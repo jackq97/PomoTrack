@@ -1,6 +1,7 @@
 package com.example.pomodoro.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Call
@@ -22,7 +25,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,12 +40,14 @@ import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
 @Composable
 fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
 
+    val remainingTime by viewModel.remainingTime.collectAsState()
+    val progress = remember { mutableStateOf(1f) }
+    val isRunning: Boolean = remainingTime > 0
+
     Surface(modifier = Modifier
         .fillMaxSize()
 
         .background(MaterialTheme.colorScheme.background)) {
-
-        val timer = viewModel.currentTime.observeAsState()
 
         Column(modifier = Modifier,
         verticalArrangement = Arrangement.Bottom,
@@ -49,25 +58,35 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.c
                 ){
 
                 RoundedCircularProgressIndicator(
-                    modifier = Modifier.size(180.dp),
-                    strokeWidth = 20.dp,
+                    modifier = Modifier.size(250.dp),
+                    strokeWidth = 10.dp,
                     progress = 1f,
                     color = Color.DarkGray)
 
                 Column() {
 
-                    Text(text = timer.toString())
+                    Text(text = "$remainingTime")
                     Text(text = "focus")
+
                 }
 
                 RoundedCircularProgressIndicator(
-                    modifier = Modifier.size(180.dp),
-                    strokeWidth = 20.dp,
-                    progress = 0.5f) }
+                    modifier = Modifier.size(250.dp),
+                    strokeWidth = 10.dp,
+                    progress = progress.value) }
+
+            LaunchedEffect(remainingTime) {
+                progress.value = remainingTime.toFloat() / 60000.toFloat()
+            }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(modifier = Modifier.size(80.dp)
+                .border(shape = CircleShape,
+                    width = 5.dp,
+                    color = Color.DarkGray),
+                onClick = { viewModel.startCountdown()
+            }) {
 
                 Icon(imageVector = Icons.Default.Done,
                     contentDescription = "play/pause")
@@ -77,8 +96,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.c
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Gray)) {
+                    .fillMaxWidth()) {
 
                 Column(modifier = Modifier
                     .padding()
@@ -109,7 +127,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.c
                         )
                     }
 
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { viewModel.pauseCountdown() }) {
 
                         Icon(
                             imageVector = Icons.Default.Call,
