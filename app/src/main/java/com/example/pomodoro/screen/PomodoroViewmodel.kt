@@ -1,60 +1,113 @@
 package com.example.pomodoro.screen
 
 import android.os.CountDownTimer
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class PomodoroViewModel : ViewModel() {
 
-    private var countdownJob: Job? = null
-    private val _remainingTime = MutableStateFlow(60)
-    val remainingTime: StateFlow<Int>
-        get() = _remainingTime
+    private var focusCountDownTimer: CountDownTimer? = null
+    private var restCountDownTimer: CountDownTimer? = null
 
-    private var startTime: Long = 0L
-    private var elapsedTime: Long = 0L
+    var onTickFocus: (Long) -> Unit = {}
+    var onFinishFocus: () -> Unit = {}
 
-    fun startCountdown() {
-        startTime = System.currentTimeMillis()
-        countdownJob?.cancel()
-        countdownJob = viewModelScope.launch {
-            while (_remainingTime.value > 0) {
-                delay(1000)
-                _remainingTime.value -= 1
+    var onTickRest: (Long) -> Unit = {}
+    var onFinishRest: () -> Unit = {}
+
+    private val _remainingTime1 = MutableStateFlow(TOTAL_TIME)
+    val remainingTime1: StateFlow<Long>
+        get() = _remainingTime1
+
+    private val _remainingTime2 = MutableStateFlow(TOTAL_TIME)
+    val remainingTime2: StateFlow<Long>
+        get() = _remainingTime2
+
+    private var _isRunning1 = MutableStateFlow(false)
+    val isRunningFocus: StateFlow<Boolean>
+        get() = _isRunning1
+
+    private val _isRunning2 = MutableStateFlow(false)
+    val isRunningRest: StateFlow<Boolean>
+        get() = _isRunning2
+
+    private val _finishedCount = MutableStateFlow(0)
+    val finishedCount: StateFlow<Int>
+        get() = _finishedCount
+
+    fun startFocusTimer(duration: Long) {
+        focusCountDownTimer?.cancel()
+        focusCountDownTimer = object : CountDownTimer(duration, INTERVAL) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                _remainingTime1.value = millisUntilFinished / 1000
+                onTickFocus(millisUntilFinished) // Call the onTick callback
             }
-        }
-    }
 
-    fun pauseCountdown() {
-        countdownJob?.cancel()
-        elapsedTime += System.currentTimeMillis() - startTime
-    }
+            override fun onFinish() {
+                _isRunning1.value = false
+                _remainingTime1.value = 0
+                onFinishFocus() // Call the onFinish callback
+                startRestTimer(5000)
+                _finishedCount.value++
 
-    fun resumeCountdown() {
-        startTime = System.currentTimeMillis()
-        countdownJob = viewModelScope.launch {
-            while (_remainingTime.value > 0) {
-                delay(1000)
-                _remainingTime.value -= 1
             }
-        }
+        }.start()
+        _isRunning1.value = true
     }
 
-    fun stopCountdown() {
-        countdownJob?.cancel()
-        elapsedTime = 0L
-        _remainingTime.value = 60
+    fun startRestTimer(duration: Long) {
+        restCountDownTimer?.cancel()
+        restCountDownTimer = object : CountDownTimer(duration, INTERVAL) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                _remainingTime2.value = millisUntilFinished / 1000
+                onTickRest(millisUntilFinished) // Call the onTick callback
+            }
+
+            override fun onFinish() {
+                _isRunning2.value = false
+                _remainingTime2.value = 0
+                onFinishRest() // Call the onFinish callback
+                startFocusTimer(5000)
+            }
+        }.start()
+        _isRunning2.value = true
     }
 
-    fun getDuration(): Long {
-        return elapsedTime + (System.currentTimeMillis() - startTime)
+    fun pauseTimer() {
+        focusCountDownTimer?.cancel()
+        restCountDownTimer?.cancel()
+        _isRunning1.value = false
+        _isRunning2.value = false
+    }
+
+    fun resetTimer() {
+        focusCountDownTimer?.cancel()
+        restCountDownTimer?.cancel()
+        _remainingTime1.value = TOTAL_TIME
+        _remainingTime2.value = TOTAL_TIME
+        _finishedCount.value = 0
+        _isRunning1.value = false
+        _isRunning2.value = false
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        focusCountDownTimer?.cancel()
+        restCountDownTimer?.cancel()
+    }
+
+    fun stopTimer() {
+
+        focusCountDownTimer?.cancel()
+        restCountDownTimer?.cancel()
+    }
+
+    companion object {
+        const val TOTAL_TIME = 60000L
+        const val INTERVAL = 1000L
     }
 }
 

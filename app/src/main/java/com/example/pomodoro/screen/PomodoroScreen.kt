@@ -1,5 +1,6 @@
 package com.example.pomodoro.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -13,11 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,20 +29,49 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.pomodoro.R
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
 
 @Composable
 fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
 
-    val remainingTime by viewModel.remainingTime.collectAsState()
-    val progress = remember { mutableStateOf(1f) }
-    val isRunning: Boolean = remainingTime > 0
+    val focusRemainingTime by viewModel.remainingTime1.collectAsState()
+    val restRemainingTime by viewModel.remainingTime2.collectAsState()
+    val isRunningFocus by viewModel.isRunningFocus.collectAsState()
+    val isRunningRest by viewModel.isRunningRest.collectAsState()
+    val focusProgress = remember { mutableStateOf(1f) }
+    val restProgress = remember { mutableStateOf(1f) }
+    val finishedCount by viewModel.finishedCount.collectAsState()
+    val focusDuration by remember { mutableStateOf(5000L) }
+    val restDuration by remember { mutableStateOf(5000L) }
+    val noOfSessions = remember { mutableStateOf(4) }
+
+    if (noOfSessions.value == finishedCount){
+
+        viewModel.stopTimer()
+    }
+
+    // progress bar
+    LaunchedEffect(focusRemainingTime) {
+        focusProgress.value = focusRemainingTime.toFloat() / 5f
+    }
+
+    // progress bar
+    LaunchedEffect(restRemainingTime) {
+        restProgress.value = restRemainingTime.toFloat() / 5f
+    }
+
+    Log.d("focus timer", "PomodoroScreen: $focusRemainingTime")
+    Log.d("focus running", "PomodoroScreen: $isRunningFocus")
+    Log.d("rest timer", "PomodoroScreen: $restRemainingTime ")
+    Log.d("rest running", "PomodoroScreen: $isRunningRest")
+    Log.d("progress bar", "PomodoroScreen: ${focusProgress.value}")
 
     Surface(modifier = Modifier
         .fillMaxSize()
-
         .background(MaterialTheme.colorScheme.background)) {
 
         Column(modifier = Modifier,
@@ -63,9 +88,14 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.c
                     progress = 1f,
                     color = Color.DarkGray)
 
-                Column() {
+                Column(verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
 
-                    Text(text = "$remainingTime")
+                    if (isRunningFocus)
+                        Text(text = focusRemainingTime.toString())
+                    if (isRunningRest)
+                        Text(text = restRemainingTime.toString())
+
                     Text(text = "focus")
 
                 }
@@ -73,23 +103,29 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.c
                 RoundedCircularProgressIndicator(
                     modifier = Modifier.size(250.dp),
                     strokeWidth = 10.dp,
-                    progress = progress.value) }
-
-            LaunchedEffect(remainingTime) {
-                progress.value = remainingTime.toFloat() / 60000.toFloat()
+                    progress = if(isRunningFocus) {
+                        focusProgress.value
+                    } else {
+                        restProgress.value
+                    })
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            IconButton(modifier = Modifier.size(80.dp)
-                .border(shape = CircleShape,
+            IconButton(modifier = Modifier
+                .size(80.dp)
+                .border(
+                    shape = CircleShape,
                     width = 5.dp,
-                    color = Color.DarkGray),
-                onClick = { viewModel.startCountdown()
-            }) {
-
-                Icon(imageVector = Icons.Default.Done,
-                    contentDescription = "play/pause")
+                    color = Color.DarkGray
+                ),
+                onClick = { viewModel.startFocusTimer(focusDuration) }) {
+                if (!isRunningFocus)
+                Icon(painter = painterResource(id = R.drawable.baseline_play_arrow),
+                    contentDescription = "play")
+                else
+                    Icon(painter = painterResource(id = R.drawable.baseline_pause),
+                        contentDescription = "pause")
             }
 
             Spacer(modifier = Modifier.height(200.dp))
@@ -106,7 +142,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.c
 
                     Text(modifier = Modifier.padding(start = 10.dp,
                     top = 7.dp),
-                        text = "2/4")
+                        text = "${finishedCount}/4")
                     TextButton(onClick = { /*TODO*/ }) {
 
                         Text(text = "Reset")
@@ -121,18 +157,14 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.c
 
                     IconButton(onClick = { /*TODO*/ }) {
 
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "skip session"
-                        )
+                        Icon(painter = painterResource(id = R.drawable.baseline_skip_next),
+                            contentDescription = "skip session")
                     }
 
-                    IconButton(onClick = { viewModel.pauseCountdown() }) {
+                    IconButton(onClick = { viewModel.pauseTimer() }) {
 
-                        Icon(
-                            imageVector = Icons.Default.Call,
-                            contentDescription = "sound"
-                        )
+                        Icon(painter = painterResource(id = R.drawable.baseline_volume),
+                            contentDescription = "sound")
                     }
                 }
             }
