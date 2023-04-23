@@ -9,9 +9,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.pomodoro.screen.PomodoroScreen
+import androidx.navigation.NavGraph
+import com.example.pomodoro.screen.NavGraphs
+import com.example.pomodoro.screen.settingscreen.SettingsScreen
 import com.example.pomodoro.ui.theme.PomodoroTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.spec.NavGraphSpec
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    PomodoroScreen()
+                    DestinationsNavHost(navGraph = NavGraphs.root)
                 }
             }
         }

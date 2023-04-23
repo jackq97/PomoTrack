@@ -1,4 +1,4 @@
-package com.example.pomodoro.screen
+package com.example.pomodoro.screen.pomodoroscreen
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -14,70 +14,99 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
+import com.example.pomodoro.screen.destinations.PomodoroScreenDestination
+import com.example.pomodoro.screen.destinations.SettingsScreenDestination
+import com.example.pomodoro.screen.settingscreen.SettingsScreen
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@OptIn(ExperimentalMaterial3Api::class)
+@RootNavGraph(start = true)
+@Destination
 @Composable
-fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
+                   navigator: DestinationsNavigator,
+                   duration: Long = 5000) {
 
     val focusRemainingTime by viewModel.remainingTime1.collectAsState()
     val restRemainingTime by viewModel.remainingTime2.collectAsState()
     val isRunningFocus by viewModel.isRunningFocus.collectAsState()
     val isRunningRest by viewModel.isRunningRest.collectAsState()
-    val focusProgress = remember { mutableStateOf(1f) }
-    val restProgress = remember { mutableStateOf(1f) }
     val finishedCount by viewModel.finishedCount.collectAsState()
+
+    var focusProgress by remember { mutableStateOf(1f) }
+    var restProgress by remember { mutableStateOf(1f) }
     val focusDuration by remember { mutableStateOf(5000L) }
     val restDuration by remember { mutableStateOf(5000L) }
-    val noOfSessions = remember { mutableStateOf(4) }
+    val noOfSessions by remember { mutableStateOf(4) }
 
-    if (noOfSessions.value == finishedCount){
+    if (noOfSessions == finishedCount){
 
         viewModel.stopTimer()
     }
 
     // progress bar
     LaunchedEffect(focusRemainingTime) {
-        focusProgress.value = focusRemainingTime.toFloat() / 5f
+        focusProgress = focusRemainingTime.toFloat() / 5f
     }
 
     // progress bar
     LaunchedEffect(restRemainingTime) {
-        restProgress.value = restRemainingTime.toFloat() / 5f
+        restProgress = restRemainingTime.toFloat() / 5f
     }
 
     Log.d("focus timer", "PomodoroScreen: $focusRemainingTime")
     Log.d("focus running", "PomodoroScreen: $isRunningFocus")
     Log.d("rest timer", "PomodoroScreen: $restRemainingTime ")
     Log.d("rest running", "PomodoroScreen: $isRunningRest")
-    Log.d("progress bar", "PomodoroScreen: ${focusProgress.value}")
+    Log.d("progress bar", "PomodoroScreen: $focusProgress")
 
     Surface(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
 
-        Column(modifier = Modifier,
+        Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally) {
 
+            TopAppBar(title = { Text(text = "Pomodoro") },
+                 navigationIcon = {
+                     IconButton(onClick = { navigator.navigate(SettingsScreenDestination) }) {
+
+                    Icon(imageVector = Icons.Default.Settings,
+                        contentDescription = "settings")
+                }
+            })
+            
+            Spacer(modifier = Modifier.height(100.dp))
+            
             Box(modifier = Modifier,
                 contentAlignment = Alignment.Center
                 ){
@@ -104,9 +133,9 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = androidx.lifecycle.viewmodel.c
                     modifier = Modifier.size(250.dp),
                     strokeWidth = 10.dp,
                     progress = if(isRunningFocus) {
-                        focusProgress.value
+                        focusProgress
                     } else {
-                        restProgress.value
+                        restProgress
                     })
             }
 

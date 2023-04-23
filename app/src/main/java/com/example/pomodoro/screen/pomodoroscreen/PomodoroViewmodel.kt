@@ -1,11 +1,18 @@
-package com.example.pomodoro.screen
+package com.example.pomodoro.screen.pomodoroscreen
+
 
 import android.os.CountDownTimer
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class PomodoroViewModel : ViewModel() {
+@HiltViewModel
+class PomodoroViewModel @Inject constructor(private val state: SavedStateHandle) : ViewModel() {
+
+    private val duration = checkNotNull(state.get<Long>("duration"))
 
     private var focusCountDownTimer: CountDownTimer? = null
     private var restCountDownTimer: CountDownTimer? = null
@@ -36,6 +43,9 @@ class PomodoroViewModel : ViewModel() {
     val finishedCount: StateFlow<Int>
         get() = _finishedCount
 
+    init {
+        startFocusTimer(duration)
+    }
     fun startFocusTimer(duration: Long) {
         focusCountDownTimer?.cancel()
         focusCountDownTimer = object : CountDownTimer(duration, INTERVAL) {
