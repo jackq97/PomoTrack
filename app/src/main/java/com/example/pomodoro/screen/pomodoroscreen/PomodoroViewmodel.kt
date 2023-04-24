@@ -12,7 +12,12 @@ import javax.inject.Inject
 @HiltViewModel
 class PomodoroViewModel @Inject constructor(private val state: SavedStateHandle) : ViewModel() {
 
-    private val duration = checkNotNull(state.get<Long>("duration"))
+    //private val duration = checkNotNull(state.get<Long>("duration"))
+    //private val restDuration = checkNotNull(state.get<Long>("restDuration"))
+    //private val rounds = checkNotNull(state.get<Long>("rounds"))
+
+    val focusDuration: Long = 25000
+    val restDuration: Long = 5000
 
     private var focusCountDownTimer: CountDownTimer? = null
     private var restCountDownTimer: CountDownTimer? = null
@@ -42,13 +47,9 @@ class PomodoroViewModel @Inject constructor(private val state: SavedStateHandle)
     private val _finishedCount = MutableStateFlow(0)
     val finishedCount: StateFlow<Int>
         get() = _finishedCount
-
-    init {
-        startFocusTimer(duration)
-    }
-    fun startFocusTimer(duration: Long) {
+    fun startFocusTimer() {
         focusCountDownTimer?.cancel()
-        focusCountDownTimer = object : CountDownTimer(duration, INTERVAL) {
+        focusCountDownTimer = object : CountDownTimer(focusDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
                 _remainingTime1.value = millisUntilFinished / 1000
@@ -59,7 +60,7 @@ class PomodoroViewModel @Inject constructor(private val state: SavedStateHandle)
                 _isRunning1.value = false
                 _remainingTime1.value = 0
                 onFinishFocus() // Call the onFinish callback
-                startRestTimer(5000)
+                startRestTimer()
                 _finishedCount.value++
 
             }
@@ -67,9 +68,9 @@ class PomodoroViewModel @Inject constructor(private val state: SavedStateHandle)
         _isRunning1.value = true
     }
 
-    fun startRestTimer(duration: Long) {
+    fun startRestTimer() {
         restCountDownTimer?.cancel()
-        restCountDownTimer = object : CountDownTimer(duration, INTERVAL) {
+        restCountDownTimer = object : CountDownTimer(restDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
                 _remainingTime2.value = millisUntilFinished / 1000
@@ -80,7 +81,7 @@ class PomodoroViewModel @Inject constructor(private val state: SavedStateHandle)
                 _isRunning2.value = false
                 _remainingTime2.value = 0
                 onFinishRest() // Call the onFinish callback
-                startFocusTimer(5000)
+                startFocusTimer()
             }
         }.start()
         _isRunning2.value = true
@@ -120,5 +121,3 @@ class PomodoroViewModel @Inject constructor(private val state: SavedStateHandle)
         const val INTERVAL = 1000L
     }
 }
-
-

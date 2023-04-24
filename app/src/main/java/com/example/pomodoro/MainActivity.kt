@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph
 import com.example.pomodoro.screen.NavGraphs
+import com.example.pomodoro.screen.infoscreen.InfoScreen
 import com.example.pomodoro.screen.settingscreen.SettingsScreen
 import com.example.pomodoro.ui.theme.PomodoroTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
@@ -29,7 +30,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DestinationsNavHost(navGraph = NavGraphs.root)
+                    //DestinationsNavHost(navGraph = NavGraphs.root)
+                    InfoScreen()
                 }
             }
         }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
+import com.example.pomodoro.screen.destinations.InfoScreenDestination
 import com.example.pomodoro.screen.destinations.PomodoroScreenDestination
 import com.example.pomodoro.screen.destinations.SettingsScreenDestination
 import com.example.pomodoro.screen.settingscreen.SettingsScreen
@@ -53,7 +55,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
                    navigator: DestinationsNavigator,
-                   duration: Long = 5000) {
+                   duration: Long = 25000) {
 
     val focusRemainingTime by viewModel.remainingTime1.collectAsState()
     val restRemainingTime by viewModel.remainingTime2.collectAsState()
@@ -102,10 +104,17 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
 
                     Icon(imageVector = Icons.Default.Settings,
                         contentDescription = "settings")
+                } },
+                actions = {
+                    IconButton(onClick = { navigator.navigate(InfoScreenDestination) }) {
+
+                        Icon(imageVector = Icons.Default.Add,
+                            contentDescription = "charts")
+                    }
                 }
-            })
+            )
             
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(120.dp))
             
             Box(modifier = Modifier,
                 contentAlignment = Alignment.Center
@@ -148,7 +157,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
                     width = 5.dp,
                     color = Color.DarkGray
                 ),
-                onClick = { viewModel.startFocusTimer(focusDuration) }) {
+                onClick = { viewModel.startFocusTimer() }) {
                 if (!isRunningFocus)
                 Icon(painter = painterResource(id = R.drawable.baseline_play_arrow),
                     contentDescription = "play")
