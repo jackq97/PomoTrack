@@ -4,13 +4,16 @@ package com.example.pomodoro.screen.pomodoroscreen
 import android.os.CountDownTimer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.example.pomodoro.repository.DurationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class PomodoroViewModel @Inject constructor(private val state: SavedStateHandle) : ViewModel() {
+class PomodoroViewModel @Inject constructor(
+    private val state: SavedStateHandle,
+    private val repository: DurationRepository) : ViewModel() {
 
     //private val duration = checkNotNull(state.get<Long>("duration"))
     //private val restDuration = checkNotNull(state.get<Long>("restDuration"))

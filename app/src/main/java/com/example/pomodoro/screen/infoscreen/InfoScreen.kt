@@ -18,7 +18,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -30,28 +29,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.pomodoro.ui.composables.InfoColumn
 import com.example.pomodoro.ui.composables.InfoTotalColumn
+import com.example.pomodoro.ui.composables.LineChart
 import com.example.pomodoro.ui.composables.PieChart
 import com.example.pomodoro.ui.composables.radiobuttons.LineRadioButtons
 import com.example.pomodoro.ui.composables.radiobuttons.PieRadioButtons
-import com.himanshoe.charty.line.LineChart
-import com.himanshoe.charty.line.model.LineData
 import com.ramcosta.composedestinations.annotation.Destination
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @Destination
 @Composable
 fun InfoScreen(){
 
-    val lineChartData = remember {
-        mutableStateListOf(
-            LineData("sun", 12F),
-            LineData("mon", 20F),
-            LineData("tue", 50F),
-            LineData("wed",200F),
-            LineData("thur", 10F),
-            LineData("fri", 8F),
-            LineData("sat", 8F),
-        )
+    val dateFormat = SimpleDateFormat("dd", Locale.getDefault())
+
+    val weekDatesList = mutableListOf<Int>()
+    val monthDatesList = mutableListOf<Int>()
+    val yearMonthsList = mutableListOf<Int>()
+
+    val calendar = Calendar.getInstance()
+    val currentMonth = calendar.get(Calendar.MONTH)
+    calendar.set(Calendar.DAY_OF_MONTH, 1)
+
+    while (calendar.get(Calendar.MONTH) == currentMonth) {
+        val date = dateFormat.format(calendar.time)
+        monthDatesList.add(date.toInt())
+        calendar.add(Calendar.DAY_OF_MONTH, 1)
     }
+
+
 
     var selectedPieRadioOption by remember {
         mutableStateOf("Day")
@@ -59,6 +66,13 @@ fun InfoScreen(){
 
     var selectedLineRadioOption by remember {
         mutableStateOf("Week")
+    }
+
+    var double = 0.0
+    val data: MutableList<Pair<Int, Double>> = mutableListOf()
+    monthDatesList.forEach{ date ->
+        double++
+        data.add(Pair(date, double))
     }
 
     Surface(
@@ -140,7 +154,7 @@ fun InfoScreen(){
                 )
                 .clip(RoundedCornerShape(5.dp))
                 .fillMaxWidth()
-                .height(280.dp)
+                .height(290.dp)
                 .background(Color.DarkGray)) {
 
                 Column(modifier = Modifier.fillMaxSize(),
@@ -156,11 +170,11 @@ fun InfoScreen(){
                     
                     LineChart(
                         modifier = Modifier
-                            .width(300.dp)
-                            .height(150.dp),
-                        color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
-                        lineData = lineChartData
-                    )
+                            .width(350.dp)
+                            .padding(8.dp)
+                            .height(180.dp),
+                        data = data
+                        )
                 }
             }
         }
