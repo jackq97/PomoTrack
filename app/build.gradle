@@ -121,7 +121,9 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    //CHART
-    implementation("com.himanshoe:charty:1.0.1")
+    //datastore
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+
 
 }

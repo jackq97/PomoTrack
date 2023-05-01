@@ -6,21 +6,21 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.pomodoro.model.local.Duration
+import com.example.pomodoro.model.local.Settings
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface DurationDao {
+interface SettingsDao {
 
     @Insert
-    suspend fun insertDuration(duration: Duration)
+    suspend fun insertSetting(settings: Settings)
 
     @Delete
-    suspend fun deleteDuration(duration: Duration)
+    suspend fun deleteSetting(settings: Settings)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(duration: Duration)
+    suspend fun update(settings: Settings)
 
-    @Query("SELECT * from duration_db")
-    fun getAllDurations(): Flow<List<Duration>>
+    @Query("SELECT * from settings_db")
+    fun getAllSettings(): Flow<List<Settings>>
 }

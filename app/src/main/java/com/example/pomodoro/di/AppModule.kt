@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.pomodoro.data.DurationDao
 import com.example.pomodoro.data.DurationDatabase
+import com.example.pomodoro.data.datastore.SettingsManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,4 +30,8 @@ object AppModule {
         "duration_db")
         .fallbackToDestructiveMigration()
         .build()
+
+    @Singleton
+    @Provides
+    fun provideDataStoreRepository(@ApplicationContext context: Context)= SettingsManager(context)
 }
