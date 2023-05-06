@@ -8,8 +8,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.pomodoro.screen.NavGraphs
+import com.example.pomodoro.screen.settingscreen.SettingsScreen
 import com.example.pomodoro.ui.theme.PomodoroTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,7 +26,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DestinationsNavHost(navGraph = NavGraphs.root)
+                    //DestinationsNavHost(navGraph = NavGraphs.root)
+
+                    SettingsScreen(navigator = EmptyDestinationsNavigator)
                 }
             }
         }

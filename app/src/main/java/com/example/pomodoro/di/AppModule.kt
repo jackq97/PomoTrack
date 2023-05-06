@@ -1,10 +1,17 @@
 package com.example.pomodoro.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
-import com.example.pomodoro.data.DurationDao
-import com.example.pomodoro.data.DurationDatabase
+import com.example.pomodoro.data.datastore.Abstract
 import com.example.pomodoro.data.datastore.SettingsManager
+import com.example.pomodoro.data.roomdatabase.DurationDao
+import com.example.pomodoro.data.roomdatabase.DurationDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,5 +40,15 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideDataStoreRepository(@ApplicationContext context: Context)= SettingsManager(context)
+    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create(
+            corruptionHandler = ReplaceFileCorruptionHandler(
+                produceNewData = { emptyPreferences() }
+            ), produceFile = { context.preferencesDataStoreFile("user_data") }
+        )
+    }
+
+
+    @Provides
+    fun provideUserPref(dataStore: DataStore<Preferences>): Abstract = SettingsManager(dataStore)
 }
