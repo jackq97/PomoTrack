@@ -44,7 +44,7 @@ object AppModule {
         return PreferenceDataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler(
                 produceNewData = { emptyPreferences() }
-            ), produceFile = { context.preferencesDataStoreFile("user_data") }
+            ), produceFile = { context.preferencesDataStoreFile("user_settings") }
         )
     }
 

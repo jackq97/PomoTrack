@@ -11,6 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.pomodoro.model.local.Settings
 import com.example.pomodoro.ui.composables.SliderComponent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -33,12 +35,26 @@ fun SettingsScreen(
     navigator: DestinationsNavigator,
     viewModel: SettingsViewModel = hiltViewModel()) {
 
-    val intVal = viewModel.userName.collectAsState()
+    var focusSliderPosition by remember { mutableStateOf(0f) }
+    var breakSliderPosition by remember { mutableStateOf(0f) }
+    var longBreakSliderPosition by remember { mutableStateOf(0f) }
+    var noOfRoundsSliderPosition  by remember { mutableStateOf(0f) }
 
-    var focusSliderPosition by remember { mutableStateOf(1f) }
-    var breakSliderPosition by remember { mutableStateOf(1f) }
-    var longBreakSliderPosition by remember { mutableStateOf(1f) }
-    var noOfRoundsSliderPosition  by remember { mutableStateOf(intVal.value) }
+    val settings = viewModel.settings.collectAsState()
+
+    LaunchedEffect(
+        settings.value.focusDur,
+        settings.value.restDur,
+        settings.value.longRestDur,
+        settings.value.rounds
+    ) {
+
+        focusSliderPosition = settings.value.focusDur
+        breakSliderPosition = settings.value.restDur
+        longBreakSliderPosition = settings.value.longRestDur
+        noOfRoundsSliderPosition = settings.value.rounds
+    }
+
 
     fun floatToTimeString(floatValue: Float): String {
             val totalMinutes = ((floatValue - 1) / 9 * 89 + 1).roundToInt()
@@ -46,9 +62,7 @@ fun SettingsScreen(
             return "$minutes min"
         }
 
-    //Log.d("val check", "SettingsScreen check saved value: ${intVal.value} ")
-
-        Surface(
+    Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.background)
@@ -59,8 +73,6 @@ fun SettingsScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-               // Text(text = "${settings.value.focusDur}/${settings.value.restDur}/${settings.value.longRestDur}/${settings.value.rounds}")
 
                 Text(text = "Focus")
                 Text(text = floatToTimeString(focusSliderPosition))
@@ -99,7 +111,7 @@ fun SettingsScreen(
                 )
 
                 Text(text = "Rounds")
-                Text(text = "${intVal.value.toInt()}")
+                Text(text = noOfRoundsSliderPosition.toInt().toString())
 
                 SliderComponent(
                     value = noOfRoundsSliderPosition,
@@ -111,16 +123,20 @@ fun SettingsScreen(
                 )
 
                 Button(onClick = {
-                    viewModel.saveData(noOfRoundsSliderPosition)
-                    Log.d("val check", "SettingsScreen check saved value: ${intVal.value} ")
-                }){
+                    viewModel.saveSettings(
+                        Settings(focusDur = focusSliderPosition,
+                        restDur = breakSliderPosition,
+                        longRestDur = longBreakSliderPosition,
+                        rounds = noOfRoundsSliderPosition
+
+                    )) }){
+
                     Text(text = "save data")
                 }
 
             }
         }
     }
-
 
 @Preview
 @Composable

@@ -47,18 +47,5 @@ class SettingsManager (private val dataStore: DataStore<Preferences>): Abstract 
                 )
             }
     }
-
-    override fun getInt(): Flow<Float> {
-        return dataStore.data.catch { emit(emptyPreferences()) }.map {
-            it[USER_VALUE] ?: 0f
-        }
-    }
-
-    override suspend fun saveInt(value: Float) {
-        dataStore.edit {
-            it[USER_VALUE]= value
-        }
-    }
-
 }
 
