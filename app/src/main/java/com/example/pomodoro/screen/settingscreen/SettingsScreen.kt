@@ -1,6 +1,5 @@
 package com.example.pomodoro.screen.settingscreen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,10 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.model.local.Settings
 import com.example.pomodoro.ui.composables.SliderComponent
+import com.example.pomodoro.util.floatToTime
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import kotlin.math.roundToInt
 
 @Destination
 @Composable
@@ -56,12 +55,6 @@ fun SettingsScreen(
     }
 
 
-    fun floatToTimeString(floatValue: Float): String {
-            val totalMinutes = ((floatValue - 1) / 9 * 89 + 1).roundToInt()
-            val minutes = totalMinutes / 1
-            return "$minutes min"
-        }
-
     Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -75,7 +68,7 @@ fun SettingsScreen(
             ) {
 
                 Text(text = "Focus")
-                Text(text = floatToTimeString(focusSliderPosition))
+                Text(text = floatToTime(focusSliderPosition).toString())
 
                 SliderComponent(
                     value = focusSliderPosition,
@@ -87,7 +80,7 @@ fun SettingsScreen(
                 )
 
                 Text(text = "Short Break")
-                Text(text = floatToTimeString(breakSliderPosition))
+                Text(text = floatToTime(breakSliderPosition).toString())
 
                 SliderComponent(
                     value = breakSliderPosition,
@@ -99,7 +92,7 @@ fun SettingsScreen(
                 )
 
                 Text(text = "Long Break")
-                Text(text = floatToTimeString(longBreakSliderPosition))
+                Text(text = floatToTime(longBreakSliderPosition).toString())
 
                 SliderComponent(
                     value = longBreakSliderPosition,

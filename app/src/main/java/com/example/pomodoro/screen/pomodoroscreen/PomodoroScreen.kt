@@ -1,6 +1,5 @@
 package com.example.pomodoro.screen.pomodoroscreen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +42,8 @@ import com.example.pomodoro.R
 import com.example.pomodoro.screen.destinations.InfoScreenDestination
 import com.example.pomodoro.screen.destinations.SettingsScreenDestination
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
+import com.example.pomodoro.util.floatToTime
+import com.example.pomodoro.util.secondsToMinutesSeconds
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -52,41 +53,53 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination
 @Composable
 fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
-                   navigator: DestinationsNavigator,
-                   duration: Long = 25000) {
+                   navigator: DestinationsNavigator) {
+
+    val settings = viewModel.settings.collectAsState()
 
     val focusRemainingTime by viewModel.remainingTime1.collectAsState()
     val restRemainingTime by viewModel.remainingTime2.collectAsState()
     val isRunningFocus by viewModel.isRunningFocus.collectAsState()
     val isRunningRest by viewModel.isRunningRest.collectAsState()
+    val isPaused by viewModel.isPaused.collectAsState()
     val finishedCount by viewModel.finishedCount.collectAsState()
 
-    var focusProgress by remember { mutableStateOf(1f) }
-    var restProgress by remember { mutableStateOf(1f) }
-    val focusDuration by remember { mutableStateOf(5000L) }
-    val restDuration by remember { mutableStateOf(5000L) }
-    val noOfSessions by remember { mutableStateOf(4) }
+    var focusProgress by remember { mutableStateOf(0f) }
+    var restProgress by remember { mutableStateOf(0f) }
+    val focusDuration by remember { mutableStateOf(0L) }
+    val restDuration by remember { mutableStateOf(0L) }
+    val noOfSessions by remember { mutableStateOf(0) }
 
-    if (noOfSessions == finishedCount){
+    var focusSettingDur by remember { mutableStateOf(0f) }
+    var restSettingDur by remember { mutableStateOf(0f) }
+    var rounds by remember { mutableStateOf(0) }
 
-        viewModel.stopTimer()
-    }
-
-    // progress bar
-    LaunchedEffect(focusRemainingTime) {
-        focusProgress = focusRemainingTime.toFloat() / 5f
-    }
+    //Log.d("setting dur", "PomodoroScreen: ${floatToTime(focusSettingDur).toInt() * 60}")
 
     // progress bar
-    LaunchedEffect(restRemainingTime) {
-        restProgress = restRemainingTime.toFloat() / 5f
+    LaunchedEffect(
+        focusRemainingTime,
+        restRemainingTime,
+        settings.value.focusDur,
+        settings.value.restDur,
+        settings.value.rounds
+    ) {
+        focusSettingDur = settings.value.focusDur
+        restSettingDur = settings.value.restDur
+        focusProgress = focusRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()
+        restProgress = restRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()
+        rounds = settings.value.rounds.toInt()
     }
 
-    Log.d("focus timer", "PomodoroScreen: $focusRemainingTime")
-    Log.d("focus running", "PomodoroScreen: $isRunningFocus")
-    Log.d("rest timer", "PomodoroScreen: $restRemainingTime ")
-    Log.d("rest running", "PomodoroScreen: $isRunningRest")
-    Log.d("progress bar", "PomodoroScreen: $focusProgress")
+    //Log.d("focus timer", "PomodoroScreen: $focusRemainingTime")
+    //Log.d("focus running", "PomodoroScreen: $isRunningFocus")
+    //Log.d("rest timer", "PomodoroScreen: $restRemainingTime ")
+    //Log.d("rest running", "PomodoroScreen: $isRunningRest")
+    //Log.d("progress bar", "PomodoroScreen: $focusProgress")
+
+    /*viewModel.onTickFocus = {
+        Log.d("pomodoro", "PomodoroScreen: ticking")
+    }*/
 
     Surface(modifier = Modifier
         .fillMaxSize()
@@ -128,12 +141,11 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
                 horizontalAlignment = Alignment.CenterHorizontally) {
 
                     if (isRunningFocus)
-                        Text(text = focusRemainingTime.toString())
+                        Text(text = secondsToMinutesSeconds(focusRemainingTime))
                     if (isRunningRest)
-                        Text(text = restRemainingTime.toString())
+                        Text(text = secondsToMinutesSeconds(restRemainingTime))
 
-                    Text(text = "focus")
-
+                    Text(text = "Focus")
                 }
 
                 RoundedCircularProgressIndicator(
@@ -155,13 +167,27 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
                     width = 5.dp,
                     color = Color.DarkGray
                 ),
-                onClick = { viewModel.startFocusTimer() }) {
-                if (!isRunningFocus)
-                Icon(painter = painterResource(id = R.drawable.baseline_play_arrow),
-                    contentDescription = "play")
-                else
-                    Icon(painter = painterResource(id = R.drawable.baseline_pause),
-                        contentDescription = "pause")
+                onClick = {
+
+                    if(!isRunningFocus && !isRunningRest){
+                        viewModel.startFocusTimer()
+                    } else {
+                        viewModel.pauseTimer()
+                    }
+
+                    if (isPaused){
+                        viewModel.resumeTimer()
+                    }
+                })
+            {
+                if (!isRunningFocus && !isRunningRest || isPaused) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_play_arrow),
+                        contentDescription = "play")
+                }else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_pause),
+                        contentDescription = "pause")}
             }
 
             Spacer(modifier = Modifier.height(200.dp))
@@ -178,7 +204,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
 
                     Text(modifier = Modifier.padding(start = 10.dp,
                     top = 7.dp),
-                        text = "${finishedCount}/4")
+                        text = "${finishedCount}/$rounds")
                     TextButton(onClick = { /*TODO*/ }) {
 
                         Text(text = "Reset")

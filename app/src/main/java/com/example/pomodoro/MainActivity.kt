@@ -26,9 +26,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    //DestinationsNavHost(navGraph = NavGraphs.root)
+                    DestinationsNavHost(navGraph = NavGraphs.root)
 
-                    SettingsScreen(navigator = EmptyDestinationsNavigator)
+                    //SettingsScreen(navigator = EmptyDestinationsNavigator)
                 }
             }
         }
