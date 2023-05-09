@@ -1,6 +1,7 @@
 package com.example.pomodoro.screen.pomodoroscreen
 
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.data.datastore.Abstract
@@ -61,6 +62,7 @@ class PomodoroViewModel @Inject constructor(
 
     private var focusCountDownTimer: CountDownTimer? = null
     private var restCountDownTimer: CountDownTimer? = null
+    private var longBreakCountDownTimer: CountDownTimer? = null
 
     private val _isPaused = MutableStateFlow(false)
     val isPaused: StateFlow<Boolean>
@@ -75,21 +77,29 @@ class PomodoroViewModel @Inject constructor(
     var onTickRest: (Long) -> Unit = {}
     var onFinishRest: () -> Unit = {}
 
-    private val _remainingTime1 = MutableStateFlow(0L)
-    val remainingTime1: StateFlow<Long>
-        get() = _remainingTime1
+    private val _remainingFocusTime = MutableStateFlow(0L)
+    val remainingFocusTime: StateFlow<Long>
+        get() = _remainingFocusTime
 
-    private val _remainingTime2 = MutableStateFlow(0L)
-    val remainingTime2: StateFlow<Long>
-        get() = _remainingTime2
+    private val _remainingRestTime = MutableStateFlow(0L)
+    val remainingRestTime: StateFlow<Long>
+        get() = _remainingRestTime
 
-    private var _isRunning1 = MutableStateFlow(false)
+    private val _remainingLongBreakTime = MutableStateFlow(0L)
+    val remainingLongBreakTime: StateFlow<Long>
+        get() = _remainingLongBreakTime
+
+    private var _isRunningFocus = MutableStateFlow(false)
     val isRunningFocus: StateFlow<Boolean>
-        get() = _isRunning1
+        get() = _isRunningFocus
 
-    private val _isRunning2 = MutableStateFlow(false)
+    private val _isRunningRest = MutableStateFlow(false)
     val isRunningRest: StateFlow<Boolean>
-        get() = _isRunning2
+        get() = _isRunningRest
+
+    private var _isRunningLongBreak = MutableStateFlow(false)
+    val isRunningLongBreak: StateFlow<Boolean>
+        get() = _isRunningLongBreak
 
     private val _finishedCount = MutableStateFlow(0)
     val finishedCount: StateFlow<Int>
@@ -98,90 +108,152 @@ class PomodoroViewModel @Inject constructor(
     fun startFocusTimer() {
 
         focusCountDownTimer?.cancel()
-        _isRunning1.value = true
+        restCountDownTimer?.cancel()
+        longBreakCountDownTimer?.cancel()
+        _isRunningFocus.value = true
         focusCountDownTimer = object : CountDownTimer(focusDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
-                _remainingTime1.value = millisUntilFinished / 1000
+                _remainingFocusTime.value = millisUntilFinished / 1000
                 onTickFocus(millisUntilFinished) // Call the onTick callback
             }
 
             override fun onFinish() {
 
-                _isRunning1.value = false
-                _remainingTime1.value = 0
+                _isRunningFocus.value = false
+                _remainingFocusTime.value = 0
                 onFinishFocus() // Call the onFinish callback
-                startRestTimer()
                 _finishedCount.value++
+                Log.d("TAG", "onFinish: ${_finishedCount.value} == $roundsDuration")
+                if (_finishedCount.value == roundsDuration) {
+                    startLongBreakTimer()
+                } else {
+                    startRestTimer()
+                }
             }
         }.start()
     }
 
     fun startRestTimer() {
 
+        focusCountDownTimer?.cancel()
         restCountDownTimer?.cancel()
-        _isRunning2.value = true
+        longBreakCountDownTimer?.cancel()
+        _isRunningRest.value = true
         restCountDownTimer = object : CountDownTimer(breakDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
-                _remainingTime2.value = millisUntilFinished / 1000
+                _remainingRestTime.value = millisUntilFinished / 1000
                 onTickRest(millisUntilFinished) // Call the onTick callback
             }
 
             override fun onFinish() {
-                _isRunning2.value = false
-                _remainingTime2.value = 0
+                _isRunningRest.value = false
+                _remainingRestTime.value = 0
                 onFinishRest() // Call the onFinish callback
                 startFocusTimer()
             }
         }.start()
     }
 
+    fun startLongBreakTimer() {
+
+        focusCountDownTimer?.cancel()
+        restCountDownTimer?.cancel()
+        longBreakCountDownTimer?.cancel()
+        _isRunningLongBreak.value = true
+
+        longBreakCountDownTimer = object : CountDownTimer(longBreakDuration, INTERVAL) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                _remainingLongBreakTime.value = millisUntilFinished / 1000
+               // onTickFocus(millisUntilFinished) // Call the onTick callback
+            }
+
+            override fun onFinish() {
+
+                _isRunningLongBreak.value = false
+                _remainingLongBreakTime.value = 0
+                _finishedCount.value = 0
+                //onFinishFocus() // Call the onFinish callback
+                startFocusTimer()
+            }
+        }.start()
+    }
     fun pauseTimer() {
         focusCountDownTimer?.cancel()
         restCountDownTimer?.cancel()
+        longBreakCountDownTimer?.cancel()
         _isPaused.value = true
-        pausedTime = if (_isRunning1.value) {
-            _remainingTime1.value * 1000
-        } else {
-            _remainingTime2.value * 1000
+
+        when {
+            _isRunningFocus.value -> {
+                pausedTime = _remainingFocusTime.value * 1000
+            }
+            _isRunningRest.value -> {
+                pausedTime = _remainingRestTime.value * 1000
+            }
+            _isRunningLongBreak.value -> {
+                pausedTime = _remainingLongBreakTime.value * 1000
+            }
         }
     }
 
     fun resumeTimer() {
         if (_isPaused.value) {
             _isPaused.value = false
-            if (_isRunning1.value) {
-                focusCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
-                    // ...
-                    override fun onTick(p0: Long) {
-                        _remainingTime1.value = p0 / 1000
-                    }
 
-                    override fun onFinish() {
-                        _isRunning1.value = false
-                        _remainingTime1.value = 0
-                        onFinishFocus() // Call the onFinish callback
-                        startRestTimer()
-                        _finishedCount.value++
-                    }
-                }.start()
-                _isRunning1.value = true
-            } else {
-                restCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
-                    // ...
-                    override fun onTick(p0: Long) {
-                        _remainingTime2.value = p0 / 1000
-                    }
+            when {
+                _isRunningFocus.value -> {
+                    focusCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
+                        // ...
+                        override fun onTick(p0: Long) {
+                            _remainingFocusTime.value = p0 / 1000
+                        }
 
-                    override fun onFinish() {
-                        _isRunning2.value = false
-                        _remainingTime2.value = 0
-                        onFinishRest() // Call the onFinish callback
-                        startFocusTimer()
-                    }
-                }.start()
-                _isRunning2.value = true
+                        override fun onFinish() {
+                            _isRunningFocus.value = false
+                            _remainingFocusTime.value = 0
+                            onFinishFocus() // Call the onFinish callback
+                            startRestTimer()
+                            _finishedCount.value++
+                        }
+                    }.start()
+                    _isRunningFocus.value = true
+                }
+                _isRunningRest.value -> {
+                    restCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
+                        // ...
+                        override fun onTick(p0: Long) {
+                            _remainingRestTime.value = p0 / 1000
+                        }
+
+                        override fun onFinish() {
+                            _isRunningRest.value = false
+                            _remainingRestTime.value = 0
+                            onFinishRest() // Call the onFinish callback
+                            startFocusTimer()
+                        }
+                    }.start()
+                    _isRunningRest.value = true
+                }
+                _isRunningLongBreak.value -> {
+                    longBreakCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
+                        // ...
+                        override fun onTick(p0: Long) {
+                            _remainingLongBreakTime.value = p0 / 1000
+                        }
+
+                        override fun onFinish() {
+                            _isRunningLongBreak.value = false
+                            _remainingLongBreakTime.value = 0
+                            _finishedCount.value = 0
+                            //onFinishRest() // Call the onFinish callback
+                            startFocusTimer()
+                        }
+                    }.start()
+                    _isRunningLongBreak.value = true
+                }
             }
         }
     }
@@ -189,11 +261,58 @@ class PomodoroViewModel @Inject constructor(
 
         focusCountDownTimer?.cancel()
         restCountDownTimer?.cancel()
-        _remainingTime1.value = TOTAL_TIME
-        _remainingTime2.value = TOTAL_TIME
+        longBreakCountDownTimer?.cancel()
+        _remainingFocusTime.value = TOTAL_TIME
+        _remainingRestTime.value = TOTAL_TIME
+        _remainingLongBreakTime.value = TOTAL_TIME
         _finishedCount.value = 0
-        _isRunning1.value = false
-        _isRunning2.value = false
+        _isRunningFocus.value = false
+        _isRunningRest.value = false
+        _isRunningLongBreak.value = false
+    }
+
+    fun skipTimer() {
+
+        when {
+
+            _isRunningFocus.value -> {
+                focusCountDownTimer?.cancel()
+                _isRunningFocus.value = false
+                _isRunningRest.value = true
+                _isRunningLongBreak.value = false
+                _finishedCount.value++
+                startRestTimer()
+            }
+
+            _isRunningRest.value -> {
+                _isRunningFocus.value = true
+                _isRunningRest.value = false
+                _isRunningLongBreak.value = false
+                restCountDownTimer?.cancel()
+                startFocusTimer()
+            }
+
+            _isRunningLongBreak.value -> {
+                _isRunningFocus.value = true
+                _isRunningRest.value = false
+                _isRunningLongBreak.value = false
+                _finishedCount.value = 0
+                longBreakCountDownTimer?.cancel()
+                startFocusTimer()
+            }
+        }
+    }
+    fun stopTimer() {
+
+        focusCountDownTimer?.cancel()
+        restCountDownTimer?.cancel()
+        _isRunningFocus.value = false
+        _isRunningRest.value = false
+    }
+
+    companion object {
+        const val TOTAL_TIME = 0L
+        const val INTERVAL = 1000L
     }
 
     override fun onCleared() {
@@ -201,18 +320,7 @@ class PomodoroViewModel @Inject constructor(
         super.onCleared()
         focusCountDownTimer?.cancel()
         restCountDownTimer?.cancel()
+        longBreakCountDownTimer?.cancel()
     }
 
-    fun stopTimer() {
-
-        focusCountDownTimer?.cancel()
-        restCountDownTimer?.cancel()
-        _isRunning1.value = false
-        _isRunning2.value = false
-    }
-
-    companion object {
-        const val TOTAL_TIME = 60000L
-        const val INTERVAL = 1000L
-    }
 }

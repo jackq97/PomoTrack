@@ -57,37 +57,44 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
 
     val settings = viewModel.settings.collectAsState()
 
-    val focusRemainingTime by viewModel.remainingTime1.collectAsState()
-    val restRemainingTime by viewModel.remainingTime2.collectAsState()
+    val focusRemainingTime by viewModel.remainingFocusTime.collectAsState()
+    val restRemainingTime by viewModel.remainingRestTime.collectAsState()
+    val longBreakRemainingTime by viewModel.remainingLongBreakTime.collectAsState()
     val isRunningFocus by viewModel.isRunningFocus.collectAsState()
     val isRunningRest by viewModel.isRunningRest.collectAsState()
+    val isRunningLongBreak by viewModel.isRunningLongBreak.collectAsState()
     val isPaused by viewModel.isPaused.collectAsState()
     val finishedCount by viewModel.finishedCount.collectAsState()
-
     var focusProgress by remember { mutableStateOf(0f) }
     var restProgress by remember { mutableStateOf(0f) }
+    var longBreakProgress by remember { mutableStateOf(0f) }
+
     val focusDuration by remember { mutableStateOf(0L) }
     val restDuration by remember { mutableStateOf(0L) }
     val noOfSessions by remember { mutableStateOf(0) }
 
     var focusSettingDur by remember { mutableStateOf(0f) }
     var restSettingDur by remember { mutableStateOf(0f) }
+    var longRestSettingDur by remember { mutableStateOf(0f) }
     var rounds by remember { mutableStateOf(0) }
 
     //Log.d("setting dur", "PomodoroScreen: ${floatToTime(focusSettingDur).toInt() * 60}")
 
-    // progress bar
     LaunchedEffect(
         focusRemainingTime,
         restRemainingTime,
+        longBreakRemainingTime,
         settings.value.focusDur,
         settings.value.restDur,
+        settings.value.longRestDur,
         settings.value.rounds
     ) {
         focusSettingDur = settings.value.focusDur
         restSettingDur = settings.value.restDur
+        longRestSettingDur = settings.value.longRestDur
         focusProgress = focusRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()
-        restProgress = restRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()
+        restProgress = restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()
+        longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
         rounds = settings.value.rounds.toInt()
     }
 
@@ -96,10 +103,6 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
     //Log.d("rest timer", "PomodoroScreen: $restRemainingTime ")
     //Log.d("rest running", "PomodoroScreen: $isRunningRest")
     //Log.d("progress bar", "PomodoroScreen: $focusProgress")
-
-    /*viewModel.onTickFocus = {
-        Log.d("pomodoro", "PomodoroScreen: ticking")
-    }*/
 
     Surface(modifier = Modifier
         .fillMaxSize()
@@ -140,12 +143,23 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
                 Column(verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally) {
 
-                    if (isRunningFocus)
+                    if (isRunningFocus) {
                         Text(text = secondsToMinutesSeconds(focusRemainingTime))
-                    if (isRunningRest)
+                    }
+                    else if(isRunningLongBreak) {
+                        Text(text = secondsToMinutesSeconds(longBreakRemainingTime))
+                    }
+                    else {
                         Text(text = secondsToMinutesSeconds(restRemainingTime))
+                    }
 
-                    Text(text = "Focus")
+                    if (isRunningFocus) {
+                        Text(text = "Focus")
+                    } else if(isRunningLongBreak) {
+                        Text(text = "Long Break")
+                    }
+                    else
+                        Text(text = "Rest")
                 }
 
                 RoundedCircularProgressIndicator(
@@ -153,7 +167,9 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
                     strokeWidth = 10.dp,
                     progress = if(isRunningFocus) {
                         focusProgress
-                    } else {
+                    } else if (isRunningLongBreak){
+                        longBreakProgress
+                    }else {
                         restProgress
                     })
             }
@@ -169,7 +185,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
                 ),
                 onClick = {
 
-                    if(!isRunningFocus && !isRunningRest){
+                    if(!isRunningFocus && !isRunningRest && !isRunningLongBreak){
                         viewModel.startFocusTimer()
                     } else {
                         viewModel.pauseTimer()
@@ -180,7 +196,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
                     }
                 })
             {
-                if (!isRunningFocus && !isRunningRest || isPaused) {
+                if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_play_arrow),
                         contentDescription = "play")
@@ -190,40 +206,40 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
                         contentDescription = "pause")}
             }
 
-            Spacer(modifier = Modifier.height(200.dp))
+            Spacer(modifier = Modifier.height(100.dp))
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()) {
+                    .fillMaxWidth()
+            ) {
 
                 Column(modifier = Modifier
-                    .padding()
                     .weight(1f),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Center) {
 
-                    Text(modifier = Modifier.padding(start = 10.dp,
+                    Text(modifier = Modifier.padding(start = 18.dp,
                     top = 7.dp),
                         text = "${finishedCount}/$rounds")
-                    TextButton(onClick = { /*TODO*/ }) {
 
+                    TextButton(onClick = { viewModel.resetTimer() }) {
                         Text(text = "Reset")
                     }
                 }
 
                 Row(modifier = Modifier
-                    .padding()
-                    .weight(1f),
+                    .weight(1f)
+                    .padding(top = 12.dp),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically) {
 
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { viewModel.skipTimer() }) {
 
                         Icon(painter = painterResource(id = R.drawable.baseline_skip_next),
                             contentDescription = "skip session")
                     }
 
-                    IconButton(onClick = { viewModel.pauseTimer() }) {
+                    IconButton(onClick = {  }) {
 
                         Icon(painter = painterResource(id = R.drawable.baseline_volume),
                             contentDescription = "sound")
@@ -238,5 +254,5 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
 @Composable
 fun PomodoroPreview(){
 
-    PomodoroPreview()
+    //PomodoroScreen(navigator = EmptyDestinationsNavigator)
 }
