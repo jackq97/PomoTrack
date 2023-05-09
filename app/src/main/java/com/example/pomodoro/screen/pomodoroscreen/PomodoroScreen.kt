@@ -1,5 +1,6 @@
 package com.example.pomodoro.screen.pomodoroscreen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -98,10 +99,12 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
         rounds = settings.value.rounds.toInt()
     }
 
-    //Log.d("focus timer", "PomodoroScreen: $focusRemainingTime")
-    //Log.d("focus running", "PomodoroScreen: $isRunningFocus")
-    //Log.d("rest timer", "PomodoroScreen: $restRemainingTime ")
-    //Log.d("rest running", "PomodoroScreen: $isRunningRest")
+    Log.d("focus timer", "PomodoroScreen: $focusRemainingTime")
+    Log.d("focus running", "PomodoroScreen: $isRunningFocus")
+    Log.d("rest timer", "PomodoroScreen: $restRemainingTime ")
+    Log.d("rest running", "PomodoroScreen: $isRunningRest")
+    Log.d("long rest timer", "PomodoroScreen: $longBreakRemainingTime ")
+    Log.d("long rest running", "PomodoroScreen: $isRunningLongBreak")
     //Log.d("progress bar", "PomodoroScreen: $focusProgress")
 
     Surface(modifier = Modifier

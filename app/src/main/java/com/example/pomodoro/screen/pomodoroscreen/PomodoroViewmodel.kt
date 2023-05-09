@@ -215,8 +215,12 @@ class PomodoroViewModel @Inject constructor(
                             _isRunningFocus.value = false
                             _remainingFocusTime.value = 0
                             onFinishFocus() // Call the onFinish callback
-                            startRestTimer()
                             _finishedCount.value++
+                            if (_finishedCount.value == roundsDuration) {
+                                startLongBreakTimer()
+                            } else {
+                                startRestTimer()
+                            }
                         }
                     }.start()
                     _isRunningFocus.value = true
@@ -278,10 +282,17 @@ class PomodoroViewModel @Inject constructor(
             _isRunningFocus.value -> {
                 focusCountDownTimer?.cancel()
                 _isRunningFocus.value = false
-                _isRunningRest.value = true
-                _isRunningLongBreak.value = false
                 _finishedCount.value++
-                startRestTimer()
+
+                if (_finishedCount.value == roundsDuration){
+                    _isRunningRest.value = false
+                    _isRunningLongBreak.value = true
+                    startLongBreakTimer()
+                } else {
+                    _isRunningRest.value = true
+                    _isRunningLongBreak.value = false
+                    startRestTimer()
+                }
             }
 
             _isRunningRest.value -> {
@@ -293,10 +304,10 @@ class PomodoroViewModel @Inject constructor(
             }
 
             _isRunningLongBreak.value -> {
+                _finishedCount.value = 0
                 _isRunningFocus.value = true
                 _isRunningRest.value = false
                 _isRunningLongBreak.value = false
-                _finishedCount.value = 0
                 longBreakCountDownTimer?.cancel()
                 startFocusTimer()
             }
