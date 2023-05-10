@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.data.datastore.Abstract
 import com.example.pomodoro.model.local.Settings
+import com.example.pomodoro.repository.DurationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -13,23 +14,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val abstract: Abstract
+    private val repository: DurationRepository
 ) : ViewModel() {
 
-    var settings = abstract.getSettings().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
-        initialValue = Settings(
-            focusDur = 3.404918F,
-            restDur = 1.447541F,
-            longRestDur = 1.909836F,
-            rounds = 2f
-        )
-    )
+    var settings = repository.getSettings()
 
     fun saveSettings(settings: Settings) {
-        viewModelScope.launch {
-            abstract.saveSettings(settings) }
+        repository.saveSettings(settings = settings)
     }
 
 }

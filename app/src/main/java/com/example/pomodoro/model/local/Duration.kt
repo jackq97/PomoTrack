@@ -6,10 +6,10 @@ import java.util.Date
 
 @Entity(tableName = "duration_db")
 data class Duration(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int? = null,
+
+    @PrimaryKey(autoGenerate = false)
     val date: Date,
-    val focusRecordedDuration: Date,
-    val restRecordedDuration: Date,
+    val focusRecordedDuration: Long,
+    val restRecordedDuration: Long,
     val recordedRounds: Int
 )

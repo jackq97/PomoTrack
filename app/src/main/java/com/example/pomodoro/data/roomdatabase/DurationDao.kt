@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.pomodoro.model.local.Duration
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 @Dao
 interface DurationDao {
@@ -23,4 +24,7 @@ interface DurationDao {
 
     @Query("SELECT * from duration_db")
     fun getAllDurations(): Flow<List<Duration>>
+
+    @Query("SELECT * FROM duration_db WHERE date = :date")
+    suspend fun getDataByDate(date: Date): Duration
 }

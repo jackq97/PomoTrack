@@ -41,19 +41,10 @@ fun SettingsScreen(
 
     val settings = viewModel.settings.collectAsState()
 
-    LaunchedEffect(
-        settings.value.focusDur,
-        settings.value.restDur,
-        settings.value.longRestDur,
-        settings.value.rounds
-    ) {
-
-        focusSliderPosition = settings.value.focusDur
-        breakSliderPosition = settings.value.restDur
-        longBreakSliderPosition = settings.value.longRestDur
-        noOfRoundsSliderPosition = settings.value.rounds
-    }
-
+    focusSliderPosition = settings.value.focusDur
+    breakSliderPosition = settings.value.restDur
+    longBreakSliderPosition = settings.value.longRestDur
+    noOfRoundsSliderPosition = settings.value.rounds
 
     Surface(
             modifier = Modifier

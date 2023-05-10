@@ -26,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,25 +78,13 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
     var longRestSettingDur by remember { mutableStateOf(0f) }
     var rounds by remember { mutableStateOf(0) }
 
-    //Log.d("setting dur", "PomodoroScreen: ${floatToTime(focusSettingDur).toInt() * 60}")
-
-    LaunchedEffect(
-        focusRemainingTime,
-        restRemainingTime,
-        longBreakRemainingTime,
-        settings.value.focusDur,
-        settings.value.restDur,
-        settings.value.longRestDur,
-        settings.value.rounds
-    ) {
-        focusSettingDur = settings.value.focusDur
-        restSettingDur = settings.value.restDur
-        longRestSettingDur = settings.value.longRestDur
-        focusProgress = focusRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()
-        restProgress = restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()
-        longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
-        rounds = settings.value.rounds.toInt()
-    }
+    focusSettingDur = settings.value.focusDur
+    restSettingDur = settings.value.restDur
+    longRestSettingDur = settings.value.longRestDur
+    focusProgress = focusRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()
+    restProgress = restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()
+    longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
+    rounds = settings.value.rounds.toInt()
 
     Log.d("focus timer", "PomodoroScreen: $focusRemainingTime")
     Log.d("focus running", "PomodoroScreen: $isRunningFocus")
