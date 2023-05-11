@@ -1,6 +1,7 @@
 package com.example.pomodoro.util
 
 
+import java.util.Date
 import kotlin.math.roundToInt
 
 fun floatToTime(floatValue: Float): Int {
@@ -16,5 +17,9 @@ fun secondsToMinutesSeconds(seconds: Long): String {
     val minutes = seconds / 60
     val remainingSeconds = seconds % 60
     return String.format("%02d:%02d", minutes, remainingSeconds)
+}
+
+fun getDateFromTimestamp(timestamp: Long): Date {
+    return Date(timestamp)
 }
 

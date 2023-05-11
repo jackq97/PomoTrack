@@ -1,6 +1,5 @@
 package com.example.pomodoro.screen.pomodoroscreen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -69,10 +68,6 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
     var restProgress by remember { mutableStateOf(0f) }
     var longBreakProgress by remember { mutableStateOf(0f) }
 
-    val focusDuration by remember { mutableStateOf(0L) }
-    val restDuration by remember { mutableStateOf(0L) }
-    val noOfSessions by remember { mutableStateOf(0) }
-
     var focusSettingDur by remember { mutableStateOf(0f) }
     var restSettingDur by remember { mutableStateOf(0f) }
     var longRestSettingDur by remember { mutableStateOf(0f) }
@@ -86,12 +81,12 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
     longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
     rounds = settings.value.rounds.toInt()
 
-    Log.d("focus timer", "PomodoroScreen: $focusRemainingTime")
-    Log.d("focus running", "PomodoroScreen: $isRunningFocus")
-    Log.d("rest timer", "PomodoroScreen: $restRemainingTime ")
-    Log.d("rest running", "PomodoroScreen: $isRunningRest")
-    Log.d("long rest timer", "PomodoroScreen: $longBreakRemainingTime ")
-    Log.d("long rest running", "PomodoroScreen: $isRunningLongBreak")
+    //Log.d("focus timer", "PomodoroScreen: $focusRemainingTime")
+    //Log.d("focus running", "PomodoroScreen: $isRunningFocus")
+    //Log.d("rest timer", "PomodoroScreen: $restRemainingTime ")
+    //Log.d("rest running", "PomodoroScreen: $isRunningRest")
+    //Log.d("long rest timer", "PomodoroScreen: $longBreakRemainingTime ")
+    //Log.d("long rest running", "PomodoroScreen: $isRunningLongBreak")
     //Log.d("progress bar", "PomodoroScreen: $focusProgress")
 
     Surface(modifier = Modifier

@@ -1,15 +1,27 @@
 package com.example.pomodoro.model.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.Instant
 import java.util.Date
+import java.util.UUID
 
-@Entity(tableName = "duration_db")
+@Entity(tableName = "duration_tbl")
 data class Duration(
 
-    @PrimaryKey(autoGenerate = false)
-    val date: Date,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+
+    @ColumnInfo(name = "date")
+    val date: Date = Date.from(Instant.now()),
+
+    @ColumnInfo(name = "focus_duration")
     val focusRecordedDuration: Long,
+
+    @ColumnInfo(name = "rest_duration")
     val restRecordedDuration: Long,
+
+    @ColumnInfo(name = "rounds")
     val recordedRounds: Int
 )

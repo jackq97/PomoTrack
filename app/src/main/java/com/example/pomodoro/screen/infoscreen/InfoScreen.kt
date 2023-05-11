@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.ui.composables.InfoColumn
 import com.example.pomodoro.ui.composables.InfoTotalColumn
 import com.example.pomodoro.ui.composables.LineChart
@@ -40,7 +42,7 @@ import java.util.Locale
 
 @Destination
 @Composable
-fun InfoScreen(){
+fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
     val dateFormat = SimpleDateFormat("dd", Locale.getDefault())
 
@@ -57,8 +59,6 @@ fun InfoScreen(){
         monthDatesList.add(date.toInt())
         calendar.add(Calendar.DAY_OF_MONTH, 1)
     }
-
-
 
     var selectedPieRadioOption by remember {
         mutableStateOf("Day")
@@ -94,7 +94,8 @@ fun InfoScreen(){
                     .padding(start = 10.dp),
                     label = "Today's Pomo",
                     progress = "1 from yesterday",
-                    value = "1")
+                    value = ""
+                )
 
                 InfoColumn(modifier = Modifier
                     .padding(start = 10.dp,

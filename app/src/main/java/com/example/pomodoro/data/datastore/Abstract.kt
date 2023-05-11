@@ -10,8 +10,6 @@ val LONG_SLIDER = floatPreferencesKey("long_slider")
 val ROUND_SLIDER = floatPreferencesKey("round_slider")
 
 interface Abstract {
-
     suspend fun saveSettings(settings: Settings)
-
     fun getSettings(): Flow<Settings>
 }

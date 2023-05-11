@@ -1,6 +1,5 @@
 package com.example.pomodoro.repository
 
-import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.data.datastore.Abstract
 import com.example.pomodoro.data.roomdatabase.DurationDao
 import com.example.pomodoro.model.local.Duration
@@ -13,19 +12,27 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
-class DurationRepository @Inject constructor(
+class PomodoroRepository @Inject constructor(
     private val durationDao: DurationDao,
     private val abstract: Abstract) {
 
     private val myScope = CoroutineScope(Dispatchers.IO)
 
     //room database
-    suspend fun insertDuration(duration: Duration) = durationDao.insertDuration(duration = duration)
+    suspend fun insertDuration(duration: List<Duration>) = durationDao.insertDuration(duration = duration)
     suspend fun deleteDuration(duration: Duration) = durationDao.deleteDuration(duration = duration)
-    fun getAllDuration(): Flow<List<Duration>> = durationDao.getAllDurations().flowOn(Dispatchers.IO)
+
+    suspend fun updateDuration(duration: Duration) = durationDao.updateDuration(duration = duration)
+
+    fun getAllDuration(): Flow<List<Duration>> = durationDao.getAllDurations()
+        .flowOn(Dispatchers.IO)
         .conflate()
+
+    suspend fun getDataByDate (date: Date) =  durationDao.getDurationByDate(date = date)
+
 
     //settings manager
 

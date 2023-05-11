@@ -14,17 +14,19 @@ import java.util.Date
 interface DurationDao {
 
     @Insert
-    suspend fun insertDuration(duration: Duration)
+    suspend fun insertDuration(duration: List<Duration>)
 
     @Delete
     suspend fun deleteDuration(duration: Duration)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(duration: Duration)
+    suspend fun updateDuration(duration: Duration)
 
-    @Query("SELECT * from duration_db")
+    @Query("SELECT * from duration_tbl")
     fun getAllDurations(): Flow<List<Duration>>
 
-    @Query("SELECT * FROM duration_db WHERE date = :date")
-    suspend fun getDataByDate(date: Date): Duration
+    @Query("select * from duration_tbl where date = :date")
+    suspend fun getDurationByDate(date: Date): Duration
+
+
 }

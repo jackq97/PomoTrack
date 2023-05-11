@@ -131,6 +131,3 @@ private fun DrawScope.drawRoundedLinearProgressIndicator(
     )
 }
 
-class CircularProgressBar {
-
-}

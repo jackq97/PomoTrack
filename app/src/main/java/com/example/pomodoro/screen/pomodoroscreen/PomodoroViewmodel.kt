@@ -6,26 +6,33 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.data.datastore.Abstract
 import com.example.pomodoro.model.local.Duration
-import com.example.pomodoro.model.local.Settings
-import com.example.pomodoro.repository.DurationRepository
+import com.example.pomodoro.repository.PomodoroRepository
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.minutesToLong
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PomodoroViewModel @Inject constructor(
-    private val repository: DurationRepository,
+    private val repository: PomodoroRepository,
     private val abstract: Abstract
 ) : ViewModel() {
+
+    fun addData(duration: List<Duration>){
+        viewModelScope.launch {
+
+            repository.insertDuration(duration = duration)
+        }
+    }
+
+    private val _durationList = MutableStateFlow<List<Duration>>(emptyList())
+    val durationList = _durationList.asStateFlow()
 
     val settings = repository.getSettings()
 
@@ -35,6 +42,22 @@ class PomodoroViewModel @Inject constructor(
     var roundsDuration: Int = 0
 
     init {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            // this is how you retrieve a list from state flow
+            repository.getAllDuration().distinctUntilChanged()
+                .collect{ listOfDurations ->
+
+                    // lambda for our notes
+                    if (listOfDurations.isEmpty()){
+                        // means list is empty
+                        Log.d("view model", "empty: empty list")
+                    }
+
+                    _durationList.value = listOfDurations
+                }
+        }
+
         viewModelScope.launch {
             // settings
             settings.collect { settings ->
@@ -93,7 +116,6 @@ class PomodoroViewModel @Inject constructor(
             }
 
             override fun onFinish() {
-
                 _isRunningFocus.value = false
                 _remainingFocusTime.value = 0
                 _finishedCount.value++
@@ -106,6 +128,9 @@ class PomodoroViewModel @Inject constructor(
         }.start()
     }
 
+    fun onFinishTimer() {
+
+    }
     fun startRestTimer() {
 
         stopAllTimers()

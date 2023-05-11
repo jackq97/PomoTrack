@@ -74,7 +74,6 @@ fun LineRadioButtons(onClickOption : (String) -> Unit) {
         }
     }
 }
-
 @Preview
 @Composable
 fun LinePreviewCustomRadioGroup(){
