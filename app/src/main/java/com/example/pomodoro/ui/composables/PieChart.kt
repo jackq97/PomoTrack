@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun PieChart(
-    values: List<Float> = listOf(65f, 40f),
+    values: List<Float> = listOf(),
     colors: List<Color> = listOf(
         MaterialTheme.colorScheme.primary,
         MaterialTheme.colorScheme.inversePrimary

@@ -1,5 +1,6 @@
 package com.example.pomodoro.repository
 
+import android.util.Log
 import com.example.pomodoro.data.datastore.Abstract
 import com.example.pomodoro.data.roomdatabase.DurationDao
 import com.example.pomodoro.model.local.Duration
@@ -12,7 +13,10 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class PomodoroRepository @Inject constructor(
@@ -25,13 +29,30 @@ class PomodoroRepository @Inject constructor(
     suspend fun insertDuration(duration: List<Duration>) = durationDao.insertDuration(duration = duration)
     suspend fun deleteDuration(duration: Duration) = durationDao.deleteDuration(duration = duration)
 
+    suspend fun nukeTable() {
+        durationDao.deleteAllData()
+    }
+
     suspend fun updateDuration(duration: Duration) = durationDao.updateDuration(duration = duration)
 
     fun getAllDuration(): Flow<List<Duration>> = durationDao.getAllDurations()
         .flowOn(Dispatchers.IO)
         .conflate()
 
-    suspend fun getDataByDate (date: Date) =  durationDao.getDurationByDate(date = date)
+    suspend fun getDataByDate (): List<Duration> {
+        val calendar = Calendar.getInstance()
+        val currentDate = calendar.time
+        val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        val dateString = formatter.format(currentDate)
+        val data =  durationDao.getDurationByDate(date = dateString)
+        Log.d("check data", "getDataByDate: $data")
+        return durationDao.getDurationByDate(date = dateString)
+    }
+    suspend fun getDurationByDateRange (startDate: Date,endDate: Date) =
+        durationDao
+        .getDurationByDateRange(
+            startDate = startDate,
+            endDate = endDate)
 
 
     //settings manager

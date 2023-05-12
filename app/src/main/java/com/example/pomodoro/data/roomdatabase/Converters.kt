@@ -1,17 +1,23 @@
 package com.example.pomodoro.data.roomdatabase
 
 import androidx.room.TypeConverter
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class Converters {
 
     @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
+    fun fromString(value: String?): Date? {
+        return value?.let {
+            SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).parse(value)
+        }
     }
 
     @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time
+    fun fromDate(date: Date?): String? {
+        return date?.let {
+            SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(date)
+        }
     }
 }

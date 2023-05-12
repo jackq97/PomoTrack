@@ -1,5 +1,6 @@
 package com.example.pomodoro.screen.infoscreen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,8 +18,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.pomodoro.model.local.Duration
 import com.example.pomodoro.ui.composables.InfoColumn
 import com.example.pomodoro.ui.composables.InfoTotalColumn
 import com.example.pomodoro.ui.composables.LineChart
@@ -38,11 +41,22 @@ import com.example.pomodoro.ui.composables.radiobuttons.PieRadioButtons
 import com.ramcosta.composedestinations.annotation.Destination
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
+import kotlin.math.log
 
 @Destination
 @Composable
 fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
+
+    val dayData: List<Duration>? by viewModel.dayData.observeAsState()
+
+    Log.d("Recorded rounds", "InfoScreen: ${dayData?.map { it.focusRecordedDuration }}")
+
+    // Example of getting data for the current week
+    val cal = Calendar.getInstance()
+    val startDate = cal.apply { set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek) }.time
+    val endDate = Date()
 
     val dateFormat = SimpleDateFormat("dd", Locale.getDefault())
 
@@ -143,7 +157,21 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    PieChart()
+                    val values = if (selectedPieRadioOption == "Day") {
+                        val totalDurationFocus = dayData?.sumOf {
+                            it.focusRecordedDuration
+                        }
+
+                        listOf(totalDurationFocus!!.toFloat(),2f /*totalRestFocus?.toFloat()*/)
+
+
+                    } else {
+                        listOf(3f, 4f)
+                    }
+
+                    Log.d("total focus", "InfoScreen: $values")
+
+                    PieChart(values = values)
                 }
             }
 

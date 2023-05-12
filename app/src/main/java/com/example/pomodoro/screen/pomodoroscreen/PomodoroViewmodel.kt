@@ -26,13 +26,15 @@ class PomodoroViewModel @Inject constructor(
 
     fun addData(duration: List<Duration>){
         viewModelScope.launch {
-
             repository.insertDuration(duration = duration)
         }
     }
 
-    private val _durationList = MutableStateFlow<List<Duration>>(emptyList())
-    val durationList = _durationList.asStateFlow()
+    fun nukeData(){
+        viewModelScope.launch {
+            repository.nukeTable()
+        }
+    }
 
     val settings = repository.getSettings()
 
@@ -42,22 +44,6 @@ class PomodoroViewModel @Inject constructor(
     var roundsDuration: Int = 0
 
     init {
-
-        viewModelScope.launch(Dispatchers.IO) {
-            // this is how you retrieve a list from state flow
-            repository.getAllDuration().distinctUntilChanged()
-                .collect{ listOfDurations ->
-
-                    // lambda for our notes
-                    if (listOfDurations.isEmpty()){
-                        // means list is empty
-                        Log.d("view model", "empty: empty list")
-                    }
-
-                    _durationList.value = listOfDurations
-                }
-        }
-
         viewModelScope.launch {
             // settings
             settings.collect { settings ->
