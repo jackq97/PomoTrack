@@ -26,14 +26,15 @@ interface DurationDao {
     fun getAllDurations(): Flow<List<Duration>>
 
     @Query("select * from duration_tbl where date = :date")
-    suspend fun getDurationByDate(date: String): List<Duration>
+    fun getDurationByDate(date: String): List<Duration?>
+
+    @Query("SELECT SUM(focus_duration) FROM duration_tbl WHERE substr(date, 4, 2) = :month AND substr(date, 7, 4) = :year")
+    fun getDurationSumByMonth(month: String, year: String): Double?
+
+
+
 
     @Query("DELETE FROM duration_tbl")
     suspend fun deleteAllData()
-
-    @Query("SELECT * FROM duration_tbl WHERE date BETWEEN :startDate AND :endDate")
-    fun getDurationByDateRange(startDate: Date, endDate: Date): List<Duration>
-
-
 
 }

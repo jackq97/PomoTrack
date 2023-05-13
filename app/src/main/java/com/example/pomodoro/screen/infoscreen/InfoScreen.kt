@@ -18,9 +18,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,52 +40,30 @@ import com.example.pomodoro.ui.composables.radiobuttons.PieRadioButtons
 import com.ramcosta.composedestinations.annotation.Destination
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
-import kotlin.math.log
 
 @Destination
 @Composable
 fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
-    val dayData: List<Duration>? by viewModel.dayData.observeAsState()
-
-    Log.d("Recorded rounds", "InfoScreen: ${dayData?.map { it.focusRecordedDuration }}")
-
-    // Example of getting data for the current week
-    val cal = Calendar.getInstance()
-    val startDate = cal.apply { set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek) }.time
-    val endDate = Date()
+    val currentDayData: List<Duration> by viewModel.dayData.collectAsState()
 
     val dateFormat = SimpleDateFormat("dd", Locale.getDefault())
 
-    val weekDatesList = mutableListOf<Int>()
-    val monthDatesList = mutableListOf<Int>()
-    val yearMonthsList = mutableListOf<Int>()
+    var selectedPieRadioOption by remember { mutableStateOf("Day") }
+    var selectedLineRadioOption by remember { mutableStateOf("Week") }
 
-    val calendar = Calendar.getInstance()
-    val currentMonth = calendar.get(Calendar.MONTH)
-    calendar.set(Calendar.DAY_OF_MONTH, 1)
+    var values = listOf(0f,0f)
+    val totalDurationFocus = currentDayData.sumOf { it.focusRecordedDuration }
+    val totalRestFocus = currentDayData.sumOf { it.restRecordedDuration }
 
-    while (calendar.get(Calendar.MONTH) == currentMonth) {
-        val date = dateFormat.format(calendar.time)
-        monthDatesList.add(date.toInt())
-        calendar.add(Calendar.DAY_OF_MONTH, 1)
-    }
+    when (selectedPieRadioOption) {
 
-    var selectedPieRadioOption by remember {
-        mutableStateOf("Day")
-    }
+        "Day" -> { values = listOf(totalDurationFocus.toFloat(),totalRestFocus.toFloat()) }
+        "Week" -> {}
+        "Month" -> {}
+        "year" -> {}
 
-    var selectedLineRadioOption by remember {
-        mutableStateOf("Week")
-    }
-
-    var double = 0.0
-    val data: MutableList<Pair<Int, Double>> = mutableListOf()
-    monthDatesList.forEach{ date ->
-        double++
-        data.add(Pair(date, double))
     }
 
     Surface(
@@ -157,19 +134,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    val values = if (selectedPieRadioOption == "Day") {
-                        val totalDurationFocus = dayData?.sumOf {
-                            it.focusRecordedDuration
-                        }
-
-                        listOf(totalDurationFocus!!.toFloat(),2f /*totalRestFocus?.toFloat()*/)
-
-
-                    } else {
-                        listOf(3f, 4f)
-                    }
-
-                    Log.d("total focus", "InfoScreen: $values")
+                    //Log.d("total focus", "InfoScreen: $values")
 
                     PieChart(values = values)
                 }
@@ -197,13 +162,13 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
                     Spacer(modifier = Modifier.height(30.dp))
                     
-                    LineChart(
+                    /*LineChart(
                         modifier = Modifier
                             .width(350.dp)
                             .padding(8.dp)
                             .height(180.dp),
                         data = data
-                        )
+                        )*/
                 }
             }
         }

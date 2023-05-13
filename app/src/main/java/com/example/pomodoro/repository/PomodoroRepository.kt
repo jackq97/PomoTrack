@@ -25,7 +25,77 @@ class PomodoroRepository @Inject constructor(
 
     private val myScope = CoroutineScope(Dispatchers.IO)
 
+    private val calendar: Calendar = Calendar.getInstance()
+    private val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    private val monthFormatter = SimpleDateFormat("MM", Locale.getDefault())
+    private val yearFormatter = SimpleDateFormat("yyyy", Locale.getDefault())
+
     //room database
+    fun getDataOfCurrentWeek(){
+
+        val data: MutableList<Pair<Int, Double>> = mutableListOf()
+        calendar.firstDayOfWeek = Calendar.MONDAY
+        //val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        val currentWeekStart = calendar.time
+
+       for (i in 1..7) {
+
+           calendar.time = currentWeekStart
+           calendar.add(Calendar.DAY_OF_WEEK, i-1)
+           val currentDate = calendar.time
+           val dateString = formatter.format(currentDate)
+           val dataForDate: List<Duration?> = durationDao.getDurationByDate(date = dateString) // query the data for the date from the Room database
+           val dataValue = dataForDate.sumOf { it?.focusRecordedDuration ?: 0.0 }  // use a default value if the data is null
+           data.add(Pair(i, dataValue))
+        }
+        Log.d("TAG", "getDataOfCurrentWeek: $data")
+    }
+
+    fun getDataOfCurrentMonth(){
+
+        val data: MutableList<Pair<Int, Double>> = mutableListOf()
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+        val currentMonthStart = calendar.time
+
+        val monthDaysCount = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+        for (i in 1..monthDaysCount) {
+            calendar.time = currentMonthStart
+            calendar.add(Calendar.DAY_OF_MONTH, i - 1)
+            val currentDate = calendar.time
+            val dateString = formatter.format(currentDate)
+            val dataForDate: List<Duration?> = durationDao.getDurationByDate(date = dateString) // query the data for the date from the Room database
+            val dataValue = dataForDate.sumOf { it?.focusRecordedDuration ?: 0.0 }  // use a default value if the data is null
+            data.add(Pair(i, dataValue))
+        }
+        Log.d("TAG", "getDataOfCurrentMonth: $data")
+    }
+
+
+    fun getDataOfCurrentYear() {
+            val data: MutableList<Pair<Int, Double>> = mutableListOf()
+
+            // set the calendar instance to the start of the year
+            calendar.set(Calendar.MONTH, Calendar.JANUARY)
+            calendar.set(Calendar.DAY_OF_MONTH, 1)
+            val currentYearStart = calendar.time
+
+            // loop through all months of the year
+            for (i in 1..12) {
+                calendar.time = currentYearStart
+                calendar.add(Calendar.MONTH, i-1)
+                val currentMonth = calendar.time
+                val monthString = monthFormatter.format(currentMonth)
+                val yearString = yearFormatter.format(currentMonth)
+                Log.d("TAG", "getDataOfCurrentYear: $monthString $yearString")
+                val dataValue = durationDao.getDurationSumByMonth(monthString,yearString) ?: 0.0  // use a default value if the data is null
+                data.add(Pair(i, dataValue))
+            }
+
+            Log.d("TAG", "getDataOfCurrentYear: $data")
+        }
+
     suspend fun insertDuration(duration: List<Duration>) = durationDao.insertDuration(duration = duration)
     suspend fun deleteDuration(duration: Duration) = durationDao.deleteDuration(duration = duration)
 
@@ -39,24 +109,7 @@ class PomodoroRepository @Inject constructor(
         .flowOn(Dispatchers.IO)
         .conflate()
 
-    suspend fun getDataByDate (): List<Duration> {
-        val calendar = Calendar.getInstance()
-        val currentDate = calendar.time
-        val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-        val dateString = formatter.format(currentDate)
-        val data =  durationDao.getDurationByDate(date = dateString)
-        Log.d("check data", "getDataByDate: $data")
-        return durationDao.getDurationByDate(date = dateString)
-    }
-    suspend fun getDurationByDateRange (startDate: Date,endDate: Date) =
-        durationDao
-        .getDurationByDateRange(
-            startDate = startDate,
-            endDate = endDate)
-
-
     //settings manager
-
     fun getSettings() = abstract.getSettings().stateIn(
         scope = myScope,
         started = SharingStarted.WhileSubscribed(),
@@ -73,6 +126,5 @@ class PomodoroRepository @Inject constructor(
             abstract.saveSettings(settings)
         }
     }
-
 }
 

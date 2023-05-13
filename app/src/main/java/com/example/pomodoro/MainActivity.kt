@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.pomodoro.screen.NavGraphs
+import com.example.pomodoro.screen.infoscreen.InfoScreen
 import com.example.pomodoro.screen.settingscreen.SettingsScreen
 import com.example.pomodoro.ui.theme.PomodoroTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     DestinationsNavHost(navGraph = NavGraphs.root)
 
+                    InfoScreen()
                     //SettingsScreen(navigator = EmptyDestinationsNavigator)
                 }
             }
