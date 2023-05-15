@@ -66,7 +66,7 @@ class PomodoroViewModel @Inject constructor(
         }
     }
 
-    fun addDate(list: List<Duration>){
+    fun addData(list: List<Duration>){
         viewModelScope.launch {
             repository.addList(list)
         }
@@ -88,16 +88,16 @@ class PomodoroViewModel @Inject constructor(
     private var restCountDownTimer: CountDownTimer? = null
     private var longBreakCountDownTimer: CountDownTimer? = null
 
-    private val _isPaused = MutableStateFlow(false)
-    val isPaused: StateFlow<Boolean> = _isPaused
-
-    private var pausedTime = 0L
-
     //var onTickFocus: (Long) -> Unit = {}
     //var onFinishFocus: () -> Unit = {}
 
     //var onTickRest: (Long) -> Unit = {}
     //var onFinishRest: () -> Unit = {}
+
+    private val _isPaused = MutableStateFlow(false)
+    val isPaused: StateFlow<Boolean> = _isPaused
+
+    private var pausedTime = 0L
 
     private val _remainingFocusTime = MutableStateFlow(0L)
     val remainingFocusTime: StateFlow<Long> = _remainingFocusTime

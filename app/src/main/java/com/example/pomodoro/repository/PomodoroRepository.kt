@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -29,10 +30,20 @@ class PomodoroRepository @Inject constructor(
     private val monthFormatter = SimpleDateFormat("MM", Locale.getDefault())
     private val yearFormatter = SimpleDateFormat("yyyy", Locale.getDefault())
 
-    suspend fun addList(list: List<Duration>) = durationDao.insertListDuration(list)
-
     //room database
-    suspend fun getDataOfCurrentWeek(){
+    suspend fun addList(list: List<Duration>) = durationDao.insertListDuration(list = list)
+
+    suspend fun getDurationByData(date: String): Duration? { return durationDao.getDurationByDate(date) }
+
+    suspend fun insertDuration(duration: Duration) = durationDao.insertDuration(duration = duration)
+
+    suspend fun deleteDuration(duration: Duration) = durationDao.deleteDuration(duration = duration)
+
+    suspend fun updateDuration(duration: Duration) = durationDao.updateDuration(duration = duration)
+
+    suspend fun nukeTable() { durationDao.deleteAllData() }
+
+    suspend fun getDataOfCurrentWeek(): Flow<List<Pair<Int, Double>>> = flow {
 
         val data: MutableList<Pair<Int, Double>> = mutableListOf()
         calendar.firstDayOfWeek = Calendar.MONDAY
@@ -50,7 +61,8 @@ class PomodoroRepository @Inject constructor(
            val dataValue = dataForDate.sumOf { it?.focusRecordedDuration?.toDouble() ?: 0.0 }  // use a default value if the data is null
            data.add(Pair(i, dataValue))
         }
-        Log.d("TAG", "getDataOfCurrentWeek: $data")
+        //Log.d("week", "getDataOfCurrentWeek: $data")
+        emit(data)
     }
 
     suspend fun getDataOfCurrentMonth(){
@@ -70,7 +82,7 @@ class PomodoroRepository @Inject constructor(
             val dataValue = dataForDate.sumOf { it?.focusRecordedDuration?.toDouble() ?: 0.0 }  // use a default value if the data is null
             data.add(Pair(i, dataValue))
         }
-        Log.d("TAG", "getDataOfCurrentMonth: $data")
+        Log.d("month", "getDataOfCurrentMonth: $data")
     }
 
     suspend fun getDataOfCurrentYear() {
@@ -88,15 +100,13 @@ class PomodoroRepository @Inject constructor(
                 val currentMonth = calendar.time
                 val monthString = monthFormatter.format(currentMonth)
                 val yearString = yearFormatter.format(currentMonth)
-                Log.d("TAG", "getDataOfCurrentYear: $monthString $yearString")
                 val dataValue = durationDao.getDurationSumByMonth(monthString,yearString) ?: 0.0  // use a default value if the data is null
                 data.add(Pair(i, dataValue))
             }
 
-            Log.d("TAG", "getDataOfCurrentYear: $data")
+            Log.d("year", "getDataOfCurrentYear: $data")
         }
 
-    suspend fun getDurationByData(date: String): Duration? { return durationDao.getDurationByDate(date) }
     suspend fun accumulateFocusDuration(date: String,
                                         focusDuration: Int,
                                         restDuration: Int,
@@ -107,13 +117,12 @@ class PomodoroRepository @Inject constructor(
         restDuration = restDuration,
         rounds = rounds
         ) }
-    suspend fun insertDuration(duration: Duration) = durationDao.insertDuration(duration = duration)
-    suspend fun deleteDuration(duration: Duration) = durationDao.deleteDuration(duration = duration)
-    suspend fun nukeTable() { durationDao.deleteAllData() }
-    suspend fun updateDuration(duration: Duration) = durationDao.updateDuration(duration = duration)
+
     fun getAllDuration(): Flow<List<Duration>> = durationDao.getAllDurations()
         .flowOn(Dispatchers.IO)
         .conflate()
+
+
 
     //settings manager
     fun getSettings() = abstract.getSettings().stateIn(

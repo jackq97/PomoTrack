@@ -1,6 +1,7 @@
 package com.example.pomodoro.ui.composables
 
 import android.graphics.Paint
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -17,14 +18,20 @@ import kotlin.math.roundToInt
 @Composable
 fun LineChart(
     modifier: Modifier = Modifier,
-    data: List<Pair<Int, Double>> = emptyList()
+    data: List<Pair<Int, Double>> = emptyList(),
+    upperValue: Int,
+    lowerValue: Int
 ) {
-
+    val doubleValues: List<Double> = data.map { it.second } // extract the second value from each pair
+    Log.d("TAG", "Double values: $doubleValues")
     val spacing = 100f
     val graphColor = MaterialTheme.colorScheme.primary
     val transparentGraphColor = remember { graphColor.copy(alpha = 0.5f) }
-    val upperValue = remember { (data.maxOfOrNull { it.second }?.plus(1))?.roundToInt() ?: 0 }
-    val lowerValue = remember { (data.minOfOrNull { it.second }?.toInt() ?: 0) }
+    //val upperValue = remember { (data.maxOfOrNull { it.second  }?.plus(1))?.roundToInt() ?: 0 }
+    Log.d("in line chart", "LineChart: ${data.maxOfOrNull { it.second }?.plus(1)?.roundToInt()}")
+    Log.d("in line chart", "LineChart: $upperValue")
+    //val lowerValue = remember { (data.minOfOrNull { it.second }?.toInt() ?: 0) }
+    //Log.d("in line chart", "LineChart: $lowerValue")
     val density = LocalDensity.current
 
     val textPaint = remember(density) {

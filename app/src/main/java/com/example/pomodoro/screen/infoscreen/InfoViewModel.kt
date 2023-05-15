@@ -1,5 +1,6 @@
 package com.example.pomodoro.screen.infoscreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.model.local.Duration
@@ -18,10 +19,13 @@ class InfoViewModel @Inject constructor (private val repository: PomodoroReposit
     private val _dayData = MutableStateFlow<List<Duration>>(emptyList())
     val dayData = _dayData
 
+    val weekData = MutableStateFlow<List<Pair<Int, Double>>>(emptyList())
+
     init {
         viewModelScope.launch {
-            repository.getAllDuration().collect{
-                _dayData.value = it
+            repository.getDataOfCurrentWeek().collect(){
+                weekData.value = it
+                //Log.d("week view-model", "week data: ${weekData.value}")
             }
         }
     }

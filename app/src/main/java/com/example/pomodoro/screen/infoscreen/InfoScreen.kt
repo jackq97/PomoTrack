@@ -41,6 +41,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.roundToInt
 
 @Destination
 @Composable
@@ -48,20 +49,32 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
     val currentDayData: List<Duration> by viewModel.dayData.collectAsState()
 
+    val weekData = viewModel.weekData.collectAsState()
+    val dummyData: List<Pair<Int, Double>> = listOf(Pair(1,2.0), Pair(2,3.0), Pair(3,4.0), Pair(4,5.0), Pair(5,0.1), Pair(6,0.0), Pair(7,3.0))
+
+    val upperValue = weekData.value.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
+    Log.d("weekData info", "upper value $upperValue")
+
+    val lowerValue = weekData.value.minOfOrNull { it.second }?.toInt() ?: 0
+    Log.d("weekData info", "lower value $lowerValue")
+
     val dateFormat = SimpleDateFormat("dd", Locale.getDefault())
+
+    //Log.d("info", "InfoScreen: we in info screen")
+    Log.d("weekData info", "InfoScreen: ${weekData.value}")
+    Log.d("weekDataDummy info", "InfoScreen: $dummyData")
 
     var selectedPieRadioOption by remember { mutableStateOf("Day") }
     var selectedLineRadioOption by remember { mutableStateOf("Week") }
 
-    val values = listOf(0f,0f)
-    //val totalDurationFocus = currentDayData.sumOf { it.focusRecordedDuration }
-        //val totalRestFocus = currentDayData.sumOf { it.restRecordedDuration }
+    var values = listOf(0f,0f)
+    val lineData: List<Pair<Int, Double>> = listOf(Pair(1, 2.0))
 
     when (selectedPieRadioOption) {
 
-        "Day" -> { /*values = listOf(totalDurationFocus.toFloat(),totalRestFocus.toFloat())*/ }
-        "Week" -> {}
-        "Month" -> {}
+        "Day" -> { values = listOf(1f,1f) }
+        "Week" -> { values = listOf(2f,1f) }
+        "Month" -> { values = listOf(1f,2f) }
         "year" -> {}
 
     }
@@ -155,20 +168,22 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
                     LineRadioButtons {
                         selectedLineRadioOption = it
                     }
 
                     Spacer(modifier = Modifier.height(30.dp))
-                    
-                    /*LineChart(
+                    val data = viewModel.weekData.collectAsState()
+
+                    LineChart(
                         modifier = Modifier
                             .width(350.dp)
                             .padding(8.dp)
                             .height(180.dp),
-                        data = data
-                        )*/
+                        data = weekData.value,
+                        upperValue = upperValue,
+                        lowerValue = lowerValue
+                        )
                 }
             }
         }
