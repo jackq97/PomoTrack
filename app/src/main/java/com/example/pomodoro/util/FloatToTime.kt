@@ -13,13 +13,13 @@ fun minutesToLong(minutes: Int): Long {
     return minutes.toLong() * 60 * 1000
 }
 
-fun secondsToMinutesSeconds(seconds: Long): String {
+fun secondsToMinutesAndSeconds(seconds: Long): String {
     val minutes = seconds / 60
     val remainingSeconds = seconds % 60
     return String.format("%02d:%02d", minutes, remainingSeconds)
 }
 
-fun getDateFromTimestamp(timestamp: Long): Date {
+/*fun getDateFromTimestamp(timestamp: Long): Date {
     return Date(timestamp)
-}
+}*/
 

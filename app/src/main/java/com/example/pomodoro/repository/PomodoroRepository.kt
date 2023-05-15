@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -30,8 +29,10 @@ class PomodoroRepository @Inject constructor(
     private val monthFormatter = SimpleDateFormat("MM", Locale.getDefault())
     private val yearFormatter = SimpleDateFormat("yyyy", Locale.getDefault())
 
+    suspend fun addList(list: List<Duration>) = durationDao.insertListDuration(list)
+
     //room database
-    fun getDataOfCurrentWeek(){
+    suspend fun getDataOfCurrentWeek(){
 
         val data: MutableList<Pair<Int, Double>> = mutableListOf()
         calendar.firstDayOfWeek = Calendar.MONDAY
@@ -45,14 +46,14 @@ class PomodoroRepository @Inject constructor(
            calendar.add(Calendar.DAY_OF_WEEK, i-1)
            val currentDate = calendar.time
            val dateString = formatter.format(currentDate)
-           val dataForDate: List<Duration?> = durationDao.getDurationByDate(date = dateString) // query the data for the date from the Room database
-           val dataValue = dataForDate.sumOf { it?.focusRecordedDuration ?: 0.0 }  // use a default value if the data is null
+           val dataForDate: List<Duration?> = durationDao.getDurationListByDate(date = dateString) // query the data for the date from the Room database
+           val dataValue = dataForDate.sumOf { it?.focusRecordedDuration?.toDouble() ?: 0.0 }  // use a default value if the data is null
            data.add(Pair(i, dataValue))
         }
         Log.d("TAG", "getDataOfCurrentWeek: $data")
     }
 
-    fun getDataOfCurrentMonth(){
+    suspend fun getDataOfCurrentMonth(){
 
         val data: MutableList<Pair<Int, Double>> = mutableListOf()
         calendar.set(Calendar.DAY_OF_MONTH, 1)
@@ -65,15 +66,14 @@ class PomodoroRepository @Inject constructor(
             calendar.add(Calendar.DAY_OF_MONTH, i - 1)
             val currentDate = calendar.time
             val dateString = formatter.format(currentDate)
-            val dataForDate: List<Duration?> = durationDao.getDurationByDate(date = dateString) // query the data for the date from the Room database
-            val dataValue = dataForDate.sumOf { it?.focusRecordedDuration ?: 0.0 }  // use a default value if the data is null
+            val dataForDate: List<Duration?> = durationDao.getDurationListByDate(date = dateString) // query the data for the date from the Room database
+            val dataValue = dataForDate.sumOf { it?.focusRecordedDuration?.toDouble() ?: 0.0 }  // use a default value if the data is null
             data.add(Pair(i, dataValue))
         }
         Log.d("TAG", "getDataOfCurrentMonth: $data")
     }
 
-
-    fun getDataOfCurrentYear() {
+    suspend fun getDataOfCurrentYear() {
             val data: MutableList<Pair<Int, Double>> = mutableListOf()
 
             // set the calendar instance to the start of the year
@@ -96,15 +96,21 @@ class PomodoroRepository @Inject constructor(
             Log.d("TAG", "getDataOfCurrentYear: $data")
         }
 
-    suspend fun insertDuration(duration: List<Duration>) = durationDao.insertDuration(duration = duration)
+    suspend fun getDurationByData(date: String): Duration? { return durationDao.getDurationByDate(date) }
+    suspend fun accumulateFocusDuration(date: String,
+                                        focusDuration: Int,
+                                        restDuration: Int,
+                                        rounds: Int
+                                        )
+    { durationDao.accumulateFocusDuration(date = date,
+        focusDuration = focusDuration,
+        restDuration = restDuration,
+        rounds = rounds
+        ) }
+    suspend fun insertDuration(duration: Duration) = durationDao.insertDuration(duration = duration)
     suspend fun deleteDuration(duration: Duration) = durationDao.deleteDuration(duration = duration)
-
-    suspend fun nukeTable() {
-        durationDao.deleteAllData()
-    }
-
+    suspend fun nukeTable() { durationDao.deleteAllData() }
     suspend fun updateDuration(duration: Duration) = durationDao.updateDuration(duration = duration)
-
     fun getAllDuration(): Flow<List<Duration>> = durationDao.getAllDurations()
         .flowOn(Dispatchers.IO)
         .conflate()

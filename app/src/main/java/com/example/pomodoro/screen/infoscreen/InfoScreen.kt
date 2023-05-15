@@ -53,13 +53,13 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
     var selectedPieRadioOption by remember { mutableStateOf("Day") }
     var selectedLineRadioOption by remember { mutableStateOf("Week") }
 
-    var values = listOf(0f,0f)
-    val totalDurationFocus = currentDayData.sumOf { it.focusRecordedDuration }
-    val totalRestFocus = currentDayData.sumOf { it.restRecordedDuration }
+    val values = listOf(0f,0f)
+    //val totalDurationFocus = currentDayData.sumOf { it.focusRecordedDuration }
+        //val totalRestFocus = currentDayData.sumOf { it.restRecordedDuration }
 
     when (selectedPieRadioOption) {
 
-        "Day" -> { values = listOf(totalDurationFocus.toFloat(),totalRestFocus.toFloat()) }
+        "Day" -> { /*values = listOf(totalDurationFocus.toFloat(),totalRestFocus.toFloat())*/ }
         "Week" -> {}
         "Month" -> {}
         "year" -> {}

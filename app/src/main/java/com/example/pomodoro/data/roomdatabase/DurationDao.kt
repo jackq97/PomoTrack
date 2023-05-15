@@ -8,13 +8,15 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.pomodoro.model.local.Duration
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 
 @Dao
 interface DurationDao {
 
     @Insert
-    suspend fun insertDuration(duration: List<Duration>)
+    suspend fun insertDuration(duration: Duration)
+
+    @Insert
+    suspend fun insertListDuration(list :List<Duration>)
 
     @Delete
     suspend fun deleteDuration(duration: Duration)
@@ -26,13 +28,20 @@ interface DurationDao {
     fun getAllDurations(): Flow<List<Duration>>
 
     @Query("select * from duration_tbl where date = :date")
-    fun getDurationByDate(date: String): List<Duration?>
+    suspend fun getDurationListByDate(date: String): List<Duration?>
+
+    @Query("select * from duration_tbl where date = :date")
+    suspend fun getDurationByDate(date: String): Duration?
 
     @Query("SELECT SUM(focus_duration) FROM duration_tbl WHERE substr(date, 4, 2) = :month AND substr(date, 7, 4) = :year")
-    fun getDurationSumByMonth(month: String, year: String): Double?
+    suspend fun getDurationSumByMonth(month: String, year: String): Double?
 
-
-
+    @Query("UPDATE duration_tbl SET focus_duration = focus_duration + :focusDuration, rest_duration = rest_duration + :restDuration, rounds = rounds + :rounds  WHERE date = :date")
+    suspend fun accumulateFocusDuration(date: String,
+                                        focusDuration: Int,
+                                        restDuration: Int,
+                                        rounds: Int
+                                        )
 
     @Query("DELETE FROM duration_tbl")
     suspend fun deleteAllData()

@@ -17,10 +17,10 @@ data class Duration(
     val date: Date = Date.from(Instant.now()),
 
     @ColumnInfo(name = "focus_duration")
-    val focusRecordedDuration: Double,
+    val focusRecordedDuration: Int,
 
     @ColumnInfo(name = "rest_duration")
-    val restRecordedDuration: Double,
+    val restRecordedDuration: Int,
 
     @ColumnInfo(name = "rounds")
     val recordedRounds: Int

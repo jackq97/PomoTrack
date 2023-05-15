@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.example.pomodoro.model.local.Duration
 
 @Database(entities = [Duration::class],
-    version = 7,
+    version = 8,
     exportSchema = false)
     @TypeConverters(Converters::class)
 

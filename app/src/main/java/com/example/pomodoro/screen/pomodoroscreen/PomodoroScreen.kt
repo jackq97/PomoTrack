@@ -38,12 +38,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
-import com.example.pomodoro.data.roomdatabase.DurationDataSource
 import com.example.pomodoro.screen.destinations.InfoScreenDestination
 import com.example.pomodoro.screen.destinations.SettingsScreenDestination
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
 import com.example.pomodoro.util.floatToTime
-import com.example.pomodoro.util.secondsToMinutesSeconds
+import com.example.pomodoro.util.secondsToMinutesAndSeconds
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -57,7 +56,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
 
     //viewModel.nukeData()
 
-    //viewModel.addData(DurationDataSource().loadData())
+    //viewModel.addDate(DurationDataSource().loadData())
 
     val settings = viewModel.settings.collectAsState()
 
@@ -134,13 +133,13 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel(),
                 horizontalAlignment = Alignment.CenterHorizontally) {
 
                     if (isRunningFocus) {
-                        Text(text = secondsToMinutesSeconds(focusRemainingTime))
+                        Text(text = secondsToMinutesAndSeconds(focusRemainingTime))
                     }
                     else if(isRunningLongBreak) {
-                        Text(text = secondsToMinutesSeconds(longBreakRemainingTime))
+                        Text(text = secondsToMinutesAndSeconds(longBreakRemainingTime))
                     }
                     else {
-                        Text(text = secondsToMinutesSeconds(restRemainingTime))
+                        Text(text = secondsToMinutesAndSeconds(restRemainingTime))
                     }
 
                     if (isRunningFocus) {

@@ -4,29 +4,59 @@ import android.os.CountDownTimer
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pomodoro.data.datastore.Abstract
 import com.example.pomodoro.model.local.Duration
 import com.example.pomodoro.repository.PomodoroRepository
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.minutesToLong
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class PomodoroViewModel @Inject constructor(
-    private val repository: PomodoroRepository,
-    private val abstract: Abstract
+    private val repository: PomodoroRepository
 ) : ViewModel() {
 
-    fun addData(duration: List<Duration>){
+    private val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    private val currentDate: String =  dateFormat.format(Date())
+
+    val settings = repository.getSettings()
+
+    var focusDuration: Long = 0L
+    var breakDuration: Long = 0L
+    var longBreakDuration: Long = 0L
+    var roundsDuration: Int = 0
+
+    fun upsert(focusDuration: Int,
+               restDuration: Int,
+               rounds: Int) {
+
         viewModelScope.launch {
-            repository.insertDuration(duration = duration)
+
+            val data = repository.getDurationByData(currentDate)
+
+            if (data == null){
+                Log.d("TAG", "upsert: data added")
+                repository.insertDuration(
+                    Duration(
+                        focusRecordedDuration = focusDuration,
+                        restRecordedDuration = restDuration,
+                        recordedRounds = rounds
+                    )
+                )
+            } else {
+                Log.d("TAG", "upsert: data updated")
+                repository.accumulateFocusDuration(date = currentDate,
+                    focusDuration = focusDuration,
+                    restDuration = restDuration,
+                    rounds = rounds
+                    )
+            }
         }
     }
 
@@ -36,12 +66,11 @@ class PomodoroViewModel @Inject constructor(
         }
     }
 
-    val settings = repository.getSettings()
-
-    var focusDuration: Long = 0L
-    var breakDuration: Long = 0L
-    var longBreakDuration: Long = 0L
-    var roundsDuration: Int = 0
+    fun addDate(list: List<Duration>){
+        viewModelScope.launch {
+            repository.addList(list)
+        }
+    }
 
     init {
         viewModelScope.launch {
@@ -64,11 +93,11 @@ class PomodoroViewModel @Inject constructor(
 
     private var pausedTime = 0L
 
-    var onTickFocus: (Long) -> Unit = {}
-    var onFinishFocus: () -> Unit = {}
+    //var onTickFocus: (Long) -> Unit = {}
+    //var onFinishFocus: () -> Unit = {}
 
-    var onTickRest: (Long) -> Unit = {}
-    var onFinishRest: () -> Unit = {}
+    //var onTickRest: (Long) -> Unit = {}
+    //var onFinishRest: () -> Unit = {}
 
     private val _remainingFocusTime = MutableStateFlow(0L)
     val remainingFocusTime: StateFlow<Long> = _remainingFocusTime
@@ -95,6 +124,7 @@ class PomodoroViewModel @Inject constructor(
 
         stopAllTimers()
         _isRunningFocus.value = true
+        //val startTime = System.currentTimeMillis() // Store the start time
         focusCountDownTimer = object : CountDownTimer(focusDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
@@ -102,9 +132,13 @@ class PomodoroViewModel @Inject constructor(
             }
 
             override fun onFinish() {
+                //val focusDuration = System.currentTimeMillis() - startTime // Calculate the duration
                 _isRunningFocus.value = false
                 _remainingFocusTime.value = 0
                 _finishedCount.value++
+                upsert(focusDuration = focusDuration.toInt(),
+                    restDuration = 0,
+                    rounds = 1)
                 if (_finishedCount.value == roundsDuration) {
                     startLongBreakTimer()
                 } else {
@@ -114,9 +148,6 @@ class PomodoroViewModel @Inject constructor(
         }.start()
     }
 
-    fun onFinishTimer() {
-
-    }
     fun startRestTimer() {
 
         stopAllTimers()
@@ -128,6 +159,9 @@ class PomodoroViewModel @Inject constructor(
             }
 
             override fun onFinish() {
+                upsert(focusDuration = 0,
+                    restDuration = breakDuration.toInt(),
+                    rounds = 0)
                 _isRunningRest.value = false
                 _remainingRestTime.value = 0
                 startFocusTimer()
@@ -189,6 +223,9 @@ class PomodoroViewModel @Inject constructor(
                         }
 
                         override fun onFinish() {
+                            upsert(focusDuration = focusDuration.toInt(),
+                                restDuration = 0,
+                                rounds = 1)
                             _isRunningFocus.value = false
                             _remainingFocusTime.value = 0
                             _finishedCount.value++
@@ -210,6 +247,9 @@ class PomodoroViewModel @Inject constructor(
                         }
 
                         override fun onFinish() {
+                            upsert(focusDuration = 0,
+                                restDuration = breakDuration.toInt(),
+                                rounds = 0)
                             _isRunningRest.value = false
                             _remainingRestTime.value = 0
                             startFocusTimer()

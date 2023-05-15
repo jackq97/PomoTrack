@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     DestinationsNavHost(navGraph = NavGraphs.root)
 
-                    InfoScreen()
+                    //InfoScreen()
                     //SettingsScreen(navigator = EmptyDestinationsNavigator)
                 }
             }
