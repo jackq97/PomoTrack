@@ -65,7 +65,7 @@ class PomodoroRepository @Inject constructor(
         emit(data)
     }
 
-    suspend fun getDataOfCurrentMonth(){
+    suspend fun getDataOfCurrentMonth(): Flow<List<Pair<Int, Double>>> = flow {
 
         val data: MutableList<Pair<Int, Double>> = mutableListOf()
         calendar.set(Calendar.DAY_OF_MONTH, 1)
@@ -82,10 +82,12 @@ class PomodoroRepository @Inject constructor(
             val dataValue = dataForDate.sumOf { it?.focusRecordedDuration?.toDouble() ?: 0.0 }  // use a default value if the data is null
             data.add(Pair(i, dataValue))
         }
-        Log.d("month", "getDataOfCurrentMonth: $data")
+        emit(data)
+        //Log.d("month", "getDataOfCurrentMonth: $data")
     }
 
-    suspend fun getDataOfCurrentYear() {
+    suspend fun getDataOfCurrentYear(): Flow<List<Pair<Int, Double>>> = flow {
+
             val data: MutableList<Pair<Int, Double>> = mutableListOf()
 
             // set the calendar instance to the start of the year
@@ -104,7 +106,8 @@ class PomodoroRepository @Inject constructor(
                 data.add(Pair(i, dataValue))
             }
 
-            Log.d("year", "getDataOfCurrentYear: $data")
+        //Log.d("year", "getDataOfCurrentYear: $data")
+        emit(data)
         }
 
     suspend fun accumulateFocusDuration(date: String,

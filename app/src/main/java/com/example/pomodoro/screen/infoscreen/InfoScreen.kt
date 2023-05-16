@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.pomodoro.model.local.Duration
 import com.example.pomodoro.ui.composables.InfoColumn
 import com.example.pomodoro.ui.composables.InfoTotalColumn
 import com.example.pomodoro.ui.composables.LineChart
@@ -38,46 +37,54 @@ import com.example.pomodoro.ui.composables.PieChart
 import com.example.pomodoro.ui.composables.radiobuttons.LineRadioButtons
 import com.example.pomodoro.ui.composables.radiobuttons.PieRadioButtons
 import com.ramcosta.composedestinations.annotation.Destination
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 import kotlin.math.roundToInt
 
 @Destination
 @Composable
 fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
-    val currentDayData: List<Duration> by viewModel.dayData.collectAsState()
 
     val weekData = viewModel.weekData.collectAsState()
-    val dummyData: List<Pair<Int, Double>> = listOf(Pair(1,2.0), Pair(2,3.0), Pair(3,4.0), Pair(4,5.0), Pair(5,0.1), Pair(6,0.0), Pair(7,3.0))
+    val monthData = viewModel.monthData.collectAsState()
+    val yearData = viewModel.yearData.collectAsState()
 
-    val upperValue = weekData.value.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
-    Log.d("weekData info", "upper value $upperValue")
+    //val dummyData: List<Pair<Int, Double>> = listOf(Pair(1,2.0), Pair(2,3.0), Pair(3,4.0), Pair(4,5.0), Pair(5,0.1), Pair(6,0.0), Pair(7,3.0))
 
-    val lowerValue = weekData.value.minOfOrNull { it.second }?.toInt() ?: 0
-    Log.d("weekData info", "lower value $lowerValue")
-
-    val dateFormat = SimpleDateFormat("dd", Locale.getDefault())
+    //val dateFormat = SimpleDateFormat("dd", Locale.getDefault())
 
     //Log.d("info", "InfoScreen: we in info screen")
-    Log.d("weekData info", "InfoScreen: ${weekData.value}")
-    Log.d("weekDataDummy info", "InfoScreen: $dummyData")
+    //Log.d("weekData info screen", "week: ${weekData.value}")
+    //Log.d("month info screen", "month data: ${monthData.value}")
+    Log.d("year info screen", "year data: ${yearData.value}")
+    //Log.d("weekDataDummy info", "InfoScreen: $dummyData")
 
     var selectedPieRadioOption by remember { mutableStateOf("Day") }
     var selectedLineRadioOption by remember { mutableStateOf("Week") }
 
-    var values = listOf(0f,0f)
-    val lineData: List<Pair<Int, Double>> = listOf(Pair(1, 2.0))
+    val pieData = listOf(0f,0f)
+    var lineData: List<Pair<Int, Double>> = emptyList()
+
+    when (selectedLineRadioOption) {
+
+        "Week" -> { lineData = weekData.value }
+        "Month" -> { lineData = monthData.value }
+        "Year" -> { lineData = yearData.value }
+    }
 
     when (selectedPieRadioOption) {
 
-        "Day" -> { values = listOf(1f,1f) }
-        "Week" -> { values = listOf(2f,1f) }
-        "Month" -> { values = listOf(1f,2f) }
-        "year" -> {}
-
+        "Day" -> { lineData = weekData.value }
+        "Week" -> { lineData = monthData.value }
+        "Month" -> { lineData = yearData.value }
     }
+
+    //Log.d("line data info", "InfoScreen: $lineData")
+
+    val upperValue = lineData.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
+    //Log.d("weekData info", "upper value $upperValue")
+
+    val lowerValue = lineData.minOfOrNull { it.second }?.toInt() ?: 0
+    //Log.d("weekData info", "lower value $lowerValue")
 
     Surface(
         modifier = Modifier
@@ -149,7 +156,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
                     //Log.d("total focus", "InfoScreen: $values")
 
-                    PieChart(values = values)
+                    PieChart(values = pieData)
                 }
             }
 
@@ -180,7 +187,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
                             .width(350.dp)
                             .padding(8.dp)
                             .height(180.dp),
-                        data = weekData.value,
+                        data = lineData,
                         upperValue = upperValue,
                         lowerValue = lowerValue
                         )
