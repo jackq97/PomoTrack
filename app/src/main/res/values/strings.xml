@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Pomodoro</string>
+    <string name="timer">Timer</string>
+    <string name="focus">Focus</string>
+    <string name="short_break">Short Break</string>
+    <string name="long_break">Long Break</string>
+    <string name="rounds">Rounds</string>
+    <string name="save_data">save data</string>
+    <string name="reset_defaults">Reset Defaults</string>
 </resources>

@@ -1,13 +1,21 @@
 package com.example.pomodoro.util
 
 
-import java.util.Date
-import kotlin.math.roundToInt
+fun floatToTime(value: Float): Int {
+    val minValue = 1.0f
+    val maxValue = 10.0f
+    val minMinutes = 1
+    val maxMinutes = 90
 
-fun floatToTime(floatValue: Float): Int {
-    val totalMinutes = ((floatValue - 1) / 9 * 89 + 1).roundToInt()
-    return totalMinutes / 1
+    val normalizedValue = (value - minValue) / (maxValue - minValue)
+
+    return (normalizedValue * (maxMinutes - minMinutes)).toInt() + minMinutes
 }
+
+fun convertMinutesToHoursAndMinutes(minutes: Int): String {
+    return "$minutes:00"
+}
+
 
 fun minutesToLong(minutes: Int): Long {
     return minutes.toLong() * 60 * 1000
