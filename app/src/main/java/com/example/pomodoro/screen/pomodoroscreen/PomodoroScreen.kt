@@ -38,7 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
-import com.example.pomodoro.data.roomdatabase.DurationDataSource
 import com.example.pomodoro.screen.destinations.InfoScreenDestination
 import com.example.pomodoro.screen.destinations.SettingsScreenDestination
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator

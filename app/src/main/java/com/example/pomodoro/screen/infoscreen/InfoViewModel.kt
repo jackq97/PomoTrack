@@ -1,6 +1,5 @@
 package com.example.pomodoro.screen.infoscreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.model.local.Duration
@@ -17,41 +16,29 @@ import javax.inject.Inject
 @HiltViewModel
 class InfoViewModel @Inject constructor (private val repository: PomodoroRepository) : ViewModel() {
 
-
     private val _allDurations = MutableStateFlow<List<Duration>>(emptyList())
-    val allDurations: StateFlow<List<Duration>> = _allDurations
+    private val _yesterdayData = MutableStateFlow(Duration())
+    private val _weekData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
+    private val _monthData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
+    private val _yearData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
 
     private val _dayData = MutableStateFlow(Duration())
     val dayData: StateFlow<Duration> = _dayData
 
-    private val _yesterdayData = MutableStateFlow(Duration())
-    val yesterdayData: StateFlow<Duration> = _yesterdayData
-
-    private val _weekData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
-    val weekData: StateFlow<List<Triple<Int, Double, Double>>> = _weekData
-
-    private val _monthData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
-    val monthData: StateFlow<List<Triple<Int, Double, Double>>> = _monthData
-
-    private val _yearData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
-    val yearData: StateFlow<List<Triple<Int, Double, Double>>> = _yearData
-
     var lineData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
     var pieData = MutableStateFlow<List<Float>>(emptyList())
 
-    private val _numberOfTotalPomos = MutableStateFlow<Int>(0)
+    private val _numberOfTotalPomos = MutableStateFlow(0)
     val numberOfTotalPomos: StateFlow<Int> = _numberOfTotalPomos
 
-    private val _totalRecordedFocus = MutableStateFlow<Int>(0)
+    private val _totalRecordedFocus = MutableStateFlow(0)
     val totalRecordedFocus: StateFlow<Int> = _totalRecordedFocus
 
-    private val _differenceOfRecordedRounds = MutableStateFlow<Int>(0)
+    private val _differenceOfRecordedRounds = MutableStateFlow(0)
     val differenceOfRecordedRounds: StateFlow<Int> = _differenceOfRecordedRounds
 
-    private val _differenceOfRecordedFocus = MutableStateFlow<Int>(0)
+    private val _differenceOfRecordedFocus = MutableStateFlow(0)
     val differenceOfRecordedFocus: StateFlow<Int> = _differenceOfRecordedFocus
-
-
 
     private suspend fun processDataForCurrentDay() {
         val data = repository.getDataForCurrentDay()
@@ -108,9 +95,7 @@ class InfoViewModel @Inject constructor (private val repository: PomodoroReposit
         }
     }
 
-    // Inside the InfoViewModel class
-
-    private fun performOperationsOnDayData() {
+    private fun getDifferenceOfData() {
         viewModelScope.launch {
             combine(_dayData, _yesterdayData) { currentDayData, yesterdayData ->
                 _differenceOfRecordedRounds.value = currentDayData.recordedRounds - yesterdayData.recordedRounds
@@ -118,7 +103,6 @@ class InfoViewModel @Inject constructor (private val repository: PomodoroReposit
             }.collect()
         }
     }
-
 
     fun getLineDataBySortOrder(sortOrder: String) {
         viewModelScope.launch {
@@ -146,7 +130,7 @@ class InfoViewModel @Inject constructor (private val repository: PomodoroReposit
         getPieDataBySortOrder(SortOrder.Day.name)
         getLineDataBySortOrder(SortOrder.Week.name)
         viewModelScope.launch {
-            performOperationsOnDayData()
+            getDifferenceOfData()
             processDataForYesterday()
             processDataForCurrentDay()
             getTotalNoOfPomos()

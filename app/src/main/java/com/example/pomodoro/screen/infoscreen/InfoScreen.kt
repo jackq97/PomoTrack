@@ -41,8 +41,6 @@ import kotlin.math.roundToInt
 @Composable
 fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
-
-
     val dayData = viewModel.dayData.collectAsState()
     val roundsDifference = viewModel.differenceOfRecordedRounds.collectAsState()
     val focusDifference = viewModel.differenceOfRecordedFocus.collectAsState()

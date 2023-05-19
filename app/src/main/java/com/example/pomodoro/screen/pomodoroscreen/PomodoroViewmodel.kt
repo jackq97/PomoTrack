@@ -1,7 +1,6 @@
 package com.example.pomodoro.screen.pomodoroscreen
 
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.model.local.Duration
@@ -24,75 +23,6 @@ class PomodoroViewModel @Inject constructor(
 
     private val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     private val currentDate: String =  dateFormat.format(Date())
-
-    val settings = repository.getSettings()
-
-    var focusDuration: Long = 0L
-    var breakDuration: Long = 0L
-    var longBreakDuration: Long = 0L
-    var roundsDuration: Int = 0
-
-    fun upsert(focusDuration: Int,
-               restDuration: Int,
-               rounds: Int) {
-
-        viewModelScope.launch {
-
-            val data = repository.getDurationByDate(currentDate)
-
-            if (data == null){
-                Log.d("TAG", "upsert: data added")
-                repository.insertDuration(
-                    Duration(
-                        focusRecordedDuration = focusDuration,
-                        restRecordedDuration = restDuration,
-                        recordedRounds = rounds
-                    )
-                )
-            } else {
-                Log.d("TAG", "upsert: data updated")
-                repository.accumulateFocusDuration(date = currentDate,
-                    focusDuration = focusDuration,
-                    restDuration = restDuration,
-                    rounds = rounds
-                    )
-            }
-        }
-    }
-
-    fun nukeData(){
-        viewModelScope.launch {
-            repository.nukeTable()
-        }
-    }
-
-    fun addData(list: List<Duration>){
-        viewModelScope.launch {
-            repository.addList(list)
-        }
-    }
-
-    init {
-        viewModelScope.launch {
-            // settings
-            settings.collect { settings ->
-                focusDuration = minutesToLong(floatToTime(settings.focusDur))
-                breakDuration = minutesToLong(floatToTime(settings.restDur))
-                longBreakDuration = minutesToLong(floatToTime(settings.longRestDur))
-                roundsDuration = settings.rounds.toInt()
-            }
-        }
-    }
-
-    private var focusCountDownTimer: CountDownTimer? = null
-    private var restCountDownTimer: CountDownTimer? = null
-    private var longBreakCountDownTimer: CountDownTimer? = null
-
-    //var onTickFocus: (Long) -> Unit = {}
-    //var onFinishFocus: () -> Unit = {}
-
-    //var onTickRest: (Long) -> Unit = {}
-    //var onFinishRest: () -> Unit = {}
 
     private val _isPaused = MutableStateFlow(false)
     val isPaused: StateFlow<Boolean> = _isPaused
@@ -119,6 +49,63 @@ class PomodoroViewModel @Inject constructor(
 
     private val _finishedCount = MutableStateFlow(0)
     val finishedCount: StateFlow<Int> = _finishedCount
+
+    val settings = repository.getSettings()
+
+    var focusDuration: Long = 0L
+    var breakDuration: Long = 0L
+    var longBreakDuration: Long = 0L
+    var roundsDuration: Int = 0
+
+    fun upsert(focusDuration: Int,
+               restDuration: Int,
+               rounds: Int) {
+
+        viewModelScope.launch {
+
+            val data = repository.getDurationByDate(currentDate)
+
+            if (data == null){
+                //Log.d("TAG", "upsert: data added")
+                repository.insertDuration(
+                    Duration(
+                        focusRecordedDuration = focusDuration,
+                        restRecordedDuration = restDuration,
+                        recordedRounds = rounds
+                    )
+                )
+            } else {
+                //Log.d("TAG", "upsert: data updated")
+                repository.accumulateFocusDuration(date = currentDate,
+                    focusDuration = focusDuration,
+                    restDuration = restDuration,
+                    rounds = rounds
+                    )
+            }
+        }
+    }
+
+    /*fun nukeData(){
+        viewModelScope.launch {
+            repository.nukeTable()
+        }
+    }
+
+    fun addData(list: List<Duration>){
+        viewModelScope.launch {
+            repository.addList(list)
+        }
+    }*/
+
+    private var focusCountDownTimer: CountDownTimer? = null
+    private var restCountDownTimer: CountDownTimer? = null
+    private var longBreakCountDownTimer: CountDownTimer? = null
+
+    //var onTickFocus: (Long) -> Unit = {}
+    //var onFinishFocus: () -> Unit = {}
+
+    //var onTickRest: (Long) -> Unit = {}
+    //var onFinishRest: () -> Unit = {}
 
     fun startFocusTimer() {
 
@@ -331,16 +318,12 @@ class PomodoroViewModel @Inject constructor(
             }
         }
     }
+
     private fun stopAllTimers() {
 
         focusCountDownTimer?.cancel()
         restCountDownTimer?.cancel()
         longBreakCountDownTimer?.cancel()
-    }
-
-    companion object {
-        const val TOTAL_TIME = 0L
-        const val INTERVAL = 1000L
     }
 
     override fun onCleared() {
@@ -351,4 +334,20 @@ class PomodoroViewModel @Inject constructor(
         longBreakCountDownTimer?.cancel()
     }
 
+    init {
+        viewModelScope.launch {
+            // settings
+            settings.collect { settings ->
+                focusDuration = minutesToLong(floatToTime(settings.focusDur))
+                breakDuration = minutesToLong(floatToTime(settings.restDur))
+                longBreakDuration = minutesToLong(floatToTime(settings.longRestDur))
+                roundsDuration = settings.rounds.toInt()
+            }
+        }
+    }
+
+    companion object {
+        const val TOTAL_TIME = 0L
+        const val INTERVAL = 1000L
+    }
 }
