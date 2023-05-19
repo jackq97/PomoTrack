@@ -7,4 +7,8 @@
     <string name="rounds">Rounds</string>
     <string name="save_data">save data</string>
     <string name="reset_defaults">Reset Defaults</string>
+    <string name="today_s_pomo">Today\'s Pomo</string>
+    <string name="today_s_focus_h">Today\'s focus (h)</string>
+    <string name="total_pomos">Total Pomos</string>
+    <string name="total_focus_duration">Total Focus Duration</string>
 </resources>

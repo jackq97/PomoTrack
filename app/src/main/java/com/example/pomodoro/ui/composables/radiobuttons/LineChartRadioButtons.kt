@@ -20,17 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.pomodoro.util.SortOrder
 
 @Composable
 fun LineRadioButtons(onClickOption : (String) -> Unit) {
 
     val options = listOf(
-        "Week",
-        "Month",
-        "Year")
+        SortOrder.Week.name,
+        SortOrder.Month.name,
+        SortOrder.Year.name)
 
     var selectedOption by remember {
-        mutableStateOf("Week")
+        mutableStateOf(SortOrder.Week.name)
     }
 
     val onSelectionChange = { text: String ->

@@ -20,17 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.pomodoro.util.SortOrder
 
 @Composable
 fun PieRadioButtons(onClickOption : (String) -> Unit) {
 
     val options = listOf(
-        "Day",
-        "Week",
-        "Month")
+        SortOrder.Day.name,
+        SortOrder.Week.name,
+        SortOrder.Month.name)
 
     var selectedOption by remember {
-        mutableStateOf("Day")
+        mutableStateOf(SortOrder.Day.name)
     }
 
     val onSelectionChange = { text: String ->

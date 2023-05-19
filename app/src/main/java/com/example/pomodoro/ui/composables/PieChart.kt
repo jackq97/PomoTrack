@@ -70,9 +70,9 @@ fun PieChart(
     Spacer(modifier = Modifier.height(32.dp))
 
     Column {
-        for (i in values.indices) {
-            DisplayLegend(color = colors[i], legend = legend[i])
-        }
+        DisplayLegend(color = colors[1], legend = legend[0])
+        DisplayLegend(color = colors[0], legend = legend[1])
+
     }
 }
 

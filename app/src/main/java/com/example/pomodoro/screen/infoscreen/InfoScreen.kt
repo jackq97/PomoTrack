@@ -19,17 +19,15 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.pomodoro.R
 import com.example.pomodoro.ui.composables.InfoColumn
 import com.example.pomodoro.ui.composables.InfoTotalColumn
 import com.example.pomodoro.ui.composables.LineChart
@@ -44,47 +42,23 @@ import kotlin.math.roundToInt
 fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
 
+    val allDurations = viewModel.allDurations.collectAsState()
+    val dayData = viewModel.dayData.collectAsState()
     val weekData = viewModel.weekData.collectAsState()
     val monthData = viewModel.monthData.collectAsState()
     val yearData = viewModel.yearData.collectAsState()
+    val lineData = viewModel.lineData.collectAsState()
+    val pieData = viewModel.pieData.collectAsState()
+    val totalFocus = viewModel.totalRecordedFocus.collectAsState()
+    val totalPomos = viewModel.numberOfTotalPomos.collectAsState()
 
-    //val dummyData: List<Pair<Int, Double>> = listOf(Pair(1,2.0), Pair(2,3.0), Pair(3,4.0), Pair(4,5.0), Pair(5,0.1), Pair(6,0.0), Pair(7,3.0))
+    Log.d("TAG", "InfoScreen: ${dayData.value}")
 
-    //val dateFormat = SimpleDateFormat("dd", Locale.getDefault())
+    //var selectedPieRadioOption by remember { mutableStateOf(SortOrder.Day.name) }
+    //var selectedLineRadioOption by remember { mutableStateOf(SortOrder.Week.name) }
 
-    //Log.d("info", "InfoScreen: we in info screen")
-    //Log.d("weekData info screen", "week: ${weekData.value}")
-    //Log.d("month info screen", "month data: ${monthData.value}")
-    Log.d("year info screen", "year data: ${yearData.value}")
-    //Log.d("weekDataDummy info", "InfoScreen: $dummyData")
-
-    var selectedPieRadioOption by remember { mutableStateOf("Day") }
-    var selectedLineRadioOption by remember { mutableStateOf("Week") }
-
-    val pieData = listOf(0f,0f)
-    var lineData: List<Pair<Int, Double>> = emptyList()
-
-    when (selectedLineRadioOption) {
-
-        "Week" -> { lineData = weekData.value }
-        "Month" -> { lineData = monthData.value }
-        "Year" -> { lineData = yearData.value }
-    }
-
-    when (selectedPieRadioOption) {
-
-        "Day" -> { lineData = weekData.value }
-        "Week" -> { lineData = monthData.value }
-        "Month" -> { lineData = yearData.value }
-    }
-
-    //Log.d("line data info", "InfoScreen: $lineData")
-
-    val upperValue = lineData.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
-    //Log.d("weekData info", "upper value $upperValue")
-
-    val lowerValue = lineData.minOfOrNull { it.second }?.toInt() ?: 0
-    //Log.d("weekData info", "lower value $lowerValue")
+    val upperValue = lineData.value.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
+    val lowerValue = lineData.value.minOfOrNull { it.second }?.toInt() ?: 0
 
     Surface(
         modifier = Modifier
@@ -103,17 +77,17 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
                 InfoColumn(modifier = Modifier
                     .padding(start = 10.dp),
-                    label = "Today's Pomo",
+                    label = stringResource(R.string.today_s_pomo),
                     progress = "1 from yesterday",
-                    value = ""
+                    value = dayData.value.recordedRounds.toString()
                 )
 
                 InfoColumn(modifier = Modifier
                     .padding(start = 10.dp,
                     end = 10.dp),
-                    label = "Today's focus (h)",
+                    label = stringResource(R.string.today_s_focus_h),
                     progress = "0h13m from yesterday",
-                    value = "0h13m")
+                    value = dayData.value.focusRecordedDuration.toString())
             }
 
             Row(modifier = Modifier
@@ -121,14 +95,14 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
                 InfoTotalColumn(modifier = Modifier
                     .padding(start = 10.dp),
-                    label = "Total Pomos",
-                    value = "20")
+                    label = stringResource(R.string.total_pomos),
+                    value = totalPomos.value.toString())
 
                 InfoTotalColumn(modifier = Modifier
                     .padding(start = 10.dp,
                         end = 10.dp),
-                    label = "Total Focus Duration",
-                    value = "9h13m")
+                    label = stringResource(R.string.total_focus_duration),
+                    value = totalFocus.value.toString())
             }
 
             // TODO: this box is reusable make it a function
@@ -148,15 +122,11 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    PieRadioButtons {
-                        selectedPieRadioOption = it
-                    }
+                    PieRadioButtons {viewModel.getPieDataBySortOrder(sortOrder = it)}
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    //Log.d("total focus", "InfoScreen: $values")
-
-                    PieChart(values = pieData)
+                    PieChart(values = pieData.value)
                 }
             }
 
@@ -176,18 +146,18 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     LineRadioButtons {
-                        selectedLineRadioOption = it
+                        viewModel.getLineDataBySortOrder(sortOrder = it)
+                        //Log.d("line data info", "InfoScreen: ${lineData.value}")
                     }
 
                     Spacer(modifier = Modifier.height(30.dp))
-                    val data = viewModel.weekData.collectAsState()
 
                     LineChart(
                         modifier = Modifier
                             .width(350.dp)
                             .padding(8.dp)
                             .height(180.dp),
-                        data = lineData,
+                        data = lineData.value,
                         upperValue = upperValue,
                         lowerValue = lowerValue
                         )
@@ -200,6 +170,5 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 @Composable
 @Preview
 fun InfoScreenPreview(){
-
     InfoScreen()
 }

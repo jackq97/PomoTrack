@@ -18,7 +18,7 @@ import kotlin.math.roundToInt
 @Composable
 fun LineChart(
     modifier: Modifier = Modifier,
-    data: List<Pair<Int, Double>> = emptyList(),
+    data: List<Triple<Int, Double, Double>> = emptyList(),
     upperValue: Int,
     lowerValue: Int
 ) {

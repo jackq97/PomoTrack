@@ -38,7 +38,7 @@ class PomodoroViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            val data = repository.getDurationByData(currentDate)
+            val data = repository.getDurationByDate(currentDate)
 
             if (data == null){
                 Log.d("TAG", "upsert: data added")

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -33,19 +34,21 @@ class PomodoroRepository @Inject constructor(
     //room database
     suspend fun addList(list: List<Duration>) = durationDao.insertListDuration(list = list)
 
-    suspend fun getDurationByData(date: String): Duration? { return durationDao.getDurationByDate(date) }
+    suspend fun getDurationByDate(date: String): Duration? { return durationDao.getDurationByDate(date) }
 
     suspend fun insertDuration(duration: Duration) = durationDao.insertDuration(duration = duration)
 
-    suspend fun deleteDuration(duration: Duration) = durationDao.deleteDuration(duration = duration)
-
-    suspend fun updateDuration(duration: Duration) = durationDao.updateDuration(duration = duration)
-
     suspend fun nukeTable() { durationDao.deleteAllData() }
 
-    suspend fun getDataOfCurrentWeek(): Flow<List<Pair<Int, Double>>> = flow {
+    suspend fun getDataForCurrentDay(): Duration {
+        val data = durationDao.getDurationByDate(formatter.format(Date())) ?: Duration()
+        Log.d(" in repository", "getDataForCurrentDay: $data")
+        return data
+    }
 
-        val data: MutableList<Pair<Int, Double>> = mutableListOf()
+    suspend fun getDataOfCurrentWeek(): Flow<List<Triple<Int, Double, Double>>> = flow {
+
+        val data: MutableList<Triple<Int, Double, Double>> = mutableListOf()
         calendar.firstDayOfWeek = Calendar.MONDAY
         //val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
@@ -58,16 +61,18 @@ class PomodoroRepository @Inject constructor(
            val currentDate = calendar.time
            val dateString = formatter.format(currentDate)
            val dataForDate: List<Duration?> = durationDao.getDurationListByDate(date = dateString) // query the data for the date from the Room database
-           val dataValue = dataForDate.sumOf { it?.focusRecordedDuration?.toDouble() ?: 0.0 }  // use a default value if the data is null
-           data.add(Pair(i, dataValue))
+           val dataFocusValue = dataForDate.sumOf { it?.focusRecordedDuration?.toDouble() ?: 0.0 }  // use a default value if the data is null
+           val dataRestValue = dataForDate.sumOf { it?.restRecordedDuration?.toDouble() ?: 0.0 }  // use a default value if the data is null
+           data.add(Triple(i, dataFocusValue, dataRestValue))
         }
         //Log.d("week", "getDataOfCurrentWeek: $data")
+
         emit(data)
     }
 
-    suspend fun getDataOfCurrentMonth(): Flow<List<Pair<Int, Double>>> = flow {
+    suspend fun getDataOfCurrentMonth(): Flow<List<Triple<Int, Double, Double>>> = flow {
 
-        val data: MutableList<Pair<Int, Double>> = mutableListOf()
+        val data: MutableList<Triple<Int, Double, Double>> = mutableListOf()
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         val currentMonthStart = calendar.time
 
@@ -80,15 +85,16 @@ class PomodoroRepository @Inject constructor(
             val dateString = formatter.format(currentDate)
             val dataForDate: List<Duration?> = durationDao.getDurationListByDate(date = dateString) // query the data for the date from the Room database
             val dataValue = dataForDate.sumOf { it?.focusRecordedDuration?.toDouble() ?: 0.0 }  // use a default value if the data is null
-            data.add(Pair(i, dataValue))
+            val dataRestValue = dataForDate.sumOf { it?.restRecordedDuration?.toDouble() ?: 0.0 }
+            data.add(Triple(i, dataValue, dataRestValue))
         }
         emit(data)
         //Log.d("month", "getDataOfCurrentMonth: $data")
     }
 
-    suspend fun getDataOfCurrentYear(): Flow<List<Pair<Int, Double>>> = flow {
+    suspend fun getDataOfCurrentYear(): Flow<List<Triple<Int, Double, Double>>> = flow {
 
-            val data: MutableList<Pair<Int, Double>> = mutableListOf()
+            val data: MutableList<Triple<Int, Double, Double>> = mutableListOf()
 
             // set the calendar instance to the start of the year
             calendar.set(Calendar.MONTH, Calendar.JANUARY)
@@ -103,7 +109,7 @@ class PomodoroRepository @Inject constructor(
                 val monthString = monthFormatter.format(currentMonth)
                 val yearString = yearFormatter.format(currentMonth)
                 val dataValue = durationDao.getDurationSumByMonth(monthString,yearString) ?: 0.0  // use a default value if the data is null
-                data.add(Pair(i, dataValue))
+                data.add(Triple(i, dataValue, 0.0))
             }
 
         //Log.d("year", "getDataOfCurrentYear: $data")
@@ -124,8 +130,6 @@ class PomodoroRepository @Inject constructor(
     fun getAllDuration(): Flow<List<Duration>> = durationDao.getAllDurations()
         .flowOn(Dispatchers.IO)
         .conflate()
-
-
 
     //settings manager
     fun getSettings() = abstract.getSettings().stateIn(
