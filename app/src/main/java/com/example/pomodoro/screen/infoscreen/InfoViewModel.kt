@@ -1,4 +1,4 @@
-    package com.example.pomodoro.screen.infoscreen
+package com.example.pomodoro.screen.infoscreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -9,17 +9,23 @@ import com.example.pomodoro.util.SortOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class InfoViewModel @Inject constructor (private val repository: PomodoroRepository) : ViewModel() {
 
+
     private val _allDurations = MutableStateFlow<List<Duration>>(emptyList())
     val allDurations: StateFlow<List<Duration>> = _allDurations
 
     private val _dayData = MutableStateFlow(Duration())
     val dayData: StateFlow<Duration> = _dayData
+
+    private val _yesterdayData = MutableStateFlow(Duration())
+    val yesterdayData: StateFlow<Duration> = _yesterdayData
 
     private val _weekData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
     val weekData: StateFlow<List<Triple<Int, Double, Double>>> = _weekData
@@ -39,18 +45,25 @@ class InfoViewModel @Inject constructor (private val repository: PomodoroReposit
     private val _totalRecordedFocus = MutableStateFlow<Int>(0)
     val totalRecordedFocus: StateFlow<Int> = _totalRecordedFocus
 
+    private val _differenceOfRecordedRounds = MutableStateFlow<Int>(0)
+    val differenceOfRecordedRounds: StateFlow<Int> = _differenceOfRecordedRounds
 
-    /*val numberOfTotalPomos = allDurations.value.sumOf { it.recordedRounds }
-    val totalRecordedFocus = allDurations.value.sumOf { it.focusRecordedDuration }*/
+    private val _differenceOfRecordedFocus = MutableStateFlow<Int>(0)
+    val differenceOfRecordedFocus: StateFlow<Int> = _differenceOfRecordedFocus
 
-    // Other ViewModel functions...
+
+
     private suspend fun processDataForCurrentDay() {
         val data = repository.getDataForCurrentDay()
-        Log.d("viewModel", "processDataForCurrentDay: $data")
         _dayData.value = data
     }
 
-    fun getTotalNoOfPomos(){
+    private suspend fun processDataForYesterday() {
+        val data = repository.getDataForYesterday()
+        _yesterdayData.value = data
+    }
+
+    private fun getTotalNoOfPomos(){
         viewModelScope.launch {
             _allDurations.collect{ duration ->
                 _numberOfTotalPomos.value = duration.sumOf { it.recordedRounds }
@@ -58,7 +71,7 @@ class InfoViewModel @Inject constructor (private val repository: PomodoroReposit
         }
     }
 
-    fun getTotalRecordeFocus(){
+    private fun getTotalRecordeFocus(){
         viewModelScope.launch {
             _allDurations.collect{ duration ->
                 _totalRecordedFocus.value = duration.sumOf { it.focusRecordedDuration }
@@ -95,6 +108,18 @@ class InfoViewModel @Inject constructor (private val repository: PomodoroReposit
         }
     }
 
+    // Inside the InfoViewModel class
+
+    private fun performOperationsOnDayData() {
+        viewModelScope.launch {
+            combine(_dayData, _yesterdayData) { currentDayData, yesterdayData ->
+                _differenceOfRecordedRounds.value = currentDayData.recordedRounds - yesterdayData.recordedRounds
+                _differenceOfRecordedFocus.value = currentDayData.focusRecordedDuration - yesterdayData.focusRecordedDuration
+            }.collect()
+        }
+    }
+
+
     fun getLineDataBySortOrder(sortOrder: String) {
         viewModelScope.launch {
             when (sortOrder) {
@@ -121,6 +146,8 @@ class InfoViewModel @Inject constructor (private val repository: PomodoroReposit
         getPieDataBySortOrder(SortOrder.Day.name)
         getLineDataBySortOrder(SortOrder.Week.name)
         viewModelScope.launch {
+            performOperationsOnDayData()
+            processDataForYesterday()
             processDataForCurrentDay()
             getTotalNoOfPomos()
             getTotalRecordeFocus()

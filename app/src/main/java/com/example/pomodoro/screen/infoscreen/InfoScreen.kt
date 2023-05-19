@@ -42,20 +42,14 @@ import kotlin.math.roundToInt
 fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
 
-    val allDurations = viewModel.allDurations.collectAsState()
+
     val dayData = viewModel.dayData.collectAsState()
-    val weekData = viewModel.weekData.collectAsState()
-    val monthData = viewModel.monthData.collectAsState()
-    val yearData = viewModel.yearData.collectAsState()
+    val roundsDifference = viewModel.differenceOfRecordedRounds.collectAsState()
+    val focusDifference = viewModel.differenceOfRecordedFocus.collectAsState()
     val lineData = viewModel.lineData.collectAsState()
     val pieData = viewModel.pieData.collectAsState()
     val totalFocus = viewModel.totalRecordedFocus.collectAsState()
     val totalPomos = viewModel.numberOfTotalPomos.collectAsState()
-
-    Log.d("TAG", "InfoScreen: ${dayData.value}")
-
-    //var selectedPieRadioOption by remember { mutableStateOf(SortOrder.Day.name) }
-    //var selectedLineRadioOption by remember { mutableStateOf(SortOrder.Week.name) }
 
     val upperValue = lineData.value.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
     val lowerValue = lineData.value.minOfOrNull { it.second }?.toInt() ?: 0
@@ -78,7 +72,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
                 InfoColumn(modifier = Modifier
                     .padding(start = 10.dp),
                     label = stringResource(R.string.today_s_pomo),
-                    progress = "1 from yesterday",
+                    progress = "${roundsDifference.value} from yesterday",
                     value = dayData.value.recordedRounds.toString()
                 )
 
@@ -86,7 +80,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
                     .padding(start = 10.dp,
                     end = 10.dp),
                     label = stringResource(R.string.today_s_focus_h),
-                    progress = "0h13m from yesterday",
+                    progress = "${focusDifference.value} from yesterday",
                     value = dayData.value.focusRecordedDuration.toString())
             }
 

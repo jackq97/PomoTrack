@@ -1,6 +1,5 @@
 package com.example.pomodoro.repository
 
-import android.util.Log
 import com.example.pomodoro.data.datastore.Abstract
 import com.example.pomodoro.data.roomdatabase.DurationDao
 import com.example.pomodoro.model.local.Duration
@@ -15,6 +14,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -40,10 +41,16 @@ class PomodoroRepository @Inject constructor(
 
     suspend fun nukeTable() { durationDao.deleteAllData() }
 
+    suspend fun getDataForYesterday(): Duration{
+
+        val formatter1 = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val yesterday = LocalDate.now().minusDays(1)
+        val dateString = formatter1.format(yesterday)
+        return durationDao.getDurationByDate(dateString) ?: Duration()
+    }
+
     suspend fun getDataForCurrentDay(): Duration {
-        val data = durationDao.getDurationByDate(formatter.format(Date())) ?: Duration()
-        Log.d(" in repository", "getDataForCurrentDay: $data")
-        return data
+        return durationDao.getDurationByDate(formatter.format(Date())) ?: Duration()
     }
 
     suspend fun getDataOfCurrentWeek(): Flow<List<Triple<Int, Double, Double>>> = flow {
