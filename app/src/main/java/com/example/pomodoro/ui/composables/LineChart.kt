@@ -1,7 +1,6 @@
 package com.example.pomodoro.ui.composables
 
 import android.graphics.Paint
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -12,8 +11,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.pomodoro.util.minutesToHoursAndMinutes
 import kotlin.math.round
-import kotlin.math.roundToInt
 
 @Composable
 fun LineChart(
@@ -22,16 +21,10 @@ fun LineChart(
     upperValue: Int,
     lowerValue: Int
 ) {
-    val doubleValues: List<Double> = data.map { it.second } // extract the second value from each pair
-    //Log.d("TAG", "Double values: $doubleValues")
+
     val spacing = 100f
     val graphColor = MaterialTheme.colorScheme.primary
     val transparentGraphColor = remember { graphColor.copy(alpha = 0.5f) }
-    //val upperValue = remember { (data.maxOfOrNull { it.second  }?.plus(1))?.roundToInt() ?: 0 }
-    //Log.d("in line chart", "LineChart: ${data.maxOfOrNull { it.second }?.plus(1)?.roundToInt()}")
-    //Log.d("in line chart", "LineChart: $upperValue")
-    //val lowerValue = remember { (data.minOfOrNull { it.second }?.toInt() ?: 0) }
-    //Log.d("in line chart", "LineChart: $lowerValue")
     val density = LocalDensity.current
 
     val textPaint = remember(density) {
@@ -47,6 +40,7 @@ fun LineChart(
         (data.indices step 2).forEach { i ->
             val hour = data[i].first
             drawContext.canvas.nativeCanvas.apply {
+
                 drawText(
                     hour.toString(),
                     spacing + i * spacePerHour,
@@ -59,8 +53,9 @@ fun LineChart(
         val priceStep = (upperValue - lowerValue) / 5f
         (0..4).forEach { i ->
             drawContext.canvas.nativeCanvas.apply {
+                //Log.d("TAG", "LineChart: ${round(lowerValue + priceStep * i)}")
                 drawText(
-                    round(lowerValue + priceStep * i).toString(),
+                    minutesToHoursAndMinutes(round(lowerValue + priceStep * i).toInt()),
                     30f,
                     size.height - spacing - i * size.height / 5f,
                     textPaint

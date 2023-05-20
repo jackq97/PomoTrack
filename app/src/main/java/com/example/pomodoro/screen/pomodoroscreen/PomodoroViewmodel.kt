@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.model.local.Duration
 import com.example.pomodoro.repository.PomodoroRepository
 import com.example.pomodoro.util.floatToTime
+import com.example.pomodoro.util.millisecondsToMinutes
 import com.example.pomodoro.util.minutesToLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -123,7 +124,7 @@ class PomodoroViewModel @Inject constructor(
                 _isRunningFocus.value = false
                 _remainingFocusTime.value = 0
                 _finishedCount.value++
-                upsert(focusDuration = focusDuration.toInt(),
+                upsert(focusDuration = millisecondsToMinutes(focusDuration),
                     restDuration = 0,
                     rounds = 1)
                 if (_finishedCount.value == roundsDuration) {
@@ -147,7 +148,7 @@ class PomodoroViewModel @Inject constructor(
 
             override fun onFinish() {
                 upsert(focusDuration = 0,
-                    restDuration = breakDuration.toInt(),
+                    restDuration = millisecondsToMinutes(breakDuration),
                     rounds = 0)
                 _isRunningRest.value = false
                 _remainingRestTime.value = 0
@@ -210,7 +211,7 @@ class PomodoroViewModel @Inject constructor(
                         }
 
                         override fun onFinish() {
-                            upsert(focusDuration = focusDuration.toInt(),
+                            upsert(focusDuration = millisecondsToMinutes(focusDuration),
                                 restDuration = 0,
                                 rounds = 1)
                             _isRunningFocus.value = false
@@ -235,7 +236,7 @@ class PomodoroViewModel @Inject constructor(
 
                         override fun onFinish() {
                             upsert(focusDuration = 0,
-                                restDuration = breakDuration.toInt(),
+                                restDuration = millisecondsToMinutes(breakDuration),
                                 rounds = 0)
                             _isRunningRest.value = false
                             _remainingRestTime.value = 0

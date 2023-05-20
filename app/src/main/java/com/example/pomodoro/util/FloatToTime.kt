@@ -6,9 +6,7 @@ fun floatToTime(value: Float): Int {
     val maxValue = 10.0f
     val minMinutes = 1
     val maxMinutes = 90
-
     val normalizedValue = (value - minValue) / (maxValue - minValue)
-
     return (normalizedValue * (maxMinutes - minMinutes)).toInt() + minMinutes
 }
 
@@ -27,7 +25,18 @@ fun secondsToMinutesAndSeconds(seconds: Long): String {
     return String.format("%02d:%02d", minutes, remainingSeconds)
 }
 
-/*fun getDateFromTimestamp(timestamp: Long): Date {
-    return Date(timestamp)
-}*/
+fun minutesToHoursAndMinutes(minutes: Int): String {
+    val hours = minutes / 60
+    val remainingMinutes = minutes % 60
+    return String.format("%2dh%2dm", hours, remainingMinutes)
+}
+
+fun millisecondsToMinutes(milliseconds: Long): Int {
+    return (milliseconds / (1000 * 60)).toInt()
+}
+
+
+
+
+
 

@@ -1,6 +1,5 @@
 package com.example.pomodoro.screen.infoscreen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +33,7 @@ import com.example.pomodoro.ui.composables.LineChart
 import com.example.pomodoro.ui.composables.PieChart
 import com.example.pomodoro.ui.composables.radiobuttons.LineRadioButtons
 import com.example.pomodoro.ui.composables.radiobuttons.PieRadioButtons
+import com.example.pomodoro.util.minutesToHoursAndMinutes
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlin.math.roundToInt
 
@@ -67,19 +67,18 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
             Row {
 
-                InfoColumn(modifier = Modifier
-                    .padding(start = 10.dp),
+                InfoColumn(modifier = Modifier,
+                    //.padding(start = 10.dp),
                     label = stringResource(R.string.today_s_pomo),
-                    progress = "${roundsDifference.value} from yesterday",
-                    value = dayData.value.recordedRounds.toString()
+                    progress = roundsDifference.value,
+                    value = dayData.value.recordedRounds
                 )
 
                 InfoColumn(modifier = Modifier
-                    .padding(start = 10.dp,
-                    end = 10.dp),
+                    .padding(end = 10.dp),
                     label = stringResource(R.string.today_s_focus_h),
-                    progress = "${focusDifference.value} from yesterday",
-                    value = dayData.value.focusRecordedDuration.toString())
+                    progress = focusDifference.value,
+                    value = dayData.value.focusRecordedDuration)
             }
 
             Row(modifier = Modifier
@@ -94,7 +93,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
                     .padding(start = 10.dp,
                         end = 10.dp),
                     label = stringResource(R.string.total_focus_duration),
-                    value = totalFocus.value.toString())
+                    value = minutesToHoursAndMinutes(totalFocus.value))
             }
 
             // TODO: this box is reusable make it a function
