@@ -28,7 +28,7 @@ fun secondsToMinutesAndSeconds(seconds: Long): String {
 fun minutesToHoursAndMinutes(minutes: Int): String {
     val hours = minutes / 60
     val remainingMinutes = minutes % 60
-    return String.format("%2dh%2dm", hours, remainingMinutes)
+    return "${hours}h ${remainingMinutes}m" //String.format("%2dh %2dm", hours, remainingMinutes)
 }
 
 fun millisecondsToMinutes(milliseconds: Long): Int {

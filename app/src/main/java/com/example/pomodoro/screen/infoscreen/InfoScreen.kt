@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
 import com.example.pomodoro.ui.composables.InfoColumn
+import com.example.pomodoro.ui.composables.InfoPomoColumn
 import com.example.pomodoro.ui.composables.InfoTotalColumn
 import com.example.pomodoro.ui.composables.LineChart
 import com.example.pomodoro.ui.composables.PieChart
@@ -67,8 +68,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
             Row {
 
-                InfoColumn(modifier = Modifier,
-                    //.padding(start = 10.dp),
+                InfoPomoColumn(modifier = Modifier,
                     label = stringResource(R.string.today_s_pomo),
                     progress = roundsDifference.value,
                     value = dayData.value.recordedRounds
@@ -125,7 +125,8 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
                 .padding(
                     top = 12.dp,
                     start = 10.dp,
-                    end = 10.dp
+                    end = 10.dp,
+                    bottom = 10.dp
                 )
                 .clip(RoundedCornerShape(5.dp))
                 .fillMaxWidth()

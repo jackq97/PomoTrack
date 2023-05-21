@@ -26,10 +26,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pomodoro.R
+import com.example.pomodoro.util.minutesToHoursAndMinutes
 import kotlin.math.absoluteValue
 
 @Composable
-fun InfoColumn(modifier: Modifier,
+fun InfoPomoColumn(modifier: Modifier,
                label: String,
                progress: Int,
                value: Int) {
@@ -91,6 +92,74 @@ fun InfoColumn(modifier: Modifier,
                 color = MaterialTheme.colorScheme.inversePrimary,
                 fontSize = 22.sp,
                 text = "$value"
+            )
+        }
+    }
+}
+
+@Composable
+fun InfoColumn(modifier: Modifier,
+               label: String,
+               progress: Int,
+               value: Int) {
+
+    val painter: Painter
+    val color: Color
+
+    if (progress < 0){
+        painter = painterResource(id = R.drawable.arrow_downward)
+        color = Color.Red
+    } else {
+        painter = painterResource(id = R.drawable.arrow_upward)
+        color = Color.Green
+    }
+
+    Box(modifier = modifier
+        .padding(start = 10.dp)
+        .clip(RoundedCornerShape(5.dp))
+        .background(color = MaterialTheme.colorScheme.primary)
+        .width(180.dp)
+        .height(100.dp)) {
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
+
+            Text(
+                modifier = Modifier.padding(start = 10.dp),
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.White,
+                fontSize = 15.sp,
+                text = label
+            )
+
+            Row {
+
+                Text(
+                    modifier = Modifier.padding(start = 10.dp),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.LightGray,
+                    text = "${minutesToHoursAndMinutes(progress.absoluteValue)} from yesterday"
+                )
+
+                Icon(
+                    modifier = modifier.size(15.dp),
+                    painter = painter,
+                    tint = color,
+                    contentDescription = null
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                modifier = Modifier.padding(start = 10.dp),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.inversePrimary,
+                fontSize = 22.sp,
+                text = minutesToHoursAndMinutes(value)
             )
         }
     }

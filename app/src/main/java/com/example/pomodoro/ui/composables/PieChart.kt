@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import okhttp3.internal.wait
+import com.example.pomodoro.util.minutesToHoursAndMinutes
 
 @Composable
 fun PieChart(
@@ -71,14 +71,14 @@ fun PieChart(
     Spacer(modifier = Modifier.height(32.dp))
 
     Column {
-        DisplayLegend(color = colors[1], legend = legend[0])
-        DisplayLegend(color = colors[0], legend = legend[1])
+        DisplayLegend(color = colors[1], legend = legend[0], value = values[1])
+        DisplayLegend(color = colors[0], legend = legend[1], value = values[0])
 
     }
 }
 
 @Composable
-fun DisplayLegend(color: Color, legend: String) {
+fun DisplayLegend(color: Color, legend: String, value: Float) {
 
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -98,7 +98,7 @@ fun DisplayLegend(color: Color, legend: String) {
         )
 
         Text(modifier = Modifier.padding(start = 4.dp),
-            text = "(13m)",
+            text = "( ${minutesToHoursAndMinutes(value.toInt())} )",
             color = Color.White
             )
     }

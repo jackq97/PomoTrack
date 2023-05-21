@@ -178,9 +178,7 @@ class PomodoroViewModel @Inject constructor(
         }.start()
     }
     fun pauseTimer() {
-        focusCountDownTimer?.cancel()
-        restCountDownTimer?.cancel()
-        longBreakCountDownTimer?.cancel()
+        stopAllTimers()
         _isPaused.value = true
 
         when {
@@ -267,9 +265,7 @@ class PomodoroViewModel @Inject constructor(
 
     fun resetTimer() {
 
-        focusCountDownTimer?.cancel()
-        restCountDownTimer?.cancel()
-        longBreakCountDownTimer?.cancel()
+        stopAllTimers()
         _remainingFocusTime.value = TOTAL_TIME
         _remainingRestTime.value = TOTAL_TIME
         _remainingLongBreakTime.value = TOTAL_TIME
@@ -282,6 +278,8 @@ class PomodoroViewModel @Inject constructor(
     }
 
     fun skipTimer() {
+
+        _isPaused.value = false
 
         when {
 
@@ -330,9 +328,7 @@ class PomodoroViewModel @Inject constructor(
     override fun onCleared() {
 
         super.onCleared()
-        focusCountDownTimer?.cancel()
-        restCountDownTimer?.cancel()
-        longBreakCountDownTimer?.cancel()
+        stopAllTimers()
     }
 
     init {

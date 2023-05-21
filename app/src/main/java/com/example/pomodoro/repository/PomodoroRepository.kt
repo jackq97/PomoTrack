@@ -23,7 +23,8 @@ import javax.inject.Inject
 
 class PomodoroRepository @Inject constructor(
     private val durationDao: DurationDao,
-    private val abstract: Abstract) {
+    private val abstract: Abstract,
+    ) {
 
     private val myScope = CoroutineScope(Dispatchers.IO)
 

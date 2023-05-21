@@ -9,9 +9,13 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import com.example.pomodoro.data.datastore.Abstract
-import com.example.pomodoro.data.datastore.SettingsManager
+import com.example.pomodoro.data.datastore.SettingsManagerImpl
 import com.example.pomodoro.data.roomdatabase.DurationDao
 import com.example.pomodoro.data.roomdatabase.DurationDatabase
+import com.example.pomodoro.data.auth_data.AuthData
+import com.example.pomodoro.data.auth_data.AuthDataImpl
+import com.example.pomodoro.repository.PomodoroRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,7 +52,16 @@ object AppModule {
         )
     }
 
+    @Provides
+    fun provideUserPref(dataStore: DataStore<Preferences>): Abstract = SettingsManagerImpl(dataStore)
 
     @Provides
-    fun provideUserPref(dataStore: DataStore<Preferences>): Abstract = SettingsManager(dataStore)
+    @Singleton
+    fun providesFirebaseAuth()  = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    fun providesAuthImpl(firebaseAuth: FirebaseAuth): AuthData {
+        return AuthDataImpl(firebaseAuth = firebaseAuth)
+    }
 }
