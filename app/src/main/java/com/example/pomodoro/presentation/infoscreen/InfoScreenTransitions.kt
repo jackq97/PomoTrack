@@ -1,19 +1,19 @@
-package com.example.pomodoro.ui.animations
+package com.example.pomodoro.presentation.infoscreen
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.navigation.NavBackStackEntry
 import com.example.pomodoro.presentation.appDestination
-import com.example.pomodoro.presentation.destinations.PomodoroScreenDestination
+import com.example.pomodoro.presentation.destinations.InfoScreenDestination
 import com.ramcosta.composedestinations.spec.DestinationStyleAnimated
 
 @OptIn(ExperimentalAnimationApi::class)
-object InfoTransitions : DestinationStyleAnimated {
+object InfoScreenTransitions : DestinationStyleAnimated {
 
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.enterTransition(): EnterTransition? {
 
         return when (initialState.appDestination()) {
-            PomodoroScreenDestination ->
+            InfoScreenDestination ->
                 slideInHorizontally(
                     initialOffsetX = { 1000 },
                     animationSpec = tween(700)
@@ -22,10 +22,10 @@ object InfoTransitions : DestinationStyleAnimated {
         }
     }
 
-    override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition() : ExitTransition? {
+    override fun AnimatedContentTransitionScope<NavBackStackEntry>.exitTransition(): ExitTransition? {
 
         return when (targetState.appDestination()) {
-            PomodoroScreenDestination ->
+            InfoScreenDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { -1000 },
                     animationSpec = tween(700)
@@ -37,7 +37,7 @@ object InfoTransitions : DestinationStyleAnimated {
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnterTransition(): EnterTransition? {
 
         return when (initialState.appDestination()) {
-            PomodoroScreenDestination ->
+            InfoScreenDestination ->
                 slideInHorizontally(
                     initialOffsetX = { -1000 },
                     animationSpec = tween(700)
@@ -49,7 +49,7 @@ object InfoTransitions : DestinationStyleAnimated {
     override fun AnimatedContentTransitionScope<NavBackStackEntry>.popExitTransition(): ExitTransition? {
 
         return when (targetState.appDestination()) {
-            PomodoroScreenDestination ->
+            InfoScreenDestination ->
                 slideOutHorizontally(
                     targetOffsetX = { 1000 },
                     animationSpec = tween(700)

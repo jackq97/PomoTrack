@@ -14,7 +14,6 @@ fun convertMinutesToHoursAndMinutes(minutes: Int): String {
     return "$minutes:00"
 }
 
-
 fun minutesToLong(minutes: Int): Long {
     return minutes.toLong() * 60 * 1000
 }

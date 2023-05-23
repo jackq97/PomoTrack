@@ -40,7 +40,6 @@ import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @RootNavGraph(start = true)
 @Destination
@@ -151,9 +150,9 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                 }){
 
                 painter = if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
-                    painterResource(id = R.drawable.baseline_play_arrow)
+                    painterResource(id = R.drawable.play)
                 }else {
-                    painterResource(id = R.drawable.baseline_pause)
+                    painterResource(id = R.drawable.pause)
                 }
 
                 Icon(
@@ -190,13 +189,13 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                     IconButton(onClick = { viewModel.skipTimer() }) {
 
-                        Icon(painter = painterResource(id = R.drawable.baseline_skip_next),
+                        Icon(painter = painterResource(id = R.drawable.skip),
                             contentDescription = "skip session")
                     }
 
                     IconButton(onClick = {  }) {
 
-                        Icon(painter = painterResource(id = R.drawable.baseline_volume),
+                        Icon(painter = painterResource(id = R.drawable.volume),
                             contentDescription = "sound")
                     }
                 }

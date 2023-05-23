@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
-import com.example.pomodoro.ui.animations.InfoTransitions
 import com.example.pomodoro.ui.composables.InfoColumn
 import com.example.pomodoro.ui.composables.InfoPomoColumn
 import com.example.pomodoro.ui.composables.InfoTotalColumn
@@ -37,9 +36,11 @@ import com.example.pomodoro.ui.composables.radiobuttons.LineRadioButtons
 import com.example.pomodoro.ui.composables.radiobuttons.PieRadioButtons
 import com.example.pomodoro.util.minutesToHoursAndMinutes
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import kotlin.math.roundToInt
 
-@Destination(style = InfoTransitions::class)
+
+@Destination
 @Composable
 fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
