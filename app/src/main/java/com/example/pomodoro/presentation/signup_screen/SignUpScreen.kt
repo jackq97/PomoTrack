@@ -1,4 +1,4 @@
-package com.example.pomodoro.screen.signup_screen
+package com.example.pomodoro.presentation.signup_screen
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.pomodoro.R
-import com.example.pomodoro.screen.destinations.SignInScreenDestination
+import com.example.pomodoro.presentation.destinations.SignInScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.launch

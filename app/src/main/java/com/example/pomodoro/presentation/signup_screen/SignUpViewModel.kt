@@ -1,9 +1,9 @@
-package com.example.pomodoro.screen.signup_screen
+package com.example.pomodoro.presentation.signup_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.data.auth_data.AuthData
-import com.example.pomodoro.screen.login_screen.SignInState
+import com.example.pomodoro.presentation.login_screen.SignInState
 import com.example.pomodoro.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel

@@ -1,4 +1,4 @@
-package com.example.pomodoro.screen.settingscreen
+package com.example.pomodoro.presentation.settingscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -23,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,14 +35,10 @@ import com.example.pomodoro.ui.composables.SliderComponent
 import com.example.pomodoro.util.convertMinutesToHoursAndMinutes
 import com.example.pomodoro.util.floatToTime
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination
 @Composable
-fun SettingsScreen(
-    navigator: DestinationsNavigator,
-    viewModel: SettingsViewModel = hiltViewModel()
-) {
+fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
 
     var focusSliderPosition by remember { mutableStateOf(0f) }
     var breakSliderPosition by remember { mutableStateOf(0f) }
@@ -60,7 +55,7 @@ fun SettingsScreen(
     Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colors.background)
+                .background(Color.White)
         ) {
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -124,9 +119,7 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
 
-                    Button(
-                        shape = RoundedCornerShape(12.dp),
-                        onClick = {
+                    Button(onClick = {
                         viewModel.saveSettings(
                             Settings(focusDur = focusSliderPosition,
                             restDur = breakSliderPosition,

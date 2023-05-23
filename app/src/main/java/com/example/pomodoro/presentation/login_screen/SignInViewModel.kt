@@ -1,4 +1,4 @@
-package com.example.pomodoro.screen.login_screen
+package com.example.pomodoro.presentation.login_screen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

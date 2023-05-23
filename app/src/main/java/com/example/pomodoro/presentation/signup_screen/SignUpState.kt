@@ -1,4 +1,4 @@
-package com.example.pomodoro.screen.signup_screen
+package com.example.pomodoro.presentation.signup_screen
 
 
 data class SignUpState(

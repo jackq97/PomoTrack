@@ -1,4 +1,4 @@
-package com.example.pomodoro.screen.pomodoroscreen
+package com.example.pomodoro.presentation.pomodoroscreen
 
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
@@ -90,9 +90,9 @@ class PomodoroViewModel @Inject constructor(
         viewModelScope.launch {
             repository.nukeTable()
         }
-    }
+    }*/
 
-    fun addData(list: List<Duration>){
+    /*fun addData(list: List<Duration>){
         viewModelScope.launch {
             repository.addList(list)
         }

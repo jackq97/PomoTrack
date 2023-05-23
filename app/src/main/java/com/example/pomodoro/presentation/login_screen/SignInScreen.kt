@@ -1,4 +1,4 @@
-package com.example.pomodoro.screen.login_screen
+package com.example.pomodoro.presentation.login_screen
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -46,11 +46,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import kotlinx.coroutines.launch
 
 @Destination
-@RootNavGraph(start = true)
 @Composable
 fun SignInScreen(
     viewModel: SignInViewModel = hiltViewModel()

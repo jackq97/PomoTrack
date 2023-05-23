@@ -1,4 +1,4 @@
-package com.example.pomodoro.screen.infoscreen
+package com.example.pomodoro.presentation.infoscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
+import com.example.pomodoro.ui.animations.InfoTransitions
 import com.example.pomodoro.ui.composables.InfoColumn
 import com.example.pomodoro.ui.composables.InfoPomoColumn
 import com.example.pomodoro.ui.composables.InfoTotalColumn
@@ -38,7 +39,7 @@ import com.example.pomodoro.util.minutesToHoursAndMinutes
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlin.math.roundToInt
 
-@Destination
+@Destination(style = InfoTransitions::class)
 @Composable
 fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 
@@ -162,5 +163,5 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()){
 @Composable
 @Preview
 fun InfoScreenPreview(){
-    InfoScreen()
+    //InfoScreen()
 }

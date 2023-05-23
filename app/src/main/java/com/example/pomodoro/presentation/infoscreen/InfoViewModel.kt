@@ -1,4 +1,4 @@
-package com.example.pomodoro.screen.infoscreen
+package com.example.pomodoro.presentation.infoscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

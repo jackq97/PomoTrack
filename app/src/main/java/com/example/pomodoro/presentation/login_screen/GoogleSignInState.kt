@@ -1,4 +1,4 @@
-package com.example.pomodoro.screen.login_screen
+package com.example.pomodoro.presentation.login_screen
 
 import com.google.firebase.auth.AuthResult
 
