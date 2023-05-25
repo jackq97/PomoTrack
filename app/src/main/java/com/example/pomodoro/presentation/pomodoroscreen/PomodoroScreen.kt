@@ -1,5 +1,7 @@
 package com.example.pomodoro.presentation.pomodoroscreen
 
+import android.graphics.fonts.Font
+import android.graphics.fonts.FontStyle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -31,8 +33,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
@@ -40,6 +44,7 @@ import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+
 
 @RootNavGraph(start = true)
 @Destination
@@ -106,12 +111,17 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         isRunningLongBreak -> { timerText = "Long Break"
                             remainingProgress = secondsToMinutesAndSeconds(longBreakRemainingTime)}
                         else -> { timerText = "Focus"
-                            remainingProgress = "00:00"}
+                            remainingProgress = "00:00"
+                        }
                     }
 
-                    Text(text = remainingProgress)
+                    Text(text = remainingProgress,
+                        fontSize = 30.sp
+                    )
 
-                    Text(text = timerText)
+                    Text(text = timerText,
+                        fontSize = 20.sp
+                    )
 
                 }
 
@@ -172,11 +182,15 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Center) {
 
-                    Text(modifier = Modifier.padding(start = 18.dp,
-                    top = 7.dp),
+                    Text(modifier = Modifier
+                        .padding(start = 18.dp,
+                            top = 7.dp),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
                         text = "${finishedCount}/$rounds")
 
-                    TextButton(onClick = { viewModel.resetTimer() }) {
+                    TextButton(modifier = Modifier.padding(start = 2.dp),
+                        onClick = { viewModel.resetTimer() }) {
                         Text(text = stringResource(R.string.reset))
                     }
                 }
