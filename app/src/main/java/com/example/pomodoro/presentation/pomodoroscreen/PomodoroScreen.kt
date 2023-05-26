@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
+import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
 import com.ramcosta.composedestinations.annotation.Destination
@@ -79,138 +80,178 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     longRestSettingDur = settings.value.longRestDur
     focusProgress = focusRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()
     restProgress = restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()
-    longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
+    longBreakProgress =
+        longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
     rounds = settings.value.rounds.toInt()
 
-    Surface(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)) {
+    AppTheme(darkTheme = false) {
 
-        Column(modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
 
-            Box(modifier = Modifier,
-                contentAlignment = Alignment.Center
-                ){
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-                RoundedCircularProgressIndicator(
-                    modifier = Modifier.size(250.dp),
-                    strokeWidth = 10.dp,
-                    progress = 1f,
-                    color = Color.DarkGray)
+                Box(
+                    modifier = Modifier,
+                    contentAlignment = Alignment.Center
+                ) {
 
-                Column(verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally) {
+                    RoundedCircularProgressIndicator(
+                        modifier = Modifier.size(250.dp),
+                        strokeWidth = 10.dp,
+                        progress = 1f,
+                        color = Color.DarkGray
+                    )
 
-                    when {
-                        isRunningFocus -> { timerText = "Focus"
-                            remainingProgress = secondsToMinutesAndSeconds(focusRemainingTime)}
-                        isRunningRest -> { timerText = "Rest"
-                            remainingProgress = secondsToMinutesAndSeconds(restRemainingTime)}
-                        isRunningLongBreak -> { timerText = "Long Break"
-                            remainingProgress = secondsToMinutesAndSeconds(longBreakRemainingTime)}
-                        else -> { timerText = "Focus"
-                            remainingProgress = "00:00"
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        when {
+                            isRunningFocus -> {
+                                timerText = "Focus"
+                                remainingProgress = secondsToMinutesAndSeconds(focusRemainingTime)
+                            }
+
+                            isRunningRest -> {
+                                timerText = "Rest"
+                                remainingProgress = secondsToMinutesAndSeconds(restRemainingTime)
+                            }
+
+                            isRunningLongBreak -> {
+                                timerText = "Long Break"
+                                remainingProgress =
+                                    secondsToMinutesAndSeconds(longBreakRemainingTime)
+                            }
+
+                            else -> {
+                                timerText = "Focus"
+                                remainingProgress = "00:00"
+                            }
+                        }
+
+                        Text(
+                            text = remainingProgress,
+                            fontSize = 30.sp
+                        )
+
+                        Text(
+                            text = timerText,
+                            fontSize = 20.sp
+                        )
+
+                    }
+
+                    RoundedCircularProgressIndicator(
+                        modifier = Modifier.size(250.dp),
+                        strokeWidth = 10.dp,
+                        progress = if (isRunningFocus) {
+                            focusProgress
+                        } else if (isRunningLongBreak) {
+                            longBreakProgress
+                        } else {
+                            restProgress
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                IconButton(modifier = Modifier
+                    .size(80.dp)
+                    .border(
+                        shape = CircleShape,
+                        width = 5.dp,
+                        color = Color.DarkGray
+                    ),
+                    onClick = {
+
+                        if (!isRunningFocus && !isRunningRest && !isRunningLongBreak) {
+                            viewModel.startFocusTimer()
+                        } else {
+                            viewModel.pauseTimer()
+                        }
+
+                        if (isPaused) {
+                            viewModel.resumeTimer()
+                        }
+                    }) {
+
+                    painter =
+                        if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
+                            painterResource(id = R.drawable.play)
+                        } else {
+                            painterResource(id = R.drawable.pause)
+                        }
+
+                    Icon(
+                        painter = painter,
+                        contentDescription = null
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(130.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+
+                        Text(
+                            modifier = Modifier
+                                .padding(
+                                    start = 18.dp,
+                                    top = 7.dp
+                                ),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            text = "${finishedCount}/$rounds"
+                        )
+
+                        TextButton(modifier = Modifier.padding(start = 2.dp),
+                            onClick = { viewModel.resetTimer() }) {
+                            Text(text = stringResource(R.string.reset))
                         }
                     }
 
-                    Text(text = remainingProgress,
-                        fontSize = 30.sp
-                    )
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(top = 12.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
-                    Text(text = timerText,
-                        fontSize = 20.sp
-                    )
+                        IconButton(onClick = { viewModel.skipTimer() }) {
 
-                }
+                            Icon(
+                                painter = painterResource(id = R.drawable.skip),
+                                contentDescription = "skip session"
+                            )
+                        }
 
-                RoundedCircularProgressIndicator(
-                    modifier = Modifier.size(250.dp),
-                    strokeWidth = 10.dp,
-                    progress = if(isRunningFocus) {
-                        focusProgress
-                    } else if (isRunningLongBreak){
-                        longBreakProgress
-                    }else {
-                        restProgress
-                    })
-            }
+                        IconButton(onClick = { }) {
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            IconButton(modifier = Modifier
-                .size(80.dp)
-                .border(
-                    shape = CircleShape,
-                    width = 5.dp,
-                    color = Color.DarkGray
-                ),
-                onClick = {
-
-                    if(!isRunningFocus && !isRunningRest && !isRunningLongBreak){
-                        viewModel.startFocusTimer()
-                    } else {
-                        viewModel.pauseTimer()
-                    }
-
-                    if (isPaused){
-                        viewModel.resumeTimer()
-                    }
-                }){
-
-                painter = if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
-                    painterResource(id = R.drawable.play)
-                }else {
-                    painterResource(id = R.drawable.pause)
-                }
-
-                Icon(
-                    painter = painter,
-                    contentDescription = null)
-            }
-
-            Spacer(modifier = Modifier.height(130.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-
-                Column(modifier = Modifier
-                    .weight(1f),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Center) {
-
-                    Text(modifier = Modifier
-                        .padding(start = 18.dp,
-                            top = 7.dp),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        text = "${finishedCount}/$rounds")
-
-                    TextButton(modifier = Modifier.padding(start = 2.dp),
-                        onClick = { viewModel.resetTimer() }) {
-                        Text(text = stringResource(R.string.reset))
-                    }
-                }
-
-                Row(modifier = Modifier
-                    .weight(1f)
-                    .padding(top = 12.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically) {
-
-                    IconButton(onClick = { viewModel.skipTimer() }) {
-
-                        Icon(painter = painterResource(id = R.drawable.skip),
-                            contentDescription = "skip session")
-                    }
-
-                    IconButton(onClick = {  }) {
-
-                        Icon(painter = painterResource(id = R.drawable.volume),
-                            contentDescription = "sound")
+                            Icon(
+                                painter = painterResource(id = R.drawable.volume),
+                                contentDescription = "sound"
+                            )
+                        }
                     }
                 }
             }
