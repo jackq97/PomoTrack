@@ -49,8 +49,7 @@ fun PieRadioButtons(onClickOption : (String) -> Unit) {
 
         options.forEach { text ->
 
-            val color = if (text == selectedOption) MaterialTheme.colorScheme.primary else Color.Transparent
-
+            val color = if (text == selectedOption) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
 
             Button(
                 onClick = { onSelectionChange(text)
@@ -68,7 +67,7 @@ fun PieRadioButtons(onClickOption : (String) -> Unit) {
             ) {
                 Text(text = text,
                     style = androidx.compose.material.MaterialTheme.typography.button,
-                    color = Color.LightGray
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
             }
 

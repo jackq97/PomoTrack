@@ -1,7 +1,5 @@
 package com.example.pomodoro.presentation.pomodoroscreen
 
-import android.graphics.fonts.Font
-import android.graphics.fonts.FontStyle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -84,12 +81,12 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
         longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
     rounds = settings.value.rounds.toInt()
 
-    AppTheme(darkTheme = false) {
+    AppTheme(darkTheme = true) {
 
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(MaterialTheme.colorScheme.surface)
         ) {
 
             Column(
@@ -107,7 +104,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         modifier = Modifier.size(250.dp),
                         strokeWidth = 10.dp,
                         progress = 1f,
-                        color = MaterialTheme.colorScheme.onSecondary,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                     )
 
                     Column(
@@ -171,7 +168,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                     .border(
                         shape = CircleShape,
                         width = 5.dp,
-                        color = MaterialTheme.colorScheme.onSecondary,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                     ),
                     onClick = {
 
@@ -195,7 +192,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                     Icon(
                         painter = painter,
-                        tint = MaterialTheme.colorScheme.,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         contentDescription = null
                     )
                 }

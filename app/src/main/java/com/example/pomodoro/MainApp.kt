@@ -26,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.pomodoro.presentation.NavGraphs
 import com.example.pomodoro.presentation.destinations.InfoScreenDestination
 import com.example.pomodoro.presentation.destinations.SettingsScreenDestination
+import com.example.pomodoro.ui.theme.AppTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.navigate
 
@@ -63,47 +64,62 @@ fun MainApp(){
         }
     }
 
-    Scaffold(
-        topBar = { TopAppBar(title = { Text(text = "Pomodoro") },
-            navigationIcon = {if (leftImageVector != null) {
-                IconButton(onClick = {
-                    if (!inScreenState.value) {
-                        navController.navigate(SettingsScreenDestination)
-                    } else {
-                        navController.popBackStack()
+    AppTheme(darkTheme = true) {
+
+        Scaffold(
+            topBar = {
+                TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+                    title = { Text(text = "Pomodoro") },
+                    navigationIcon = {
+                        if (leftImageVector != null) {
+                            IconButton(onClick = {
+                                if (!inScreenState.value) {
+                                    navController.navigate(SettingsScreenDestination)
+                                } else {
+                                    navController.popBackStack()
+                                }
+                            }) {
+
+                                Icon(
+                                    imageVector = leftImageVector,
+                                    contentDescription = "settings",
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+
+                            }
+                        }
+                    },
+
+                    actions = {
+                        if (rightImageVector != null) {
+                            IconButton(onClick = {
+                                if (!inScreenState.value) {
+                                    navController.navigate(InfoScreenDestination)
+                                } else {
+                                    navController.popBackStack()
+                                }
+                            }) {
+
+                                Icon(
+
+                                    imageVector = rightImageVector,
+                                    contentDescription = "charts",
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
                     }
-                }) {
-
-                    Icon(
-                        imageVector = leftImageVector,
-                        contentDescription = "settings"
-                    )
-
-                }
-            }},
-            actions = {if (rightImageVector != null) {
-                IconButton(onClick = {
-                    if (!inScreenState.value) {
-                        navController.navigate(InfoScreenDestination)
-                    } else {
-                        navController.popBackStack()
-                    }
-                }) {
-
-                    Icon(
-                            imageVector = rightImageVector,
-                            contentDescription = "charts"
-                        )
-                }
-            }
-            }
-        ) },
-        bottomBar = {  },
-        content = {
-            DestinationsNavHost(
-                navController = navController,
-                navGraph = NavGraphs.root,
-                modifier = Modifier.padding(it)
-            )
-        })
+                )
+            },
+            bottomBar = { },
+            content = {
+                DestinationsNavHost(
+                    navController = navController,
+                    navGraph = NavGraphs.root,
+                    modifier = Modifier.padding(it)
+                )
+            })
+    }
 }

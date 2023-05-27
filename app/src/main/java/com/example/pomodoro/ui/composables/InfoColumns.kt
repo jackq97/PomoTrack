@@ -49,7 +49,7 @@ fun InfoPomoColumn(modifier: Modifier,
     Box(modifier = modifier
         .padding(start = 10.dp)
         .clip(RoundedCornerShape(5.dp))
-        .background(color = MaterialTheme.colorScheme.primary)
+        .background(color = MaterialTheme.colorScheme.secondaryContainer)
         .width(180.dp)
         .height(100.dp)) {
 
@@ -62,7 +62,7 @@ fun InfoPomoColumn(modifier: Modifier,
             Text(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 fontSize = 15.sp,
                 text = label
             )
@@ -89,7 +89,7 @@ fun InfoPomoColumn(modifier: Modifier,
             Text(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.inversePrimary,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 22.sp,
                 text = "$value"
             )
@@ -117,7 +117,7 @@ fun InfoColumn(modifier: Modifier,
     Box(modifier = modifier
         .padding(start = 10.dp)
         .clip(RoundedCornerShape(5.dp))
-        .background(color = MaterialTheme.colorScheme.primary)
+        .background(color = MaterialTheme.colorScheme.tertiaryContainer)
         .width(180.dp)
         .height(100.dp)) {
 
@@ -157,7 +157,7 @@ fun InfoColumn(modifier: Modifier,
             Text(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.inversePrimary,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 22.sp,
                 text = minutesToHoursAndMinutes(value)
             )
@@ -172,7 +172,7 @@ fun InfoTotalColumn(modifier: Modifier,
 
     Box(modifier = modifier
         .clip(RoundedCornerShape(5.dp))
-        .background(color = MaterialTheme.colorScheme.primary)
+        .background(color = MaterialTheme.colorScheme.tertiaryContainer)
         .width(180.dp)
         .height(70.dp)) {
 
@@ -194,7 +194,7 @@ fun InfoTotalColumn(modifier: Modifier,
             Text(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.inversePrimary,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 22.sp,
                 text = value
             )
