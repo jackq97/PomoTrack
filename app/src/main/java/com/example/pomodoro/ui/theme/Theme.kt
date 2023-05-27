@@ -8,15 +8,16 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-@SuppressLint("ConflictingOnColor")
 private val LightThemeColors = lightColorScheme(
     primary = Blue600,
     onPrimary = Black2,
     secondary = Color.White,
-    onSecondary = Color.Black,
+    onSecondary = Black1,
     error = RedErrorDark,
     onError = RedErrorLight,
     background = Grey1,
@@ -44,6 +45,8 @@ fun AppTheme(
     content: @Composable () -> Unit
 ){
 
+    val systemController = rememberSystemUiController()
+
     val dynamicColor = setDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val context = LocalContext.current
 
@@ -61,8 +64,16 @@ fun AppTheme(
         }
     }
 
+    SideEffect {
+        systemController.setStatusBarColor(
+            color = colors.primary,
+            darkIcons = darkTheme
+        )
+    }
+
     MaterialTheme(
         colorScheme = colors,
         content = content
     )
 }
+

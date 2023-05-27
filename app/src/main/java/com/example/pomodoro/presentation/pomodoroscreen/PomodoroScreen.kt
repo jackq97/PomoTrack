@@ -107,7 +107,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         modifier = Modifier.size(250.dp),
                         strokeWidth = 10.dp,
                         progress = 1f,
-                        color = Color.DarkGray
+                        color = MaterialTheme.colorScheme.onSecondary,
                     )
 
                     Column(
@@ -117,34 +117,34 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                         when {
                             isRunningFocus -> {
-                                timerText = "Focus"
+                                timerText = stringResource(R.string.focus)
                                 remainingProgress = secondsToMinutesAndSeconds(focusRemainingTime)
                             }
 
                             isRunningRest -> {
-                                timerText = "Rest"
+                                timerText = stringResource(R.string.rest)
                                 remainingProgress = secondsToMinutesAndSeconds(restRemainingTime)
                             }
 
                             isRunningLongBreak -> {
-                                timerText = "Long Break"
+                                timerText = stringResource(R.string.long_break)
                                 remainingProgress =
                                     secondsToMinutesAndSeconds(longBreakRemainingTime)
                             }
 
                             else -> {
-                                timerText = "Focus"
+                                timerText = stringResource(R.string.focus)
                                 remainingProgress = "00:00"
                             }
                         }
 
-                        Text(
-                            text = remainingProgress,
+                        Text(text = remainingProgress,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 30.sp
                         )
 
-                        Text(
-                            text = timerText,
+                        Text(text = timerText,
+                            color = MaterialTheme.colorScheme.secondary,
                             fontSize = 20.sp
                         )
 
@@ -153,6 +153,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                     RoundedCircularProgressIndicator(
                         modifier = Modifier.size(250.dp),
                         strokeWidth = 10.dp,
+                        color = MaterialTheme.colorScheme.primary,
                         progress = if (isRunningFocus) {
                             focusProgress
                         } else if (isRunningLongBreak) {
@@ -170,7 +171,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                     .border(
                         shape = CircleShape,
                         width = 5.dp,
-                        color = Color.DarkGray
+                        color = MaterialTheme.colorScheme.onSecondary,
                     ),
                     onClick = {
 
@@ -194,6 +195,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                     Icon(
                         painter = painter,
+                        tint = MaterialTheme.colorScheme.,
                         contentDescription = null
                     )
                 }
@@ -220,12 +222,15 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                                 ),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold,
+                            color =  MaterialTheme.colorScheme.onSurface,
                             text = "${finishedCount}/$rounds"
                         )
 
                         TextButton(modifier = Modifier.padding(start = 2.dp),
                             onClick = { viewModel.resetTimer() }) {
-                            Text(text = stringResource(R.string.reset))
+                            Text(text = stringResource(R.string.reset),
+                                color = MaterialTheme.colorScheme.primary
+                                )
                         }
                     }
 
@@ -241,6 +246,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                             Icon(
                                 painter = painterResource(id = R.drawable.skip),
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 contentDescription = "skip session"
                             )
                         }
@@ -249,6 +255,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                             Icon(
                                 painter = painterResource(id = R.drawable.volume),
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 contentDescription = "sound"
                             )
                         }
