@@ -24,12 +24,13 @@ fun LineChart(
 
     val spacing = 100f
     val graphColor = MaterialTheme.colorScheme.primary
+    val textColor = MaterialTheme.colorScheme.onPrimaryContainer
     val transparentGraphColor = remember { graphColor.copy(alpha = 0.5f) }
     val density = LocalDensity.current
 
-    val textPaint = remember(density) {
+    val textPaint: Paint = remember(density) {
         Paint().apply {
-            color = android.graphics.Color.WHITE
+            color = textColor.hashCode()
             textAlign = Paint.Align.CENTER
             textSize = density.run { 12.sp.toPx() }
         }

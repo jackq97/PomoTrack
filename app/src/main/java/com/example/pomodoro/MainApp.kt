@@ -64,7 +64,7 @@ fun MainApp(){
         }
     }
 
-    AppTheme(darkTheme = true) {
+    AppTheme(darkTheme = false) {
 
         Scaffold(
             topBar = {

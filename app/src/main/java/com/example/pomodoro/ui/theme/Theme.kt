@@ -1,7 +1,7 @@
 package com.example.pomodoro.ui.theme
 
-import android.annotation.SuppressLint
 import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -41,7 +41,7 @@ private val DarkThemeColors = darkColorScheme(
 @Composable
 fun AppTheme(
     setDynamicColor: Boolean = true,
-    darkTheme: Boolean,
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ){
 

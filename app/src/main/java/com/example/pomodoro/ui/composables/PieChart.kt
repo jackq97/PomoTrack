@@ -28,7 +28,7 @@ import com.example.pomodoro.util.minutesToHoursAndMinutes
 fun PieChart(
     values: List<Float> = listOf(),
     colors: List<Color> = listOf(
-        MaterialTheme.colorScheme.onSecondary,
+        MaterialTheme.colorScheme.primary,
         MaterialTheme.colorScheme.onPrimaryContainer),
     legend: List<String> = listOf("Focus", "Rest"),
     size: Dp = 110.dp,
@@ -94,12 +94,12 @@ fun DisplayLegend(color: Color, legend: String, value: Float) {
 
         Text(
             text = legend,
-            color = Color.LightGray
+            color = color
         )
 
         Text(modifier = Modifier.padding(start = 4.dp),
             text = "( ${minutesToHoursAndMinutes(value.toInt())} )",
-            color = Color.White
+            color = color
             )
     }
 }

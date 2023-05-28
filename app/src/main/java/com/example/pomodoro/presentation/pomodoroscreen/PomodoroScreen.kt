@@ -81,7 +81,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
         longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
     rounds = settings.value.rounds.toInt()
 
-    AppTheme(darkTheme = true) {
+    AppTheme(darkTheme = false) {
 
         Surface(
             modifier = Modifier
