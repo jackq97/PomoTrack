@@ -49,7 +49,7 @@ fun LineRadioButtons(onClickOption : (String) -> Unit) {
 
         options.forEach { text ->
 
-            val color = if (text == selectedOption) MaterialTheme.colorScheme.primary else Color.Transparent
+            val color = if (text == selectedOption) MaterialTheme.colorScheme.tertiaryContainer else Color.Transparent
 
 
             Button(
@@ -68,7 +68,7 @@ fun LineRadioButtons(onClickOption : (String) -> Unit) {
             ) {
                 Text(text = text,
                     style = androidx.compose.material.MaterialTheme.typography.button,
-                    color = Color.LightGray
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
                     )
             }
 

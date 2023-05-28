@@ -28,8 +28,8 @@ import com.example.pomodoro.util.minutesToHoursAndMinutes
 fun PieChart(
     values: List<Float> = listOf(),
     colors: List<Color> = listOf(
-        MaterialTheme.colorScheme.primary,
-        MaterialTheme.colorScheme.inversePrimary),
+        MaterialTheme.colorScheme.onSecondary,
+        MaterialTheme.colorScheme.onPrimaryContainer),
     legend: List<String> = listOf("Focus", "Rest"),
     size: Dp = 110.dp,
     thickness: Dp = 15.dp

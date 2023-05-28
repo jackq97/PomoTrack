@@ -173,7 +173,9 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                     onClick = {
 
                         if (!isRunningFocus && !isRunningRest && !isRunningLongBreak) {
+
                             viewModel.startFocusTimer()
+
                         } else {
                             viewModel.pauseTimer()
                         }

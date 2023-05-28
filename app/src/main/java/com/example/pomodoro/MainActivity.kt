@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.pomodoro.presentation.infoscreen.InfoScreen
+import com.example.pomodoro.presentation.settingscreen.SettingsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -14,6 +15,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MainApp()
             //InfoScreen()
+            //SettingsScreen()
         }
     }
 }

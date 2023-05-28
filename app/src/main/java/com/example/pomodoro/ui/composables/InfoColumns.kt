@@ -49,7 +49,7 @@ fun InfoPomoColumn(modifier: Modifier,
     Box(modifier = modifier
         .padding(start = 10.dp)
         .clip(RoundedCornerShape(5.dp))
-        .background(color = MaterialTheme.colorScheme.secondaryContainer)
+        .background(color = MaterialTheme.colorScheme.primaryContainer)
         .width(180.dp)
         .height(100.dp)) {
 
@@ -62,7 +62,7 @@ fun InfoPomoColumn(modifier: Modifier,
             Text(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 15.sp,
                 text = label
             )
@@ -72,7 +72,7 @@ fun InfoPomoColumn(modifier: Modifier,
                 Text(
                     modifier = Modifier.padding(start = 10.dp),
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.LightGray,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     text = "${progress.absoluteValue} from yesterday"
                 )
 
@@ -89,7 +89,7 @@ fun InfoPomoColumn(modifier: Modifier,
             Text(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 22.sp,
                 text = "$value"
             )
@@ -117,7 +117,7 @@ fun InfoColumn(modifier: Modifier,
     Box(modifier = modifier
         .padding(start = 10.dp)
         .clip(RoundedCornerShape(5.dp))
-        .background(color = MaterialTheme.colorScheme.tertiaryContainer)
+        .background(color = MaterialTheme.colorScheme.primaryContainer)
         .width(180.dp)
         .height(100.dp)) {
 
@@ -130,7 +130,7 @@ fun InfoColumn(modifier: Modifier,
             Text(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 15.sp,
                 text = label
             )
@@ -140,7 +140,7 @@ fun InfoColumn(modifier: Modifier,
                 Text(
                     modifier = Modifier.padding(start = 10.dp),
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.LightGray,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     text = "${minutesToHoursAndMinutes(progress.absoluteValue)} from yesterday"
                 )
 
@@ -157,7 +157,7 @@ fun InfoColumn(modifier: Modifier,
             Text(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 22.sp,
                 text = minutesToHoursAndMinutes(value)
             )
@@ -172,7 +172,7 @@ fun InfoTotalColumn(modifier: Modifier,
 
     Box(modifier = modifier
         .clip(RoundedCornerShape(5.dp))
-        .background(color = MaterialTheme.colorScheme.tertiaryContainer)
+        .background(color = MaterialTheme.colorScheme.primaryContainer)
         .width(180.dp)
         .height(70.dp)) {
 
@@ -184,7 +184,7 @@ fun InfoTotalColumn(modifier: Modifier,
             Text(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 15.sp,
                 text = label
             )
@@ -194,7 +194,7 @@ fun InfoTotalColumn(modifier: Modifier,
             Text(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 22.sp,
                 text = value
             )

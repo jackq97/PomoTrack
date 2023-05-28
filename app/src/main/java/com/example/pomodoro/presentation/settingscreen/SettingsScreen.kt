@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Button
-import androidx.compose.material.Surface
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,6 +36,7 @@ import com.example.pomodoro.model.local.Settings
 import com.example.pomodoro.ui.composables.SettingsSliderText
 import com.example.pomodoro.ui.composables.SettingsText
 import com.example.pomodoro.ui.composables.SliderComponent
+import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.convertMinutesToHoursAndMinutes
 import com.example.pomodoro.util.floatToTime
 import com.ramcosta.composedestinations.annotation.Destination
@@ -52,21 +57,26 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     longBreakSliderPosition = settings.value.longRestDur
     noOfRoundsSliderPosition = settings.value.rounds
 
-    Surface(
+    AppTheme(darkTheme = true) {
+
+        Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(color = MaterialTheme.colorScheme.surface)
         ) {
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-                Text(modifier = Modifier.padding(top = 8.dp),
-                    text = stringResource(R.string.timer),
-                    fontSize = 25.sp
-                )
+            Column(modifier = Modifier,
+                horizontalAlignment = Alignment.CenterHorizontally) {
 
                 SettingsText(label = stringResource(R.string.focus))
-                SettingsSliderText(label = convertMinutesToHoursAndMinutes(floatToTime(focusSliderPosition)))
+
+                SettingsSliderText(
+                    label = convertMinutesToHoursAndMinutes(
+                        floatToTime(
+                            focusSliderPosition
+                        )
+                    )
+                )
 
                 SliderComponent(
                     value = focusSliderPosition,
@@ -78,7 +88,13 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 )
 
                 SettingsText(label = stringResource(R.string.short_break))
-                SettingsSliderText(label = convertMinutesToHoursAndMinutes(floatToTime(breakSliderPosition)) )
+                SettingsSliderText(
+                    label = convertMinutesToHoursAndMinutes(
+                        floatToTime(
+                            breakSliderPosition
+                        )
+                    )
+                )
 
                 SliderComponent(
                     value = breakSliderPosition,
@@ -90,7 +106,13 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 )
 
                 SettingsText(label = stringResource(R.string.long_break))
-                SettingsSliderText(label = convertMinutesToHoursAndMinutes(floatToTime(longBreakSliderPosition)) )
+                SettingsSliderText(
+                    label = convertMinutesToHoursAndMinutes(
+                        floatToTime(
+                            longBreakSliderPosition
+                        )
+                    )
+                )
 
                 SliderComponent(
                     value = longBreakSliderPosition,
@@ -113,20 +135,22 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     maxValue = 10f
                 )
 
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
 
                     Button(onClick = {
                         viewModel.saveSettings(
-                            Settings(focusDur = focusSliderPosition,
-                            restDur = breakSliderPosition,
-                            longRestDur = longBreakSliderPosition,
-                            rounds = noOfRoundsSliderPosition
-
-                        )) }){
+                            Settings(
+                                focusDur = focusSliderPosition,
+                                restDur = breakSliderPosition,
+                                longRestDur = longBreakSliderPosition,
+                                rounds = noOfRoundsSliderPosition))
+                    }
+                    ){
 
                         Text(text = stringResource(R.string.save_data))
                     }
@@ -135,12 +159,15 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
 
                     TextButton(modifier = Modifier,
                         onClick = { /*TODO*/ }) {
-                        Text(text = stringResource(R.string.reset_defaults))
+                        Text(text = stringResource(R.string.reset_defaults),
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
 
             }
         }
+    }
 }
 
 @Preview

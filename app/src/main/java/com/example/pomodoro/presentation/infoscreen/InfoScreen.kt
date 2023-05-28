@@ -55,7 +55,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()) {
     val upperValue = lineData.value.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
     val lowerValue = lineData.value.minOfOrNull { it.second }?.toInt() ?: 0
 
-    AppTheme(darkTheme = false) {
+    AppTheme(darkTheme = true) {
 
         Surface(
             modifier = Modifier.fillMaxSize()
@@ -111,7 +111,6 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()) {
                     )
                 }
 
-                // TODO: this box is reusable make it a function
                 Box(
                     modifier = Modifier
                         .padding(
@@ -122,7 +121,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()) {
                         .clip(RoundedCornerShape(5.dp))
                         .fillMaxWidth()
                         .height(270.dp)
-                        .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                        .background(color = MaterialTheme.colorScheme.primaryContainer)
                 ) {
 
                     Column(
@@ -150,7 +149,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()) {
                         .clip(RoundedCornerShape(5.dp))
                         .fillMaxWidth()
                         .height(290.dp)
-                        .background(Color.DarkGray)
+                        .background(color = MaterialTheme.colorScheme.primaryContainer)
                 ) {
 
                     Column(
@@ -158,9 +157,9 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()) {
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+
                         LineRadioButtons {
                             viewModel.getLineDataBySortOrder(sortOrder = it)
-                            //Log.d("line data info", "InfoScreen: ${lineData.value}")
                         }
 
                         Spacer(modifier = Modifier.height(30.dp))

@@ -18,9 +18,9 @@ fun SliderComponent(
 ) {
 
     val customSliderColors = SliderDefaults.colors(
-        activeTrackColor = MaterialTheme.colorScheme.inversePrimary, // Set your desired color for the active track
-        inactiveTrackColor = Color.LightGray, // Set your desired color for the inactive track
-        thumbColor = MaterialTheme.colorScheme.primary // Set your desired color for the thumb
+        activeTrackColor = MaterialTheme.colorScheme.primaryContainer, // Set your desired color for the active track
+        inactiveTrackColor = MaterialTheme.colorScheme.secondary, // Set your desired color for the inactive track
+        thumbColor = MaterialTheme.colorScheme.tertiary // Set your desired color for the thumb
     )
 
     Slider(

@@ -17,13 +17,14 @@ fun SettingsSliderText(
     label: String = "25:00"
 ) {
     Box(modifier = Modifier
-        .background(color = MaterialTheme.colorScheme.inversePrimary,
+        .background(color = MaterialTheme.colorScheme.primaryContainer,
             shape = RoundedCornerShape(12.dp))
     ) {
         Text(
             modifier = Modifier.padding(8.dp),
             text = label,
-            fontSize = 15.sp
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
 }
