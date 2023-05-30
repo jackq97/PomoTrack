@@ -8,8 +8,11 @@ val FOCUS_SLIDER = floatPreferencesKey("focus_slider")
 val BREAK_SLIDER = floatPreferencesKey("break_slider")
 val LONG_SLIDER = floatPreferencesKey("long_slider")
 val ROUND_SLIDER = floatPreferencesKey("round_slider")
+val VOLUME_SLIDER = floatPreferencesKey("volume_slider")
 
 interface Abstract {
     suspend fun saveSettings(settings: Settings)
     fun getSettings(): Flow<Settings>
+    suspend fun saveVolumeSettings(volume: Float)
+    fun getVolumeSettings(): Flow<Float>
 }

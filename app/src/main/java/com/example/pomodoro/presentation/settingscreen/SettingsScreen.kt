@@ -1,6 +1,5 @@
 package com.example.pomodoro.presentation.settingscreen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -144,7 +143,8 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                                 focusDur = focusSliderPosition,
                                 restDur = breakSliderPosition,
                                 longRestDur = longBreakSliderPosition,
-                                rounds = noOfRoundsSliderPosition))
+                                rounds = noOfRoundsSliderPosition,
+                                ))
                     }
                     ){
 

@@ -156,5 +156,17 @@ class PomodoroRepository @Inject constructor(
             abstract.saveSettings(settings)
         }
     }
+
+    fun getVolume() = abstract.getVolumeSettings().stateIn(
+        scope = myScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = 1f
+    )
+    fun saveVolume(volume: Float) {
+        myScope.launch {
+            abstract.saveVolumeSettings(volume = volume)
+        }
+    }
+
 }
 

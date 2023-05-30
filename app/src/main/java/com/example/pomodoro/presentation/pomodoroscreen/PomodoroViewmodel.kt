@@ -1,11 +1,9 @@
 package com.example.pomodoro.presentation.pomodoroscreen
 
-import android.media.MediaPlayer
 import android.os.CountDownTimer
-import androidx.compose.ui.platform.LocalContext
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pomodoro.R
 import com.example.pomodoro.model.local.Duration
 import com.example.pomodoro.repository.PomodoroRepository
 import com.example.pomodoro.util.floatToTime
@@ -56,11 +54,17 @@ class PomodoroViewModel @Inject constructor(
     val finishedCount: StateFlow<Int> = _finishedCount
 
     val settings = repository.getSettings()
+    val getVolume = repository.getVolume()
 
     var focusDuration: Long = 0L
     var breakDuration: Long = 0L
     var longBreakDuration: Long = 0L
     var roundsDuration: Int = 0
+
+    fun saveVolume(volume: Float) {
+        Log.d("saved", "saveVolume: actually saved")
+        repository.saveVolume(volume = volume)
+    }
 
     fun upsert(focusDuration: Int,
                restDuration: Int,

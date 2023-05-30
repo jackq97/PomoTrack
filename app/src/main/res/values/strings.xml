@@ -15,4 +15,7 @@
     <string name="reset">Reset</string>
     <string name="rest">Rest</string>
     <string name="pomodoro">Pomodoro</string>
+    <string name="default_time">00:00</string>
+    <string name="skip_session">skip session</string>
+    <string name="sound">sound</string>
 </resources>

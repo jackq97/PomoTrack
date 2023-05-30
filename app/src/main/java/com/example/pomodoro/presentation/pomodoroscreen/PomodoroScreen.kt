@@ -1,8 +1,13 @@
 package com.example.pomodoro.presentation.pomodoroscreen
 
 import android.media.MediaPlayer
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -26,14 +31,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +63,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
     val settings = viewModel.settings.collectAsState()
+    val volume = viewModel.getVolume.collectAsState()
 
     val focusRemainingTime by viewModel.remainingFocusTime.collectAsState()
     val restRemainingTime by viewModel.remainingRestTime.collectAsState()
@@ -75,28 +82,25 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     var focusSettingDur by remember { mutableFloatStateOf(0f) }
     var restSettingDur by remember { mutableFloatStateOf(0f) }
     var longRestSettingDur by remember { mutableFloatStateOf(0f) }
-    var rounds by remember { mutableStateOf(0) }
+    var rounds by remember { mutableIntStateOf(0) }
 
     var isSliderVisible by remember { mutableStateOf(false) }
-    var sliderPosition by remember { mutableStateOf(0f) }
+    var volumeSliderPosition by remember { mutableFloatStateOf(0f) }
 
-    val animatedSliderPosition by animateFloatAsState(
-        targetValue = sliderPosition,
-        animationSpec = tween(durationMillis = 500)
-    )
+    volumeSliderPosition = volume.value
 
     val mContext = LocalContext.current
     val mMediaPlayer = MediaPlayer.create(mContext, R.raw.tick)
 
     var painter: Painter
+    var volumePainter: Painter
 
     focusSettingDur = settings.value.focusDur
     restSettingDur = settings.value.restDur
     longRestSettingDur = settings.value.longRestDur
     focusProgress = focusRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()
     restProgress = restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()
-    longBreakProgress =
-        longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
+    longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
     rounds = settings.value.rounds.toInt()
 
     viewModel.onTickRest = {
@@ -154,7 +158,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                             else -> {
                                 timerText = stringResource(R.string.focus)
-                                remainingProgress = "00:00"
+                                remainingProgress = stringResource(R.string.default_time)
                             }
                         }
 
@@ -223,6 +227,8 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                 }
                 
                 Spacer(modifier = Modifier.height(40.dp))
+
+                val density = LocalDensity.current
                 
                 Row(
                     
@@ -232,9 +238,26 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                     horizontalArrangement = Arrangement.End
                 
                 ) {
-                    if (isSliderVisible) {
-                        AnimatedSliderVertical()
-                    } 
+                    AnimatedVisibility(visible = isSliderVisible,
+                        enter = slideInVertically {
+                            // Slide in from 40 dp from the top.
+                            with(density) { -40.dp.roundToPx() }
+                        } + expandVertically(
+                            // Expand from the top.
+                            expandFrom = Alignment.Top
+                        ) + fadeIn(
+                            // Fade in with the initial alpha of 0.3f.
+                            initialAlpha = 0.3f
+                        ),
+                        exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                    ) {
+
+                        AnimatedSliderVertical(value = volumeSliderPosition,
+                            onValueChange = {
+                                volumeSliderPosition = it
+                                viewModel.saveVolume(volumeSliderPosition)
+                            })
+                    }
                 }
 
                 Row(
@@ -282,8 +305,16 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                             Icon(
                                 painter = painterResource(id = R.drawable.skip),
                                 tint = MaterialTheme.colorScheme.onSurface,
-                                contentDescription = "skip session"
+                                contentDescription = stringResource(R.string.skip_session)
                             )
+                        }
+
+                        volumePainter = if (volumeSliderPosition == 0F) {
+
+                            painterResource(id = R.drawable.volume_off)
+                        } else {
+
+                            painterResource(id = R.drawable.volume)
                         }
 
                         IconButton(onClick = {
@@ -291,9 +322,9 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         }) {
 
                             Icon(
-                                painter = painterResource(id = R.drawable.volume),
+                                painter = volumePainter,
                                 tint = MaterialTheme.colorScheme.onSurface,
-                                contentDescription = "sound"
+                                contentDescription = stringResource(R.string.sound)
                             )
                         }
                     }
