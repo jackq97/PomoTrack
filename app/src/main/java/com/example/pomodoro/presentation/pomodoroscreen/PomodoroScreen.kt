@@ -1,5 +1,8 @@
 package com.example.pomodoro.presentation.pomodoroscreen
 
+import android.media.MediaPlayer
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -22,12 +25,15 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
+import com.example.pomodoro.ui.composables.AnimatedSliderVertical
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
@@ -59,16 +66,27 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     val isRunningLongBreak by viewModel.isRunningLongBreak.collectAsState()
     val isPaused by viewModel.isPaused.collectAsState()
     val finishedCount by viewModel.finishedCount.collectAsState()
-    var focusProgress by remember { mutableStateOf(0f) }
-    var restProgress by remember { mutableStateOf(0f) }
-    var longBreakProgress by remember { mutableStateOf(0f) }
+    var focusProgress by remember { mutableFloatStateOf(0f) }
+    var restProgress by remember { mutableFloatStateOf(0f) }
+    var longBreakProgress by remember { mutableFloatStateOf(0f) }
     var remainingProgress by remember { mutableStateOf("") }
     var timerText by remember { mutableStateOf("") }
 
-    var focusSettingDur by remember { mutableStateOf(0f) }
-    var restSettingDur by remember { mutableStateOf(0f) }
-    var longRestSettingDur by remember { mutableStateOf(0f) }
+    var focusSettingDur by remember { mutableFloatStateOf(0f) }
+    var restSettingDur by remember { mutableFloatStateOf(0f) }
+    var longRestSettingDur by remember { mutableFloatStateOf(0f) }
     var rounds by remember { mutableStateOf(0) }
+
+    var isSliderVisible by remember { mutableStateOf(false) }
+    var sliderPosition by remember { mutableStateOf(0f) }
+
+    val animatedSliderPosition by animateFloatAsState(
+        targetValue = sliderPosition,
+        animationSpec = tween(durationMillis = 500)
+    )
+
+    val mContext = LocalContext.current
+    val mMediaPlayer = MediaPlayer.create(mContext, R.raw.tick)
 
     var painter: Painter
 
@@ -81,6 +99,10 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
         longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
     rounds = settings.value.rounds.toInt()
 
+    viewModel.onTickRest = {
+        mMediaPlayer.start()
+    }
+
     AppTheme(darkTheme = false) {
 
         Surface(
@@ -90,7 +112,8 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
         ) {
 
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -198,8 +221,21 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         contentDescription = null
                     )
                 }
-
-                Spacer(modifier = Modifier.height(130.dp))
+                
+                Spacer(modifier = Modifier.height(40.dp))
+                
+                Row(
+                    
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    horizontalArrangement = Arrangement.End
+                
+                ) {
+                    if (isSliderVisible) {
+                        AnimatedSliderVertical()
+                    } 
+                }
 
                 Row(
                     modifier = Modifier
@@ -250,7 +286,9 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                             )
                         }
 
-                        IconButton(onClick = { }) {
+                        IconButton(onClick = {
+                            isSliderVisible = !isSliderVisible
+                        }) {
 
                             Icon(
                                 painter = painterResource(id = R.drawable.volume),

@@ -55,7 +55,7 @@ fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()) {
     val upperValue = lineData.value.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
     val lowerValue = lineData.value.minOfOrNull { it.second }?.toInt() ?: 0
 
-    AppTheme(darkTheme = isSystemInDarkTheme()) {
+    AppTheme(darkTheme = false) {
 
         Surface(
             modifier = Modifier

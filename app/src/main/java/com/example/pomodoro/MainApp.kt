@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -71,7 +72,9 @@ fun MainApp(){
                 TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                 ),
-                    title = { Text(text = "Pomodoro") },
+                    title = { Text(text = stringResource(R.string.pomodoro),
+                        style = MaterialTheme.typography.headlineMedium
+                    ) },
                     navigationIcon = {
                         if (leftImageVector != null) {
                             IconButton(onClick = {
