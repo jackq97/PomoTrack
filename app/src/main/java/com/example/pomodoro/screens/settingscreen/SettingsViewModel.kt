@@ -1,4 +1,4 @@
-package com.example.pomodoro.presentation.settingscreen
+package com.example.pomodoro.screens.settingscreen
 
 import androidx.lifecycle.ViewModel
 import com.example.pomodoro.model.local.Settings

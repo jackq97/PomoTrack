@@ -1,4 +1,4 @@
-package com.example.pomodoro.presentation.pomodoroscreen
+package com.example.pomodoro.screens.pomodoroscreen
 
 import android.os.CountDownTimer
 import android.util.Log

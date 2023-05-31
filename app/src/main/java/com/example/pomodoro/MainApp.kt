@@ -1,6 +1,6 @@
 package com.example.pomodoro
 
-import androidx.compose.foundation.layout.padding
+import android.annotation.SuppressLint
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -12,32 +12,30 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.example.pomodoro.presentation.NavGraphs
-import com.example.pomodoro.presentation.destinations.InfoScreenDestination
-import com.example.pomodoro.presentation.destinations.SettingsScreenDestination
+import com.example.pomodoro.navigation.NavigationRoutes
 import com.example.pomodoro.ui.theme.AppTheme
-import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.navigation.navigate
+import com.example.pomodoro.util.SnackbarDemoAppState
+import com.example.pomodoro.util.rememberSnackbarDemoAppState
+import hu.benefanlabs.snackbardemo.ui.navigation.MyNavigation
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainApp(){
 
-    val navController = rememberNavController()
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val appState: SnackbarDemoAppState = rememberSnackbarDemoAppState()
+
+    val navBackStackEntry by appState.navController.currentBackStackEntryAsState()
 
     var leftImageVector: ImageVector? = null
     var rightImageVector: ImageVector? = null
@@ -68,6 +66,7 @@ fun MainApp(){
     AppTheme(darkTheme = false) {
 
         Scaffold(
+            scaffoldState = appState.scaffoldState,
             topBar = {
                 TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
@@ -79,9 +78,9 @@ fun MainApp(){
                         if (leftImageVector != null) {
                             IconButton(onClick = {
                                 if (!inScreenState.value) {
-                                    navController.navigate(SettingsScreenDestination)
+                                    appState.navController.navigate(NavigationRoutes.SettingsScreen.route)
                                 } else {
-                                    navController.popBackStack()
+                                    appState.navController.popBackStack()
                                 }
                             }) {
 
@@ -99,9 +98,9 @@ fun MainApp(){
                         if (rightImageVector != null) {
                             IconButton(onClick = {
                                 if (!inScreenState.value) {
-                                    navController.navigate(InfoScreenDestination)
+                                    appState.navController.navigate(NavigationRoutes.InfoScreen.route)
                                 } else {
-                                    navController.popBackStack()
+                                    appState.navController.popBackStack()
                                 }
                             }) {
 
@@ -118,11 +117,10 @@ fun MainApp(){
             },
             bottomBar = { },
             content = {
-                DestinationsNavHost(
-                    navController = navController,
-                    navGraph = NavGraphs.root,
-                    modifier = Modifier.padding(it)
-                )
+                MyNavigation(navController = appState.navController,
+                    showSnackbar = { message, duration ->
+                    appState.showSnackbar(message = message, duration = duration)
+                })
             })
     }
 }

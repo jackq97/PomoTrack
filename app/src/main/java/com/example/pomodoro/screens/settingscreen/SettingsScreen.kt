@@ -1,4 +1,4 @@
-package com.example.pomodoro.presentation.settingscreen
+package com.example.pomodoro.screens.settingscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -34,11 +35,10 @@ import com.example.pomodoro.ui.composables.SliderComponent
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.convertMinutesToHoursAndMinutes
 import com.example.pomodoro.util.floatToTime
-import com.ramcosta.composedestinations.annotation.Destination
 
-@Destination
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(),
+                   showSnackbar: (String, SnackbarDuration) -> Unit) {
 
     var focusSliderPosition by remember { mutableFloatStateOf(0f) }
     var breakSliderPosition by remember { mutableFloatStateOf(0f) }
@@ -138,6 +138,8 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 ) {
 
                     Button(onClick = {
+
+                        showSnackbar("Saved", SnackbarDuration.Short)
                         viewModel.saveSettings(
                             Settings(
                                 focusDur = focusSliderPosition,
@@ -156,6 +158,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     TextButton(modifier = Modifier,
                         onClick = {
 
+                            showSnackbar("Set to Defaults", SnackbarDuration.Short)
                             focusSliderPosition = 3.510038F
                             breakSliderPosition = 1.4549646F
                             longBreakSliderPosition = 1.9804868F

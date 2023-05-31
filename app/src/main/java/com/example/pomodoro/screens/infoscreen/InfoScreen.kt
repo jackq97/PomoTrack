@@ -1,7 +1,6 @@
-package com.example.pomodoro.presentation.infoscreen
+package com.example.pomodoro.screens.infoscreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,11 +35,9 @@ import com.example.pomodoro.ui.composables.radiobuttons.LineRadioButtons
 import com.example.pomodoro.ui.composables.radiobuttons.PieRadioButtons
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.minutesToHoursAndMinutes
-import com.ramcosta.composedestinations.annotation.Destination
 import kotlin.math.roundToInt
 
 
-@Destination
 @Composable
 fun InfoScreen(viewModel: InfoViewModel = hiltViewModel()) {
 

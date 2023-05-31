@@ -1,6 +1,7 @@
-package com.example.pomodoro.presentation.pomodoroscreen
+package com.example.pomodoro.screens.pomodoroscreen
 
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -53,12 +54,8 @@ import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import kotlin.math.roundToInt
 
-
-@RootNavGraph(start = true)
-@Destination
 @Composable
 fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
@@ -85,7 +82,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     var rounds by remember { mutableIntStateOf(0) }
 
     var isSliderVisible by remember { mutableStateOf(false) }
-    var volumeSliderPosition by remember { mutableFloatStateOf(0f) }
+    var volumeSliderPosition by remember { mutableFloatStateOf(0.0f) }
 
     volumeSliderPosition = volume.value
 
@@ -102,10 +99,6 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     restProgress = restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()
     longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
     rounds = settings.value.rounds.toInt()
-
-    viewModel.onTickRest = {
-        mMediaPlayer.start()
-    }
 
     AppTheme(darkTheme = false) {
 
@@ -199,17 +192,9 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                     ),
                     onClick = {
 
-                        if (!isRunningFocus && !isRunningRest && !isRunningLongBreak) {
-
-                            viewModel.startFocusTimer()
-
-                        } else {
-                            viewModel.pauseTimer()
-                        }
-
-                        if (isPaused) {
-                            viewModel.resumeTimer()
-                        }
+                        if (!isRunningFocus && !isRunningRest && !isRunningLongBreak) { viewModel.startFocusTimer()
+                        } else { viewModel.pauseTimer() }
+                        if (isPaused) { viewModel.resumeTimer() }
                     }) {
 
                     painter =
@@ -255,7 +240,14 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         AnimatedSliderVertical(value = volumeSliderPosition,
                             onValueChange = {
                                 volumeSliderPosition = it
+                                val roundedNumber = (volumeSliderPosition * 10f).roundToInt() / 10f
+                                Log.d("volume", "PomodoroScreen: $roundedNumber")
+                                mMediaPlayer.setVolume(roundedNumber, roundedNumber) // Update the MediaPlayer volume
                                 viewModel.saveVolume(volumeSliderPosition)
+                                //plays volume on tick
+                                viewModel.onTickRest = {
+                                    mMediaPlayer.start()
+                                }
                             })
                     }
                 }

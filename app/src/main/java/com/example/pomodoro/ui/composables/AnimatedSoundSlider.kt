@@ -43,7 +43,8 @@ fun AnimatedSliderVertical(
     ) {
         Slider(
             value = value,
-            onValueChange = onValueChange
+            onValueChange = onValueChange,
+            valueRange = 0.0f..1.0f // Set the value range from 0.0 to 1.0
         )
     }
 }
