@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Slider
+import androidx.compose.material.SliderDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
@@ -42,6 +44,11 @@ fun AnimatedSliderVertical(
         verticalArrangement = Arrangement.Bottom
     ) {
         Slider(
+            colors = SliderDefaults.colors(
+                activeTrackColor = MaterialTheme.colorScheme.primaryContainer, // Set your desired color for the active track
+                inactiveTrackColor = MaterialTheme.colorScheme.secondary, // Set your desired color for the inactive track
+                thumbColor = MaterialTheme.colorScheme.tertiary // Set your desired color for the thumb
+            ),
             value = value,
             onValueChange = onValueChange,
             valueRange = 0.0f..1.0f // Set the value range from 0.0 to 1.0

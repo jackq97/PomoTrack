@@ -21,11 +21,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.pomodoro.navigation.MyNavigation
 import com.example.pomodoro.navigation.NavigationRoutes
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.SnackbarDemoAppState
 import com.example.pomodoro.util.rememberSnackbarDemoAppState
-import hu.benefanlabs.snackbardemo.ui.navigation.MyNavigation
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
