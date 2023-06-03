@@ -51,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
 import com.example.pomodoro.ui.composables.AnimatedSliderVertical
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
+import com.example.pomodoro.ui.composables.ToggleLottieIcon
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
@@ -99,6 +100,15 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     restProgress = restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()
     longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
     rounds = settings.value.rounds.toInt()
+
+    var invokeAnimationTransition by remember { mutableStateOf(false) }
+
+    if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
+
+        // START
+    } else {
+        // PAUSE
+    }
 
     AppTheme(darkTheme = false) {
 
@@ -183,33 +193,26 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                IconButton(modifier = Modifier
-                    .size(80.dp)
-                    .border(
-                        shape = CircleShape,
-                        width = 5.dp,
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                    ),
+                ToggleLottieIcon(
+                    startAnimation = invokeAnimationTransition,
+                    iconModifier = Modifier
+                        .size(80.dp)
+                        .border(
+                            shape = CircleShape,
+                            width = 5.dp,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                        ),
+                    lottieModifier = Modifier.size(30.dp),
+                    res = R.raw.play_pause,
                     onClick = {
-
-                        if (!isRunningFocus && !isRunningRest && !isRunningLongBreak) { viewModel.startFocusTimer()
-                        } else { viewModel.pauseTimer() }
+                        if (!isRunningFocus && !isRunningRest && !isRunningLongBreak)
+                        { viewModel.startFocusTimer() }
+                        else
+                        { viewModel.pauseTimer() }
                         if (isPaused) { viewModel.resumeTimer() }
-                    }) {
-
-                    painter =
-                        if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
-                            painterResource(id = R.drawable.play)
-                        } else {
-                            painterResource(id = R.drawable.pause)
-                        }
-
-                    Icon(
-                        painter = painter,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        contentDescription = null
-                    )
-                }
+                              },
+                    animationSpeed = 5f
+                )
                 
                 Spacer(modifier = Modifier.height(40.dp))
 

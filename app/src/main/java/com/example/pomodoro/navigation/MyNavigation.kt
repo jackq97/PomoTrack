@@ -18,7 +18,9 @@ fun MyNavigation(
     navController: NavHostController,
     showSnackbar: (String, SnackbarDuration) -> Unit
 ) {
-
+    
+    val durationMilli = 500
+    
     AnimatedNavHost(
         navController = navController,
         startDestination = NavigationRoutes.PomodoroScreen.route
@@ -32,28 +34,28 @@ fun MyNavigation(
             enterTransition = {
                 when (initialState.destination.route) {
                     "pomodoro_screen" ->
-                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(800))
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(durationMilli))
                     else -> null
                 }
             },
             exitTransition = {
                 when (targetState.destination.route) {
                     "pomodoro_screen" ->
-                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(800))
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(durationMilli))
                     else -> null
                 }
             },
             popEnterTransition = {
                 when (initialState.destination.route) {
                     "pomodoro_screen" ->
-                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(800))
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(durationMilli))
                     else -> null
                 }
             },
             popExitTransition = {
                 when (targetState.destination.route) {
                     "pomodoro_screen" ->
-                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(800))
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(durationMilli))
                     else -> null
                 }
             }
@@ -65,28 +67,28 @@ fun MyNavigation(
             enterTransition = {
                 when (initialState.destination.route) {
                     "pomodoro_screen" ->
-                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(800))
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(durationMilli))
                     else -> null
                 }
             },
             exitTransition = {
                 when (targetState.destination.route) {
                     "pomodoro_screen" ->
-                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(800))
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(durationMilli))
                     else -> null
                 }
             },
             popEnterTransition = {
                 when (initialState.destination.route) {
                     "pomodoro_screen" ->
-                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(800))
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(durationMilli))
                     else -> null
                 }
             },
             popExitTransition = {
                 when (targetState.destination.route) {
                     "pomodoro_screen" ->
-                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(800))
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(durationMilli))
                     else -> null
                 }
             }
