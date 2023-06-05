@@ -1,5 +1,6 @@
 package com.example.pomodoro.ui.composables
 
+import android.util.Log
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,14 +23,11 @@ fun ToggleLottieIcon(
     res: Int,
     animationSpeed: Float = 2.5f,
     onClick: () -> Unit,
-    endReached: Boolean = false
-){
+    ){
 
     var isPlaying by remember { mutableStateOf(false) }
     var animationEndReached by remember { mutableStateOf(false) }
     var isEnabled by remember { mutableStateOf(true) }
-
-    //animationEndReached = endReached
 
     val composition by rememberLottieComposition(
         spec = LottieCompositionSpec.RawRes(res)
@@ -64,6 +62,60 @@ fun ToggleLottieIcon(
         if (isPlaying &&
             (progress == 1.0f || progress == 0.0f)
         ){
+            isPlaying = false
+            isEnabled = true
+            animationEndReached = !animationEndReached
+        }
+    }
+}
+
+@Composable
+fun TestLottieIcon(
+    iconModifier: Modifier = Modifier,
+    lottieModifier: Modifier = Modifier,
+    startAnimation: Boolean,
+    playReverse: Boolean = false,
+    res: Int,
+    animationSpeed: Float = 2.5f,
+    onClick: () -> Unit,
+) {
+
+    Log.d("ToggleLottieIcon", "Composable recomposed")
+
+    var isPlaying by remember { mutableStateOf(false) }
+    var animationEndReached by remember { mutableStateOf(false) }
+    var isEnabled by remember { mutableStateOf(true) }
+
+    val composition by rememberLottieComposition(
+        spec = LottieCompositionSpec.RawRes(res)
+    )
+
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        restartOnPlay = false,
+        isPlaying = isPlaying || startAnimation,
+        speed = if (playReverse) -animationSpeed else animationSpeed,
+        clipSpec = LottieClipSpec.Progress(0f, 1f)
+    )
+
+    IconButton(
+        modifier = iconModifier,
+        enabled = isEnabled,
+        onClick = {
+            isPlaying = true
+            isEnabled = false
+            onClick()
+        }
+    ) {
+        LottieAnimation(
+            modifier = lottieModifier,
+            composition = composition,
+            progress = { progress }
+        )
+    }
+
+    LaunchedEffect(progress) {
+        if (isPlaying && (progress == 1.0f || progress == 0.0f)) {
             isPlaying = false
             isEnabled = true
             animationEndReached = !animationEndReached

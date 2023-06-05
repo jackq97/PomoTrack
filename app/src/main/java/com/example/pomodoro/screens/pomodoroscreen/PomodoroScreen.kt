@@ -51,7 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
 import com.example.pomodoro.ui.composables.AnimatedSliderVertical
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
-import com.example.pomodoro.ui.composables.ToggleLottieIcon
+import com.example.pomodoro.ui.composables.TestLottieIcon
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
@@ -101,16 +101,21 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
     rounds = settings.value.rounds.toInt()
 
-    var invokeAnimationTransition by remember { mutableStateOf(false) }
+    var startPlaying by remember { mutableStateOf(false) }
+    var endReached by remember { mutableStateOf(false) }
 
     if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
-
         // START
+        endReached = true
+        Log.d("TAG", "PomodoroScreen: we should pause")
     } else {
-        // PAUSE
+        //PAUSE
+        startPlaying = true
+        Log.d("TAG", "PomodoroScreen: we should play")
+        Log.d("TAG", "PomodoroScreen: $startPlaying")
     }
 
-    AppTheme(darkTheme = false) {
+    AppTheme() {
 
         Surface(
             modifier = Modifier
@@ -193,8 +198,20 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                ToggleLottieIcon(
-                    startAnimation = invokeAnimationTransition,
+                /*if (!isRunningFocus && !isRunningRest && !isRunningLongBreak) {
+                    invokeAnimationTransition = true
+                    viewModel.startFocusTimer()
+                    animationEndReached = true
+                } else {
+                    viewModel.pauseTimer()
+                }
+                if (isPaused) {
+                    viewModel.resumeTimer()
+                }*/
+
+                Log.d("TAG", "PomodoroScreen: close to lottie icon $startPlaying")
+
+                TestLottieIcon(
                     iconModifier = Modifier
                         .size(80.dp)
                         .border(
@@ -204,16 +221,17 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         ),
                     lottieModifier = Modifier.size(30.dp),
                     res = R.raw.play_pause,
+                    animationSpeed = 5f,
                     onClick = {
-                        if (!isRunningFocus && !isRunningRest && !isRunningLongBreak)
-                        { viewModel.startFocusTimer() }
-                        else
-                        { viewModel.pauseTimer() }
+                        if (!isRunningFocus && !isRunningRest && !isRunningLongBreak) {
+                            viewModel.startFocusTimer()
+                        } else { viewModel.pauseTimer() }
                         if (isPaused) { viewModel.resumeTimer() }
                               },
-                    animationSpeed = 5f
-                )
-                
+                    startAnimation = startPlaying,
+                    playReverse = endReached,
+                    )
+
                 Spacer(modifier = Modifier.height(40.dp))
 
                 val density = LocalDensity.current
@@ -314,6 +332,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                         IconButton(onClick = {
                             isSliderVisible = !isSliderVisible
+                            endReached = true
                         }) {
 
                             Icon(
