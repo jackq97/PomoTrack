@@ -1,6 +1,5 @@
 package com.example.pomodoro.ui.composables
 
-import android.util.Log
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,13 +16,12 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
 fun ToggleLottieIcon(
-    iconModifier: Modifier = Modifier,
+    modifier: Modifier = Modifier,
     lottieModifier: Modifier = Modifier,
     startAnimation: Boolean,
     res: Int,
     animationSpeed: Float = 2.5f,
-    onClick: () -> Unit,
-    ){
+    onClick: () -> Unit){
 
     var isPlaying by remember { mutableStateOf(false) }
     var animationEndReached by remember { mutableStateOf(false) }
@@ -42,7 +40,7 @@ fun ToggleLottieIcon(
     )
 
     IconButton(
-        modifier = iconModifier,
+        modifier = modifier,
         enabled = isEnabled,
         onClick = {
             isPlaying = true
@@ -70,20 +68,16 @@ fun ToggleLottieIcon(
 }
 
 @Composable
-fun TestLottieIcon(
-    iconModifier: Modifier = Modifier,
+fun conditionalLottieIcon(
+    modifier: Modifier = Modifier,
     lottieModifier: Modifier = Modifier,
     startAnimation: Boolean,
-    playReverse: Boolean = false,
+    playReverse: Boolean,
     res: Int,
     animationSpeed: Float = 2.5f,
     onClick: () -> Unit,
 ) {
 
-    Log.d("ToggleLottieIcon", "Composable recomposed")
-
-    var isPlaying by remember { mutableStateOf(false) }
-    var animationEndReached by remember { mutableStateOf(false) }
     var isEnabled by remember { mutableStateOf(true) }
 
     val composition by rememberLottieComposition(
@@ -92,19 +86,18 @@ fun TestLottieIcon(
 
     val progress by animateLottieCompositionAsState(
         composition = composition,
-        restartOnPlay = false,
-        isPlaying = isPlaying || startAnimation,
+        restartOnPlay = startAnimation,
+        isPlaying = startAnimation,
         speed = if (playReverse) -animationSpeed else animationSpeed,
         clipSpec = LottieClipSpec.Progress(0f, 1f)
     )
 
     IconButton(
-        modifier = iconModifier,
+        modifier = modifier,
         enabled = isEnabled,
         onClick = {
-            isPlaying = true
-            isEnabled = false
             onClick()
+            isEnabled = false
         }
     ) {
         LottieAnimation(
@@ -115,10 +108,8 @@ fun TestLottieIcon(
     }
 
     LaunchedEffect(progress) {
-        if (isPlaying && (progress == 1.0f || progress == 0.0f)) {
-            isPlaying = false
+        if ((progress == 1.0f || progress == 0.0f)){
             isEnabled = true
-            animationEndReached = !animationEndReached
         }
     }
 }

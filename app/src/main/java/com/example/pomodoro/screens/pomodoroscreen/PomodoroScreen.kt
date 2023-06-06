@@ -1,7 +1,6 @@
 package com.example.pomodoro.screens.pomodoroscreen
 
 import android.media.MediaPlayer
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -51,7 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
 import com.example.pomodoro.ui.composables.AnimatedSliderVertical
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
-import com.example.pomodoro.ui.composables.TestLottieIcon
+import com.example.pomodoro.ui.composables.conditionalLottieIcon
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
@@ -90,7 +89,6 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     val mContext = LocalContext.current
     val mMediaPlayer = MediaPlayer.create(mContext, R.raw.tick)
 
-    var painter: Painter
     var volumePainter: Painter
 
     focusSettingDur = settings.value.focusDur
@@ -103,17 +101,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
     var startPlaying by remember { mutableStateOf(false) }
     var endReached by remember { mutableStateOf(false) }
-
-    if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
-        // START
-        endReached = true
-        Log.d("TAG", "PomodoroScreen: we should pause")
-    } else {
-        //PAUSE
-        startPlaying = true
-        Log.d("TAG", "PomodoroScreen: we should play")
-        Log.d("TAG", "PomodoroScreen: $startPlaying")
-    }
+    var buttonPressed by remember { mutableStateOf(false) }
 
     AppTheme() {
 
@@ -198,21 +186,17 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                /*if (!isRunningFocus && !isRunningRest && !isRunningLongBreak) {
-                    invokeAnimationTransition = true
-                    viewModel.startFocusTimer()
-                    animationEndReached = true
+                if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
+                    // START
+                    if (buttonPressed) endReached = true
                 } else {
-                    viewModel.pauseTimer()
+                    //PAUSE
+                    startPlaying = true
+                    endReached = false
                 }
-                if (isPaused) {
-                    viewModel.resumeTimer()
-                }*/
 
-                Log.d("TAG", "PomodoroScreen: close to lottie icon $startPlaying")
-
-                TestLottieIcon(
-                    iconModifier = Modifier
+                conditionalLottieIcon(
+                    modifier = Modifier
                         .size(80.dp)
                         .border(
                             shape = CircleShape,
@@ -223,13 +207,14 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                     res = R.raw.play_pause,
                     animationSpeed = 5f,
                     onClick = {
+                        buttonPressed = true
                         if (!isRunningFocus && !isRunningRest && !isRunningLongBreak) {
                             viewModel.startFocusTimer()
                         } else { viewModel.pauseTimer() }
                         if (isPaused) { viewModel.resumeTimer() }
                               },
                     startAnimation = startPlaying,
-                    playReverse = endReached,
+                    playReverse = endReached
                     )
 
                 Spacer(modifier = Modifier.height(40.dp))
@@ -262,7 +247,6 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                             onValueChange = {
                                 volumeSliderPosition = it
                                 val roundedNumber = (volumeSliderPosition * 10f).roundToInt() / 10f
-                                Log.d("volume", "PomodoroScreen: $roundedNumber")
                                 mMediaPlayer.setVolume(roundedNumber, roundedNumber) // Update the MediaPlayer volume
                                 viewModel.saveVolume(volumeSliderPosition)
                                 //plays volume on tick
