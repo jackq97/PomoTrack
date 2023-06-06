@@ -105,14 +105,14 @@ fun MainApp(){
                                 buttonPressed = true
                                 if (!inScreenState.value) {
                                     appState.navController.navigate(NavigationRoutes.InfoScreen.route)
-                                }
-                                      },
+                                } },
                             animationSpeed = 2f,
                             scale = 6f
                         )
                     }
                 )
             },
+
             bottomBar = { },
 
             content = {

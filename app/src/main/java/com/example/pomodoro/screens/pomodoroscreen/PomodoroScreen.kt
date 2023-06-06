@@ -52,11 +52,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
 import com.example.pomodoro.ui.composables.AnimatedSliderVertical
+import com.example.pomodoro.ui.composables.CircularProgressbar1
 import com.example.pomodoro.ui.composables.ConditionalLottieIcon
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
+import kotlin.math.round
 import kotlin.math.roundToInt
 
 @Composable
@@ -100,11 +102,9 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     focusSettingDur = settings.value.focusDur
     restSettingDur = settings.value.restDur
     longRestSettingDur = settings.value.longRestDur
-    focusProgress = focusRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()
-    Log.d("TAG", "focus time: $focusRemainingTime")
-    Log.d("TAG", "focus progress: $focusProgress")
-    restProgress = restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()
-    longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
+    focusProgress = (focusRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()) * 100
+    restProgress = (restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()) * 100
+    longBreakProgress = (longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()) * 100
     rounds = settings.value.rounds.toInt()
 
     var startPlaying by remember { mutableStateOf(false) }
@@ -183,6 +183,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                                     text = remainingProgress,
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary,
+                                    fontSize = 40.sp
                                 )
                             }
                         }
@@ -190,6 +191,8 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         Text(text = timerText,
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.secondary,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 20.sp
                         )
                     }
 
@@ -199,13 +202,16 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         isRunningRest -> { restProgress }
                         else -> { 1f }
                     }
-
-                    RoundedCircularProgressIndicator(
-                        modifier = Modifier.size(250.dp),
-                        strokeWidth = 10.dp,
-                        color = MaterialTheme.colorScheme.primary,
-                        progress = if (showProgress == 0.0f) 1f else showProgress
-                    )
+                    val roundedValue = round(showProgress)
+                    //
+                    Log.d("TAG", "PomodoroScreen: $roundedValue")
+                    CircularProgressbar1(
+                        size = 250.dp,
+                        foregroundIndicatorColor = MaterialTheme.colorScheme.primary,
+                        indicatorThickness = 10.dp,
+                        dataUsage = if (roundedValue == 1.0f) 100f else roundedValue,
+                        animationDuration = 1000,
+                        )
                 }
 
                 Spacer(modifier = Modifier.height(40.dp))
