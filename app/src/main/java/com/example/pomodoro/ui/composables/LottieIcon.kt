@@ -16,6 +16,56 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
+fun ConditionalLottieIcon(
+    modifier: Modifier = Modifier,
+    lottieModifier: Modifier = Modifier,
+    playAnimation: Boolean,
+    playReverse: Boolean,
+    res: Int,
+    animationSpeed: Float = 2.5f,
+    onClick: () -> Unit,
+    scale: Float = 1f,
+) {
+
+    var isEnabled by remember { mutableStateOf(true) }
+
+    val composition by rememberLottieComposition(
+        spec = LottieCompositionSpec.RawRes(res)
+    )
+
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        restartOnPlay = playAnimation,
+        isPlaying = playAnimation,
+        speed = if (playReverse) -animationSpeed else animationSpeed,
+        clipSpec = LottieClipSpec.Progress(0f, 1f)
+    )
+
+    IconButton(
+        modifier = modifier,
+        enabled = isEnabled,
+        onClick = {
+            onClick()
+            isEnabled = false
+        }
+    ) {
+
+        LottieAnimation(
+            modifier = lottieModifier
+                .scale(scale),
+            composition = composition,
+            progress = { progress }
+        )
+    }
+
+    LaunchedEffect(progress) {
+        if ((progress == 1.0f || progress == 0.0f)){
+            isEnabled = true
+        }
+    }
+}
+
+/*@Composable
 fun ToggleLottieIcon(
     modifier: Modifier = Modifier,
     lottieModifier: Modifier = Modifier,
@@ -66,53 +116,4 @@ fun ToggleLottieIcon(
             animationEndReached = !animationEndReached
         }
     }
-}
-
-@Composable
-fun ConditionalLottieIcon(
-    modifier: Modifier = Modifier,
-    lottieModifier: Modifier = Modifier,
-    playAnimation: Boolean,
-    playReverse: Boolean,
-    res: Int,
-    animationSpeed: Float = 2.5f,
-    onClick: () -> Unit,
-    scale: Float = 1f,
-) {
-
-    var isEnabled by remember { mutableStateOf(true) }
-
-    val composition by rememberLottieComposition(
-        spec = LottieCompositionSpec.RawRes(res)
-    )
-
-    val progress by animateLottieCompositionAsState(
-        composition = composition,
-        restartOnPlay = playAnimation,
-        isPlaying = playAnimation,
-        speed = if (playReverse) -animationSpeed else animationSpeed,
-        clipSpec = LottieClipSpec.Progress(0f, 1f)
-    )
-
-    IconButton(
-        modifier = modifier
-            .scale(scale),
-        enabled = isEnabled,
-        onClick = {
-            onClick()
-            isEnabled = false
-        }
-    ) {
-        LottieAnimation(
-            modifier = lottieModifier,
-            composition = composition,
-            progress = { progress }
-        )
-    }
-
-    LaunchedEffect(progress) {
-        if ((progress == 1.0f || progress == 0.0f)){
-            isEnabled = true
-        }
-    }
-}
+}*/

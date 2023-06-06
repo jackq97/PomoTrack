@@ -6,7 +6,6 @@ import androidx.compose.material.SliderDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -18,8 +17,8 @@ fun SliderComponent(
 ) {
 
     val customSliderColors = SliderDefaults.colors(
-        activeTrackColor = MaterialTheme.colorScheme.primaryContainer, // Set your desired color for the active track
-        inactiveTrackColor = MaterialTheme.colorScheme.secondary, // Set your desired color for the inactive track
+        activeTrackColor = MaterialTheme.colorScheme.secondary, // Set your desired color for the active track
+        inactiveTrackColor = MaterialTheme.colorScheme.primaryContainer, // Set your desired color for the inactive track
         thumbColor = MaterialTheme.colorScheme.tertiary // Set your desired color for the thumb
     )
 

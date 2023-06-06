@@ -52,7 +52,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(),
     longBreakSliderPosition = settings.value.longRestDur
     noOfRoundsSliderPosition = settings.value.rounds
 
-    AppTheme(darkTheme = true) {
+    AppTheme() {
 
         Surface(
             modifier = Modifier

@@ -45,8 +45,8 @@ fun AnimatedSliderVertical(
     ) {
         Slider(
             colors = SliderDefaults.colors(
-                activeTrackColor = MaterialTheme.colorScheme.primaryContainer, // Set your desired color for the active track
-                inactiveTrackColor = MaterialTheme.colorScheme.secondary, // Set your desired color for the inactive track
+                activeTrackColor = MaterialTheme.colorScheme.secondary, // Set your desired color for the active track
+                inactiveTrackColor = MaterialTheme.colorScheme.primaryContainer, // Set your desired color for the inactive track
                 thumbColor = MaterialTheme.colorScheme.tertiary // Set your desired color for the thumb
             ),
             value = value,

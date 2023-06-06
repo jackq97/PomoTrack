@@ -73,6 +73,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     var focusProgress by remember { mutableFloatStateOf(0f) }
     var restProgress by remember { mutableFloatStateOf(0f) }
     var longBreakProgress by remember { mutableFloatStateOf(0f) }
+    var showProgress by remember { mutableFloatStateOf(0f) }
     var remainingProgress by remember { mutableStateOf("") }
     var timerText by remember { mutableStateOf("") }
 
@@ -87,6 +88,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     volumeSliderPosition = volume.value
 
     val mContext = LocalContext.current
+    val density = LocalDensity.current
     val mMediaPlayer = MediaPlayer.create(mContext, R.raw.tick)
 
     var volumePainter: Painter
@@ -154,33 +156,34 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                             else -> {
                                 timerText = stringResource(R.string.focus)
-                                remainingProgress = stringResource(R.string.default_time)
+                                remainingProgress = "${floatToTime(focusSettingDur)}:00"
                             }
                         }
 
                         Text(text = remainingProgress,
+                            style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
-                            fontSize = 30.sp
                         )
 
                         Text(text = timerText,
+                            style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.secondary,
-                            fontSize = 20.sp
                         )
 
+                    }
+
+                    showProgress = when {
+                        isRunningFocus -> { focusProgress }
+                        isRunningLongBreak -> { longBreakProgress }
+                        isRunningRest -> { restProgress }
+                        else -> { 10f }
                     }
 
                     RoundedCircularProgressIndicator(
                         modifier = Modifier.size(250.dp),
                         strokeWidth = 10.dp,
                         color = MaterialTheme.colorScheme.primary,
-                        progress = if (isRunningFocus) {
-                            focusProgress
-                        } else if (isRunningLongBreak) {
-                            longBreakProgress
-                        } else {
-                            restProgress
-                        }
+                        progress = showProgress
                     )
                 }
 
@@ -219,8 +222,6 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                val density = LocalDensity.current
-                
                 Row(
                     
                     modifier = Modifier
