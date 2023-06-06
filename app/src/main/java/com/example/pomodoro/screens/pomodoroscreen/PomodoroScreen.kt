@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
 import com.example.pomodoro.ui.composables.AnimatedSliderVertical
+import com.example.pomodoro.ui.composables.ConditionalLottieIcon
 import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
-import com.example.pomodoro.ui.composables.conditionalLottieIcon
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
@@ -195,7 +195,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                     endReached = false
                 }
 
-                conditionalLottieIcon(
+                ConditionalLottieIcon(
                     modifier = Modifier
                         .size(80.dp)
                         .border(
@@ -213,7 +213,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         } else { viewModel.pauseTimer() }
                         if (isPaused) { viewModel.resumeTimer() }
                               },
-                    startAnimation = startPlaying,
+                    playAnimation = startPlaying,
                     playReverse = endReached
                     )
 

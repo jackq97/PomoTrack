@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -68,14 +69,15 @@ fun ToggleLottieIcon(
 }
 
 @Composable
-fun conditionalLottieIcon(
+fun ConditionalLottieIcon(
     modifier: Modifier = Modifier,
     lottieModifier: Modifier = Modifier,
-    startAnimation: Boolean,
+    playAnimation: Boolean,
     playReverse: Boolean,
     res: Int,
     animationSpeed: Float = 2.5f,
     onClick: () -> Unit,
+    scale: Float = 1f,
 ) {
 
     var isEnabled by remember { mutableStateOf(true) }
@@ -86,14 +88,15 @@ fun conditionalLottieIcon(
 
     val progress by animateLottieCompositionAsState(
         composition = composition,
-        restartOnPlay = startAnimation,
-        isPlaying = startAnimation,
+        restartOnPlay = playAnimation,
+        isPlaying = playAnimation,
         speed = if (playReverse) -animationSpeed else animationSpeed,
         clipSpec = LottieClipSpec.Progress(0f, 1f)
     )
 
     IconButton(
-        modifier = modifier,
+        modifier = modifier
+            .scale(scale),
         enabled = isEnabled,
         onClick = {
             onClick()
