@@ -18,12 +18,12 @@ val CustomTypography = Typography(
     titleMedium = TextStyle(
         fontFamily = RobotoMono,
         fontWeight = FontWeight.Bold,
-        fontSize = 30.sp
+        fontSize = 40.sp
     ),
 
     titleSmall = TextStyle(
         fontFamily = RobotoMono,
         fontWeight = FontWeight.Bold,
-        fontSize = 20.sp
+        fontSize = 30.sp
     )
 )

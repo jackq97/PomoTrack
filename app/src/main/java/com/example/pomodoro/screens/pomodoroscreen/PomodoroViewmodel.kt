@@ -1,7 +1,6 @@
 package com.example.pomodoro.screens.pomodoroscreen
 
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.model.local.Duration
@@ -17,7 +16,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-
 
 @HiltViewModel
 class PomodoroViewModel @Inject constructor(
@@ -61,8 +59,19 @@ class PomodoroViewModel @Inject constructor(
     var longBreakDuration: Long = 0L
     var roundsDuration: Int = 0
 
+    init {
+        viewModelScope.launch {
+            // settings
+            settings.collect { settings ->
+                focusDuration = minutesToLong(floatToTime(settings.focusDur))
+                breakDuration = minutesToLong(floatToTime(settings.restDur))
+                longBreakDuration = minutesToLong(floatToTime(settings.longRestDur))
+                roundsDuration = settings.rounds.toInt()
+            }
+        }
+    }
+
     fun saveVolume(volume: Float) {
-        Log.d("saved", "saveVolume: actually saved")
         repository.saveVolume(volume = volume)
     }
 
@@ -75,7 +84,7 @@ class PomodoroViewModel @Inject constructor(
             val data = repository.getDurationByDate(currentDate)
 
             if (data == null){
-                //Log.d("TAG", "upsert: data added")
+
                 repository.insertDuration(
                     Duration(
                         focusRecordedDuration = focusDuration,
@@ -94,18 +103,6 @@ class PomodoroViewModel @Inject constructor(
         }
     }
 
-    /*fun nukeData(){
-        viewModelScope.launch {
-            repository.nukeTable()
-        }
-    }*/
-
-    /*fun addData(list: List<Duration>){
-        viewModelScope.launch {
-            repository.addList(list)
-        }
-    }*/
-
     private var focusCountDownTimer: CountDownTimer? = null
     private var restCountDownTimer: CountDownTimer? = null
     private var longBreakCountDownTimer: CountDownTimer? = null
@@ -120,7 +117,6 @@ class PomodoroViewModel @Inject constructor(
 
         stopAllTimers()
         _isRunningFocus.value = true
-        //val startTime = System.currentTimeMillis() // Store the start time
         focusCountDownTimer = object : CountDownTimer(focusDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
@@ -128,7 +124,7 @@ class PomodoroViewModel @Inject constructor(
             }
 
             override fun onFinish() {
-                //val focusDuration = System.currentTimeMillis() - startTime // Calculate the duration
+
                 _isRunningFocus.value = false
                 _remainingFocusTime.value = 0
                 _finishedCount.value++
@@ -147,6 +143,7 @@ class PomodoroViewModel @Inject constructor(
     fun startRestTimer() {
 
         stopAllTimers()
+
         _isRunningRest.value = true
         restCountDownTimer = object : CountDownTimer(breakDuration, INTERVAL) {
 
@@ -338,18 +335,6 @@ class PomodoroViewModel @Inject constructor(
 
         super.onCleared()
         stopAllTimers()
-    }
-
-    init {
-        viewModelScope.launch {
-            // settings
-            settings.collect { settings ->
-                focusDuration = minutesToLong(floatToTime(settings.focusDur))
-                breakDuration = minutesToLong(floatToTime(settings.restDur))
-                longBreakDuration = minutesToLong(floatToTime(settings.longRestDur))
-                roundsDuration = settings.rounds.toInt()
-            }
-        }
     }
 
     companion object {

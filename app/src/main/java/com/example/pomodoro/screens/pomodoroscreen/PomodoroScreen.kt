@@ -1,7 +1,9 @@
 package com.example.pomodoro.screens.pomodoroscreen
 
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -93,10 +96,13 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
     var volumePainter: Painter
 
+
     focusSettingDur = settings.value.focusDur
     restSettingDur = settings.value.restDur
     longRestSettingDur = settings.value.longRestDur
     focusProgress = focusRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()
+    Log.d("TAG", "focus time: $focusRemainingTime")
+    Log.d("TAG", "focus progress: $focusProgress")
     restProgress = restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()
     longBreakProgress = longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()
     rounds = settings.value.rounds.toInt()
@@ -160,30 +166,45 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                             }
                         }
 
-                        Text(text = remainingProgress,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
+                        var isVisible by remember { mutableStateOf(false) }
+
+                        LaunchedEffect(Unit) {
+                            isVisible = true
+                        }
+
+                        Column(modifier = Modifier
+                            .height(60.dp)) {
+
+                            AnimatedVisibility(
+                                visible = isVisible,
+                                enter = fadeIn(animationSpec = tween(durationMillis = 1000))
+                            ) {
+                                Text(
+                                    text = remainingProgress,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                        }
 
                         Text(text = timerText,
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.secondary,
                         )
-
                     }
 
                     showProgress = when {
                         isRunningFocus -> { focusProgress }
                         isRunningLongBreak -> { longBreakProgress }
                         isRunningRest -> { restProgress }
-                        else -> { 10f }
+                        else -> { 1f }
                     }
 
                     RoundedCircularProgressIndicator(
                         modifier = Modifier.size(250.dp),
                         strokeWidth = 10.dp,
                         color = MaterialTheme.colorScheme.primary,
-                        progress = showProgress
+                        progress = if (showProgress == 0.0f) 1f else showProgress
                     )
                 }
 
