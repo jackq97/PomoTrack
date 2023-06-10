@@ -3,8 +3,11 @@ package com.example.pomodoro.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.example.pomodoro.screens.infoscreen.InfoScreen
 import com.example.pomodoro.screens.pomodoroscreen.PomodoroScreen
@@ -22,6 +25,7 @@ fun MyNavigation(
     val durationMilli = 500
     
     AnimatedNavHost(
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface),
         navController = navController,
         startDestination = NavigationRoutes.PomodoroScreen.route
     ) {

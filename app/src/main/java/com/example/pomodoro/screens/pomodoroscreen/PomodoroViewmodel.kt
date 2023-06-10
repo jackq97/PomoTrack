@@ -283,9 +283,9 @@ class PomodoroViewModel @Inject constructor(
         _isPaused.value = false
     }
 
-    fun skipTimer() {
+   fun skipTimer() {
 
-        _isPaused.value = false
+       _isPaused.value = false
 
         when {
 
@@ -320,6 +320,10 @@ class PomodoroViewModel @Inject constructor(
                 _isRunningLongBreak.value = false
                 longBreakCountDownTimer?.cancel()
                 startFocusTimer()
+            }
+
+            else -> {
+                startRestTimer()
             }
         }
     }

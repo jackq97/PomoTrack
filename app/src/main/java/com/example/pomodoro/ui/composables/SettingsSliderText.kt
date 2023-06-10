@@ -24,6 +24,7 @@ fun SettingsSliderText(
             modifier = Modifier.padding(8.dp),
             text = label,
             fontSize = 20.sp,
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onPrimaryContainer
         )
     }

@@ -1,6 +1,7 @@
 package com.example.pomodoro
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,10 +32,19 @@ fun MainApp(){
 
     val appState: SnackbarDemoAppState = rememberSnackbarDemoAppState()
 
+
+
     val inScreenState = rememberSaveable { (mutableStateOf(false)) }
     var startPlaying by remember { mutableStateOf(false) }
     var endReached by remember { mutableStateOf(false) }
     var buttonPressed by remember { mutableStateOf(false) }
+    var drawerIcon = R.raw.drawer_close
+    var pieChartIcon = R.raw.pie_chart
+
+    if (isSystemInDarkTheme()){
+        drawerIcon = R.raw.drawer_close_light
+        pieChartIcon = R.raw.pie_chart_light
+    }
 
     val navBackStackEntry by appState.navController.currentBackStackEntryAsState()
 
@@ -80,7 +90,7 @@ fun MainApp(){
                             playReverse = endReached,
                             lottieModifier = Modifier
                                 .fillMaxSize(),
-                            res = R.raw.drawer_close,
+                            res = drawerIcon,
                             onClick = {
                                 buttonPressed = true
                                 if (!inScreenState.value) {
@@ -95,12 +105,15 @@ fun MainApp(){
 
                     actions = {
 
+                        var isSelected by remember { mutableStateOf(false) }
+                        //isSelected = !isSelected
+
                         ConditionalLottieIcon(
                             playAnimation = startPlaying,
                             playReverse = endReached,
                             modifier = Modifier,
                             lottieModifier = Modifier,
-                            res = R.raw.pie_chart,
+                            res = pieChartIcon,
                             onClick = {
                                 buttonPressed = true
                                 if (!inScreenState.value) {

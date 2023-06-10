@@ -1,7 +1,6 @@
 package com.example.pomodoro.screens.pomodoroscreen
 
 import android.media.MediaPlayer
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -12,6 +11,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,10 +51,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
+import com.example.pomodoro.ui.composables.AnimatedCircularProgressbar
 import com.example.pomodoro.ui.composables.AnimatedSliderVertical
-import com.example.pomodoro.ui.composables.CircularProgressbar1
+import com.example.pomodoro.ui.composables.CircularProgressbar
 import com.example.pomodoro.ui.composables.ConditionalLottieIcon
-import com.example.pomodoro.ui.composables.RoundedCircularProgressIndicator
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
@@ -87,17 +87,8 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     var longRestSettingDur by remember { mutableFloatStateOf(0f) }
     var rounds by remember { mutableIntStateOf(0) }
 
-    var isSliderVisible by remember { mutableStateOf(false) }
-    var volumeSliderPosition by remember { mutableFloatStateOf(0.0f) }
-
-    volumeSliderPosition = volume.value
-
     val mContext = LocalContext.current
     val density = LocalDensity.current
-    val mMediaPlayer = MediaPlayer.create(mContext, R.raw.tick)
-
-    var volumePainter: Painter
-
 
     focusSettingDur = settings.value.focusDur
     restSettingDur = settings.value.restDur
@@ -110,6 +101,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
     var startPlaying by remember { mutableStateOf(false) }
     var endReached by remember { mutableStateOf(false) }
     var buttonPressed by remember { mutableStateOf(false) }
+    var isEnabledSkip by remember { mutableStateOf(true) }
 
     AppTheme() {
 
@@ -131,11 +123,10 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                     contentAlignment = Alignment.Center
                 ) {
 
-                    RoundedCircularProgressIndicator(
-                        modifier = Modifier.size(250.dp),
-                        strokeWidth = 10.dp,
-                        progress = 1f,
-                        color = MaterialTheme.colorScheme.secondaryContainer,
+                    CircularProgressbar(
+                        size = 250.dp,
+                        foregroundIndicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                        indicatorThickness = 10.dp
                     )
 
                     Column(
@@ -189,7 +180,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         }
 
                         Text(text = timerText,
-                            style = MaterialTheme.typography.titleSmall,
+                            style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.secondary,
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 20.sp
@@ -203,9 +194,8 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         else -> { 1f }
                     }
                     val roundedValue = round(showProgress)
-                    //
-                    Log.d("TAG", "PomodoroScreen: $roundedValue")
-                    CircularProgressbar1(
+
+                    AnimatedCircularProgressbar(
                         size = 250.dp,
                         foregroundIndicatorColor = MaterialTheme.colorScheme.primary,
                         indicatorThickness = 10.dp,
@@ -225,6 +215,12 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                     endReached = false
                 }
 
+                var playPauseIcon = R.raw.play_pause
+
+                if (isSystemInDarkTheme()) {
+                    playPauseIcon = R.raw.play_pause_light
+                }
+
                 ConditionalLottieIcon(
                     modifier = Modifier
                         .size(80.dp)
@@ -234,7 +230,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                             color = MaterialTheme.colorScheme.secondaryContainer,
                         ),
                     lottieModifier = Modifier.size(30.dp),
-                    res = R.raw.play_pause,
+                    res = playPauseIcon,
                     animationSpeed = 5f,
                     onClick = {
                         buttonPressed = true
@@ -249,9 +245,13 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                Row(
-                    
-                    modifier = Modifier
+                var isSliderVisible by remember { mutableStateOf(false) }
+                var volumeSliderPosition by remember { mutableFloatStateOf(0.0f) }
+                volumeSliderPosition = volume.value
+
+                val mMediaPlayer = MediaPlayer.create(mContext, R.raw.tick)
+
+                Row(modifier = Modifier
                         .fillMaxWidth()
                         .height(120.dp),
                     horizontalArrangement = Arrangement.End
@@ -325,7 +325,14 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        IconButton(onClick = { viewModel.skipTimer() }) {
+                        if (isRunningFocus || isRunningLongBreak || isRunningRest){
+                            isEnabledSkip = true
+                        }
+
+                        IconButton(
+                            enabled = isEnabledSkip,
+                            onClick = { viewModel.skipTimer() })
+                        {
 
                             Icon(
                                 painter = painterResource(id = R.drawable.skip),
@@ -334,11 +341,9 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
                             )
                         }
 
-                        volumePainter = if (volumeSliderPosition == 0F) {
-
+                        val volumePainter: Painter = if (volumeSliderPosition == 0F) {
                             painterResource(id = R.drawable.volume_off)
                         } else {
-
                             painterResource(id = R.drawable.volume)
                         }
 
