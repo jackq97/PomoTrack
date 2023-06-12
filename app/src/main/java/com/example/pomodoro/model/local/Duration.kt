@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.Instant
 import java.util.Date
-import java.util.UUID
 
 @Entity(tableName = "duration_tbl")
 data class Duration(

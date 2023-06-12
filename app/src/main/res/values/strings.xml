@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Pomodoro</string>
-    <string name="timer">Timer</string>
     <string name="focus">Focus</string>
     <string name="short_break">Short Break</string>
     <string name="long_break">Long Break</string>
@@ -11,11 +10,9 @@
     <string name="today_s_focus_h">Today\'s focus (h)</string>
     <string name="total_pomos">Total Pomos</string>
     <string name="total_focus_duration">Total Focus Duration</string>
-    <string name="web_client_id">1027512837663-l1upopa3f1t4pkh7lan78hh55ftpk31k.apps.googleusercontent.com</string>
     <string name="reset">Reset</string>
     <string name="rest">Rest</string>
     <string name="pomodoro">Pomodoro</string>
-    <string name="default_time">00:00</string>
     <string name="skip_session">skip session</string>
     <string name="sound">sound</string>
 </resources>

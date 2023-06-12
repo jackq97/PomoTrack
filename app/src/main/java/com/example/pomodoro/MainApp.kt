@@ -1,8 +1,8 @@
 package com.example.pomodoro
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +25,6 @@ import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.SnackbarDemoAppState
 import com.example.pomodoro.util.rememberSnackbarDemoAppState
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainApp(){
@@ -103,9 +102,6 @@ fun MainApp(){
 
                     actions = {
 
-                        var isSelected by remember { mutableStateOf(false) }
-                        //isSelected = !isSelected
-
                         ConditionalLottieIcon(
                             playAnimation = startPlaying,
                             playReverse = endReached,
@@ -127,7 +123,9 @@ fun MainApp(){
             bottomBar = { },
 
             content = {
-                MyNavigation(navController = appState.navController,
+                MyNavigation(
+                    modifier = Modifier.padding(it),
+                    navController = appState.navController,
                     showSnackbar = { message, duration ->
                     appState.showSnackbar(message = message, duration = duration)
                 })
