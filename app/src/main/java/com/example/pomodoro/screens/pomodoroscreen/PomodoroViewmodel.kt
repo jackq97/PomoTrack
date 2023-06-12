@@ -270,17 +270,16 @@ class PomodoroViewModel @Inject constructor(
     }
 
     fun resetTimer() {
-
         stopAllTimers()
+        _isPaused.value = false
+        _isRunningFocus.value = false
+        _isRunningRest.value = false
+        _isRunningLongBreak.value = false
         _remainingFocusTime.value = TOTAL_TIME
         _remainingRestTime.value = TOTAL_TIME
         _remainingLongBreakTime.value = TOTAL_TIME
         _finishedCount.value = 0
         pausedTime = 0
-        _isRunningFocus.value = false
-        _isRunningRest.value = false
-        _isRunningLongBreak.value = false
-        _isPaused.value = false
     }
 
    fun skipTimer() {

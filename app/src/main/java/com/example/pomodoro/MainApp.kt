@@ -32,8 +32,6 @@ fun MainApp(){
 
     val appState: SnackbarDemoAppState = rememberSnackbarDemoAppState()
 
-
-
     val inScreenState = rememberSaveable { (mutableStateOf(false)) }
     var startPlaying by remember { mutableStateOf(false) }
     var endReached by remember { mutableStateOf(false) }

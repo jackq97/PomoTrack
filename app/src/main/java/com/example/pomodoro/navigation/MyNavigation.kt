@@ -8,9 +8,11 @@ import androidx.compose.material.SnackbarDuration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.pomodoro.screens.infoscreen.InfoScreen
 import com.example.pomodoro.screens.pomodoroscreen.PomodoroScreen
+import com.example.pomodoro.screens.pomodoroscreen.PomodoroViewModel
 import com.example.pomodoro.screens.settingscreen.SettingsScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -21,7 +23,9 @@ fun MyNavigation(
     navController: NavHostController,
     showSnackbar: (String, SnackbarDuration) -> Unit
 ) {
-    
+
+    val pomodoroViewModel: PomodoroViewModel = hiltViewModel()
+
     val durationMilli = 500
     
     AnimatedNavHost(
@@ -31,7 +35,7 @@ fun MyNavigation(
     ) {
 
         composable(route = NavigationRoutes.PomodoroScreen.route) {
-            PomodoroScreen()
+            PomodoroScreen(viewModel = pomodoroViewModel)
         }
 
         composable(route = NavigationRoutes.InfoScreen.route,
@@ -97,7 +101,9 @@ fun MyNavigation(
                 }
             }
         ) {
-            SettingsScreen(showSnackbar = showSnackbar)
+            SettingsScreen(
+                timerViewModel = pomodoroViewModel,
+                showSnackbar = showSnackbar)
         }
     }
 }

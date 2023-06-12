@@ -1,6 +1,5 @@
 package com.example.pomodoro.ui.composables
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -78,8 +77,6 @@ fun AnimatedCircularProgressbar(
     LaunchedEffect(dataUsage) {
         dataUsageRemember = dataUsage
     }
-
-    Log.d("TAG", "data usage: $dataUsage")
 
     Canvas(
         modifier = Modifier
