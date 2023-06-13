@@ -1,7 +1,6 @@
 package com.example.pomodoro.screens.pomodoroscreen
 
 import android.media.MediaPlayer
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -48,8 +47,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
+import com.example.pomodoro.screens.SharedPomodoroViewModel
 import com.example.pomodoro.ui.composables.AnimatedCircularProgressbar
 import com.example.pomodoro.ui.composables.AnimatedSliderVertical
 import com.example.pomodoro.ui.composables.CircularProgressbar
@@ -61,7 +60,7 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 
 @Composable
-fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
+fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
 
     val settings = viewModel.settings.collectAsState()
     val volume = viewModel.getVolume.collectAsState()
@@ -190,21 +189,21 @@ fun PomodoroScreen(viewModel: PomodoroViewModel = hiltViewModel()) {
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                Log.d("TAG", "focus: $isRunningFocus")
+                /*Log.d("TAG", "focus: $isRunningFocus")
                 Log.d("TAG", "rest: $isRunningRest")
                 Log.d("TAG", "long break: $isRunningLongBreak")
                 Log.d("TAG", "paused: $isPaused")
-                Log.d("TAG", "----------------------------------------------")
+                Log.d("TAG", "----------------------------------------------")*/
 
                 if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
                     // START
                     if (buttonPressed) endReached = true
-                    Log.d("TAG", "start working")
+                    //Log.d("TAG", "start working")
                 } else {
                     //PAUSE
                     startPlaying = true
                     endReached = false
-                    Log.d("TAG", "pause working")
+                    //Log.d("TAG", "pause working")
                 }
 
                 var playPauseIcon = R.raw.play_pause

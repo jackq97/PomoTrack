@@ -26,10 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pomodoro.R
 import com.example.pomodoro.model.local.Settings
-import com.example.pomodoro.screens.pomodoroscreen.PomodoroViewModel
+import com.example.pomodoro.screens.SharedPomodoroViewModel
 import com.example.pomodoro.ui.composables.SettingsSliderText
 import com.example.pomodoro.ui.composables.SettingsText
 import com.example.pomodoro.ui.composables.SliderComponent
@@ -38,8 +37,7 @@ import com.example.pomodoro.util.convertMinutesToHoursAndMinutes
 import com.example.pomodoro.util.floatToTime
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(),
-                   timerViewModel: PomodoroViewModel = hiltViewModel(),
+fun SettingsScreen(viewModel: SharedPomodoroViewModel,
                    showSnackbar: (String, SnackbarDuration) -> Unit) {
 
     var focusSliderPosition by remember { mutableFloatStateOf(0f) }
@@ -151,7 +149,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(),
                                 rounds = noOfRoundsSliderPosition,
                                 ))
 
-                        timerViewModel.resetTimer()
+                        viewModel.resetTimer()
                     }
                     ){
 
@@ -176,7 +174,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(),
                                     longRestDur = longBreakSliderPosition,
                                     rounds = noOfRoundsSliderPosition))
 
-                            timerViewModel.resetTimer()
+                            viewModel.resetTimer()
 
                         }) {
                         Text(text = stringResource(R.string.reset_defaults),

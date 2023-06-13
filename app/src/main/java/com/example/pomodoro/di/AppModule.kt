@@ -8,7 +8,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
-import com.example.pomodoro.data.datastore.Abstract
+import com.example.pomodoro.data.datastore.SettingsManager
 import com.example.pomodoro.data.datastore.SettingsManagerImpl
 import com.example.pomodoro.data.roomdatabase.DurationDao
 import com.example.pomodoro.data.roomdatabase.DurationDatabase
@@ -49,6 +49,6 @@ object AppModule {
     }
 
     @Provides
-    fun provideUserPref(dataStore: DataStore<Preferences>): Abstract = SettingsManagerImpl(dataStore)
+    fun provideUserPref(dataStore: DataStore<Preferences>): SettingsManager = SettingsManagerImpl(dataStore)
 
 }

@@ -6,4 +6,5 @@ sealed class NavigationRoutes(
     object PomodoroScreen: NavigationRoutes(route = "pomodoro_screen")
     object InfoScreen: NavigationRoutes(route = "info_screen")
     object SettingsScreen: NavigationRoutes(route = "settings_screen")
+    object TestScreen: NavigationRoutes(route = "test_screen")
 }

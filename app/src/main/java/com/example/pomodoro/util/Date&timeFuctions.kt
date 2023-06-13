@@ -1,6 +1,5 @@
 package com.example.pomodoro.util
 
-
 fun floatToTime(value: Float): Int {
     val minValue = 1.0f
     val maxValue = 10.0f

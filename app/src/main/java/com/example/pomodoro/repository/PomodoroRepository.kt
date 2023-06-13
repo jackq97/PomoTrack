@@ -1,6 +1,6 @@
 package com.example.pomodoro.repository
 
-import com.example.pomodoro.data.datastore.Abstract
+import com.example.pomodoro.data.datastore.SettingsManager
 import com.example.pomodoro.data.roomdatabase.DurationDao
 import com.example.pomodoro.model.local.Duration
 import com.example.pomodoro.model.local.Settings
@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 class PomodoroRepository @Inject constructor(
     private val durationDao: DurationDao,
-    private val abstract: Abstract,
+    private val settingsManager: SettingsManager,
     ) {
 
     private val myScope = CoroutineScope(Dispatchers.IO)
@@ -36,11 +36,11 @@ class PomodoroRepository @Inject constructor(
     //room database
     suspend fun addList(list: List<Duration>) = durationDao.insertListDuration(list = list)
 
+    suspend fun nukeTable() { durationDao.deleteAllData() }
+
     suspend fun getDurationByDate(date: String): Duration? { return durationDao.getDurationByDate(date) }
 
     suspend fun insertDuration(duration: Duration) = durationDao.insertDuration(duration = duration)
-
-    suspend fun nukeTable() { durationDao.deleteAllData() }
 
     suspend fun getDataForYesterday(): Duration{
 
@@ -127,20 +127,18 @@ class PomodoroRepository @Inject constructor(
     suspend fun accumulateFocusDuration(date: String,
                                         focusDuration: Int,
                                         restDuration: Int,
-                                        rounds: Int
-                                        )
+                                        rounds: Int)
     { durationDao.accumulateFocusDuration(date = date,
         focusDuration = focusDuration,
         restDuration = restDuration,
-        rounds = rounds
-        ) }
+        rounds = rounds) }
 
     fun getAllDuration(): Flow<List<Duration>> = durationDao.getAllDurations()
         .flowOn(Dispatchers.IO)
         .conflate()
 
     //settings manager
-    fun getSettings() = abstract.getSettings().stateIn(
+    fun getSettings() = settingsManager.getSettings().stateIn(
         scope = myScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = Settings(
@@ -153,20 +151,31 @@ class PomodoroRepository @Inject constructor(
 
     fun saveSettings(settings: Settings) {
         myScope.launch {
-            abstract.saveSettings(settings)
+            settingsManager.saveSettings(settings)
         }
     }
 
-    fun getVolume() = abstract.getVolumeSettings().stateIn(
+    fun getVolume() = settingsManager.getVolumeSettings().stateIn(
         scope = myScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = 1f
     )
+
     fun saveVolume(volume: Float) {
         myScope.launch {
-            abstract.saveVolumeSettings(volume = volume)
+            settingsManager.saveVolumeSettings(volume = volume)
         }
     }
 
-}
+    fun getTimerReset() = settingsManager.getResetTimer().stateIn(
+        scope = myScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = false
+    )
 
+    fun saveResetTimer(reset: Boolean) {
+        myScope.launch {
+            settingsManager.saveResetTimer(reset = reset)
+        }
+    }
+}

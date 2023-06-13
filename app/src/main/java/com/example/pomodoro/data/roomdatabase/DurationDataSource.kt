@@ -4,7 +4,7 @@ import com.example.pomodoro.model.local.Duration
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-
+// it's used to feed artificial data
 class DurationDataSource {
 
     private val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.US)

@@ -10,9 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.pomodoro.screens.SharedPomodoroViewModel
 import com.example.pomodoro.screens.infoscreen.InfoScreen
 import com.example.pomodoro.screens.pomodoroscreen.PomodoroScreen
-import com.example.pomodoro.screens.pomodoroscreen.PomodoroViewModel
 import com.example.pomodoro.screens.settingscreen.SettingsScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -24,9 +24,9 @@ fun MyNavigation(
     navController: NavHostController,
     showSnackbar: (String, SnackbarDuration) -> Unit) {
 
-    val pomodoroViewModel: PomodoroViewModel = hiltViewModel()
+    val animationDurationMilli = 500
 
-    val durationMilli = 500
+    val viewModel: SharedPomodoroViewModel = hiltViewModel()
     
     AnimatedNavHost(
         modifier = modifier.background(MaterialTheme.colorScheme.surface),
@@ -35,35 +35,35 @@ fun MyNavigation(
     ) {
 
         composable(route = NavigationRoutes.PomodoroScreen.route) {
-            PomodoroScreen(viewModel = pomodoroViewModel)
+            PomodoroScreen(viewModel = viewModel)
         }
 
         composable(route = NavigationRoutes.InfoScreen.route,
             enterTransition = {
                 when (initialState.destination.route) {
                     "pomodoro_screen" ->
-                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(durationMilli))
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(animationDurationMilli))
                     else -> null
                 }
             },
             exitTransition = {
                 when (targetState.destination.route) {
                     "pomodoro_screen" ->
-                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(durationMilli))
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(animationDurationMilli))
                     else -> null
                 }
             },
             popEnterTransition = {
                 when (initialState.destination.route) {
                     "pomodoro_screen" ->
-                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(durationMilli))
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(animationDurationMilli))
                     else -> null
                 }
             },
             popExitTransition = {
                 when (targetState.destination.route) {
                     "pomodoro_screen" ->
-                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(durationMilli))
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(animationDurationMilli))
                     else -> null
                 }
             }
@@ -75,34 +75,34 @@ fun MyNavigation(
             enterTransition = {
                 when (initialState.destination.route) {
                     "pomodoro_screen" ->
-                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(durationMilli))
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(animationDurationMilli))
                     else -> null
                 }
             },
             exitTransition = {
                 when (targetState.destination.route) {
                     "pomodoro_screen" ->
-                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(durationMilli))
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(animationDurationMilli))
                     else -> null
                 }
             },
             popEnterTransition = {
                 when (initialState.destination.route) {
                     "pomodoro_screen" ->
-                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(durationMilli))
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(animationDurationMilli))
                     else -> null
                 }
             },
             popExitTransition = {
                 when (targetState.destination.route) {
                     "pomodoro_screen" ->
-                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(durationMilli))
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(animationDurationMilli))
                     else -> null
                 }
             }
         ) {
             SettingsScreen(
-                timerViewModel = pomodoroViewModel,
+                viewModel = viewModel,
                 showSnackbar = showSnackbar)
         }
     }

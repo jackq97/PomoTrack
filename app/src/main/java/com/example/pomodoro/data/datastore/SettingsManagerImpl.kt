@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 
-class SettingsManagerImpl (private val dataStore: DataStore<Preferences>): Abstract {
+class SettingsManagerImpl (private val dataStore: DataStore<Preferences>):
+    SettingsManager {
 
     //to edit data
     override suspend fun saveSettings(settings: Settings) {
@@ -24,26 +25,6 @@ class SettingsManagerImpl (private val dataStore: DataStore<Preferences>): Abstr
             preferences[LONG_SLIDER] = settings.longRestDur
             preferences[ROUND_SLIDER] = settings.rounds
         }
-    }
-
-    override suspend fun saveVolumeSettings(volume: Float) {
-        dataStore.edit { preferences ->
-            preferences[VOLUME_SLIDER] = volume
-        }
-    }
-
-    override fun getVolumeSettings(): Flow<Float> {
-        return dataStore.data.map { preferences ->
-            preferences[VOLUME_SLIDER] ?: 1F
-        }.catch { exception ->
-            if (exception is IOException) {
-                Log.e("exception", "error reading preferences: $exception")
-                emit(0F)
-            } else {
-                throw exception
-            }
-        }
-
     }
 
     // to get data
@@ -66,6 +47,46 @@ class SettingsManagerImpl (private val dataStore: DataStore<Preferences>): Abstr
                     rounds = settings[ROUND_SLIDER] ?: 2f,
                     )
             }
+    }
+
+    override suspend fun saveResetTimer(reset: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[RESET_TIMER] = reset
+        }
+    }
+
+    override fun getResetTimer(): Flow<Boolean> {
+
+        return dataStore.data.map { preferences ->
+            preferences[RESET_TIMER] ?: false
+        }.catch {
+                exception ->
+            if (exception is IOException) {
+                Log.e("exception", "error reading preferences: $exception")
+                emit(false)
+            } else {
+                throw exception
+            }
+        }
+    }
+
+    override suspend fun saveVolumeSettings(volume: Float) {
+        dataStore.edit { preferences ->
+            preferences[VOLUME_SLIDER] = volume
+        }
+    }
+
+    override fun getVolumeSettings(): Flow<Float> {
+        return dataStore.data.map { preferences ->
+            preferences[VOLUME_SLIDER] ?: 1F
+        }.catch { exception ->
+            if (exception is IOException) {
+                Log.e("exception", "error reading preferences: $exception")
+                emit(0F)
+            } else {
+                throw exception
+            }
+        }
     }
 }
 

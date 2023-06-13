@@ -1,9 +1,10 @@
-package com.example.pomodoro.screens.pomodoroscreen
+package com.example.pomodoro.screens
 
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomodoro.model.local.Duration
+import com.example.pomodoro.model.local.Settings
 import com.example.pomodoro.repository.PomodoroRepository
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.millisecondsToMinutes
@@ -18,9 +19,9 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class PomodoroViewModel @Inject constructor(
+class SharedPomodoroViewModel @Inject constructor(
     private val repository: PomodoroRepository
-) : ViewModel() {
+) : ViewModel(){
 
     private val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     private val currentDate: String =  dateFormat.format(Date())
@@ -61,7 +62,6 @@ class PomodoroViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            // settings
             settings.collect { settings ->
                 focusDuration = minutesToLong(floatToTime(settings.focusDur))
                 breakDuration = minutesToLong(floatToTime(settings.restDur))
@@ -73,6 +73,10 @@ class PomodoroViewModel @Inject constructor(
 
     fun saveVolume(volume: Float) {
         repository.saveVolume(volume = volume)
+    }
+
+    fun saveSettings(settings: Settings) {
+        repository.saveSettings(settings = settings)
     }
 
     fun upsert(focusDuration: Int,
@@ -126,7 +130,7 @@ class PomodoroViewModel @Inject constructor(
             override fun onFinish() {
 
                 _isRunningFocus.value = false
-                _remainingFocusTime.value = 0
+                //_remainingFocusTime.value = 0
                 _finishedCount.value++
                 upsert(focusDuration = millisecondsToMinutes(focusDuration),
                     restDuration = 0,
@@ -143,8 +147,8 @@ class PomodoroViewModel @Inject constructor(
     fun startRestTimer() {
 
         stopAllTimers()
-
         _isRunningRest.value = true
+
         restCountDownTimer = object : CountDownTimer(breakDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
@@ -157,7 +161,7 @@ class PomodoroViewModel @Inject constructor(
                     restDuration = millisecondsToMinutes(breakDuration),
                     rounds = 0)
                 _isRunningRest.value = false
-                _remainingRestTime.value = 0
+                //_remainingRestTime.value = 0
                 startFocusTimer()
             }
         }.start()
@@ -177,7 +181,7 @@ class PomodoroViewModel @Inject constructor(
             override fun onFinish() {
 
                 _isRunningLongBreak.value = false
-                _remainingLongBreakTime.value = 0
+                //_remainingLongBreakTime.value = 0
                 _finishedCount.value = 0
                 startFocusTimer()
             }
@@ -219,7 +223,7 @@ class PomodoroViewModel @Inject constructor(
                                 restDuration = 0,
                                 rounds = 1)
                             _isRunningFocus.value = false
-                            _remainingFocusTime.value = 0
+                            //_remainingFocusTime.value = 0
                             _finishedCount.value++
                             if (_finishedCount.value == roundsDuration) {
                                 startLongBreakTimer()
@@ -243,7 +247,7 @@ class PomodoroViewModel @Inject constructor(
                                 restDuration = millisecondsToMinutes(breakDuration),
                                 rounds = 0)
                             _isRunningRest.value = false
-                            _remainingRestTime.value = 0
+                            //_remainingRestTime.value = 0
                             startFocusTimer()
                         }
                     }.start()
@@ -259,7 +263,7 @@ class PomodoroViewModel @Inject constructor(
 
                         override fun onFinish() {
                             _isRunningLongBreak.value = false
-                            _remainingLongBreakTime.value = 0
+                            //_remainingLongBreakTime.value = 0
                             _finishedCount.value = 0
                             startFocusTimer()
                         }
