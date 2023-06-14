@@ -1,6 +1,7 @@
 package com.example.pomodoro.screens.pomodoroscreen
 
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -189,21 +190,15 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                /*Log.d("TAG", "focus: $isRunningFocus")
-                Log.d("TAG", "rest: $isRunningRest")
-                Log.d("TAG", "long break: $isRunningLongBreak")
-                Log.d("TAG", "paused: $isPaused")
-                Log.d("TAG", "----------------------------------------------")*/
-
                 if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
                     // START
                     if (buttonPressed) endReached = true
-                    //Log.d("TAG", "start working")
+                    Log.d("TAG", "PomodoroScreen: start icon")
                 } else {
                     //PAUSE
                     startPlaying = true
                     endReached = false
-                    //Log.d("TAG", "pause working")
+                    Log.d("TAG", "PomodoroScreen: pause icon")
                 }
 
                 var playPauseIcon = R.raw.play_pause
@@ -301,7 +296,9 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                         )
 
                         TextButton(modifier = Modifier.padding(start = 2.dp),
-                            onClick = { viewModel.resetTimer() }) {
+                            onClick = {
+                                buttonPressed = true
+                                viewModel.resetTimer() }) {
                             Text(text = stringResource(R.string.reset),
                                 color = MaterialTheme.colorScheme.primary
                                 )
