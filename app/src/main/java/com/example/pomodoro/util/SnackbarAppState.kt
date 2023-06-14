@@ -11,6 +11,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SnackbarDemoAppState constructor(
@@ -24,6 +25,10 @@ class SnackbarDemoAppState constructor(
                 message = message,
                 duration = duration
             )
+        }
+        snackbarScope.launch {
+            delay(1000)
+            scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
         }
     }
 }

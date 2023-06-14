@@ -111,11 +111,10 @@ class SharedPomodoroViewModel @Inject constructor(
     private var restCountDownTimer: CountDownTimer? = null
     private var longBreakCountDownTimer: CountDownTimer? = null
 
-    //var onTickFocus: (Long) -> Unit = {}
-    //var onFinishFocus: () -> Unit = {}
+    var onFinishFocus: () -> Unit = {}
 
     var onTickRest: () -> Unit = {}
-    //var onFinishRest: () -> Unit = {}
+    var onFinishRest: () -> Unit = {}
 
     fun startFocusTimer() {
 
@@ -128,7 +127,7 @@ class SharedPomodoroViewModel @Inject constructor(
             }
 
             override fun onFinish() {
-
+                onFinishFocus()
                 _isRunningFocus.value = false
                 //_remainingFocusTime.value = 0
                 _finishedCount.value++
@@ -157,6 +156,7 @@ class SharedPomodoroViewModel @Inject constructor(
             }
 
             override fun onFinish() {
+                onFinishRest()
                 upsert(focusDuration = 0,
                     restDuration = millisecondsToMinutes(breakDuration),
                     rounds = 0)
@@ -176,10 +176,11 @@ class SharedPomodoroViewModel @Inject constructor(
 
             override fun onTick(millisUntilFinished: Long) {
                 _remainingLongBreakTime.value = millisUntilFinished / 1000
+                onTickRest()
             }
 
             override fun onFinish() {
-
+                onFinishRest()
                 _isRunningLongBreak.value = false
                 //_remainingLongBreakTime.value = 0
                 _finishedCount.value = 0
@@ -219,6 +220,7 @@ class SharedPomodoroViewModel @Inject constructor(
                         }
 
                         override fun onFinish() {
+                            onFinishFocus()
                             upsert(focusDuration = millisecondsToMinutes(focusDuration),
                                 restDuration = 0,
                                 rounds = 1)
@@ -239,10 +241,12 @@ class SharedPomodoroViewModel @Inject constructor(
                     restCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
                         // ...
                         override fun onTick(p0: Long) {
+                            onTickRest()
                             _remainingRestTime.value = p0 / 1000
                         }
 
                         override fun onFinish() {
+                            onFinishRest()
                             upsert(focusDuration = 0,
                                 restDuration = millisecondsToMinutes(breakDuration),
                                 rounds = 0)
@@ -258,10 +262,12 @@ class SharedPomodoroViewModel @Inject constructor(
                     longBreakCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
                         // ...
                         override fun onTick(p0: Long) {
+                            onTickRest()
                             _remainingLongBreakTime.value = p0 / 1000
                         }
 
                         override fun onFinish() {
+                            onFinishRest()
                             _isRunningLongBreak.value = false
                             //_remainingLongBreakTime.value = 0
                             _finishedCount.value = 0

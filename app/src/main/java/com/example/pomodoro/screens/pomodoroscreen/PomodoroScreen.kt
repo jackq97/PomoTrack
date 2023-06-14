@@ -30,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -51,20 +52,16 @@ import androidx.compose.ui.unit.sp
 import com.example.pomodoro.R
 import com.example.pomodoro.screens.SharedPomodoroViewModel
 import com.example.pomodoro.ui.composables.AnimatedCircularProgressbar
-import com.example.pomodoro.ui.composables.AnimatedSliderVertical
 import com.example.pomodoro.ui.composables.CircularProgressbar
 import com.example.pomodoro.ui.composables.ConditionalLottieIcon
+import com.example.pomodoro.ui.composables.VerticalSlider
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
 import kotlin.math.round
-import kotlin.math.roundToInt
 
 @Composable
 fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
-
-    val settings = viewModel.settings.collectAsState()
-    val volume = viewModel.getVolume.collectAsState()
 
     val focusRemainingTime by viewModel.remainingFocusTime.collectAsState()
     val restRemainingTime by viewModel.remainingRestTime.collectAsState()
@@ -81,13 +78,17 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
     var remainingProgress by remember { mutableStateOf("") }
     var timerText by remember { mutableStateOf("") }
 
+    val mContext = LocalContext.current
+    val density = LocalDensity.current
+
     var focusSettingDur by remember { mutableFloatStateOf(0f) }
     var restSettingDur by remember { mutableFloatStateOf(0f) }
     var longRestSettingDur by remember { mutableFloatStateOf(0f) }
     var rounds by remember { mutableIntStateOf(0) }
+    var volumeSliderValue by remember { mutableFloatStateOf(0f) }
 
-    val mContext = LocalContext.current
-    val density = LocalDensity.current
+    val settings = viewModel.settings.collectAsState()
+    val volume = viewModel.getVolume.collectAsState()
 
     focusSettingDur = settings.value.focusDur
     restSettingDur = settings.value.restDur
@@ -108,6 +109,11 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surface)
         ) {
+
+            LaunchedEffect(volume.value){
+                //to make sure slider value doesn't update with timer
+                volumeSliderValue = volume.value
+            }
 
             Column(
                 modifier = Modifier
@@ -193,12 +199,10 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                 if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
                     // START
                     if (buttonPressed) endReached = true
-                    Log.d("TAG", "PomodoroScreen: start icon")
                 } else {
                     //PAUSE
                     startPlaying = true
                     endReached = false
-                    Log.d("TAG", "PomodoroScreen: pause icon")
                 }
 
                 var playPauseIcon = R.raw.play_pause
@@ -232,10 +236,13 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                 Spacer(modifier = Modifier.height(40.dp))
 
                 var isSliderVisible by remember { mutableStateOf(false) }
-                var volumeSliderPosition by remember { mutableFloatStateOf(0.0f) }
-                volumeSliderPosition = volume.value
-
                 val mMediaPlayer = MediaPlayer.create(mContext, R.raw.tick)
+                Log.d("TAG", "PomodoroScreen: $volumeSliderValue")
+                mMediaPlayer.setVolume(volumeSliderValue, volumeSliderValue) // Update the MediaPlayer volume
+
+                viewModel.onTickRest = {
+                    mMediaPlayer.start()
+                }
 
                 Row(modifier = Modifier
                     .fillMaxWidth()
@@ -245,29 +252,21 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                 ) {
                     AnimatedVisibility(visible = isSliderVisible,
                         enter = slideInVertically {
-                            // Slide in from 40 dp from the top.
                             with(density) { -40.dp.roundToPx() }
                         } + expandVertically(
-                            // Expand from the top.
                             expandFrom = Alignment.Top
                         ) + fadeIn(
-                            // Fade in with the initial alpha of 0.3f.
                             initialAlpha = 0.3f
                         ),
                         exit = slideOutVertically() + shrinkVertically() + fadeOut()
                     ) {
 
-                        AnimatedSliderVertical(value = volumeSliderPosition,
-                            onValueChange = {
-                                volumeSliderPosition = it
-                                val roundedNumber = (volumeSliderPosition * 10f).roundToInt() / 10f
-                                mMediaPlayer.setVolume(roundedNumber, roundedNumber) // Update the MediaPlayer volume
-                                viewModel.saveVolume(volumeSliderPosition)
-                                //plays volume on tick
-                                viewModel.onTickRest = {
-                                    mMediaPlayer.start()
-                                }
-                            })
+                        VerticalSlider(value = volumeSliderValue, onValueChange = {
+                            volumeSliderValue = it },
+                            onValueChangeFinished = {
+                                viewModel.saveVolume(volumeSliderValue)
+                            }
+                        )
                     }
                 }
 
@@ -324,7 +323,7 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                             )
                         }
 
-                        val volumePainter: Painter = if (volumeSliderPosition == 0F) {
+                        val volumePainter: Painter = if (volumeSliderValue == 0F) {
                             painterResource(id = R.drawable.volume_off)
                         } else {
                             painterResource(id = R.drawable.volume)
