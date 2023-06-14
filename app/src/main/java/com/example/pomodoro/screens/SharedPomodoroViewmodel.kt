@@ -26,32 +26,6 @@ class SharedPomodoroViewModel @Inject constructor(
     private val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     private val currentDate: String =  dateFormat.format(Date())
 
-    private val _isPaused = MutableStateFlow(false)
-    val isPaused: StateFlow<Boolean> = _isPaused
-
-    private var pausedTime = 0L
-
-    private val _remainingFocusTime = MutableStateFlow(0L)
-    val remainingFocusTime: StateFlow<Long> = _remainingFocusTime
-
-    private val _remainingRestTime = MutableStateFlow(0L)
-    val remainingRestTime: StateFlow<Long> = _remainingRestTime
-
-    private val _remainingLongBreakTime = MutableStateFlow(0L)
-    val remainingLongBreakTime: StateFlow<Long> = _remainingLongBreakTime
-
-    private var _isRunningFocus = MutableStateFlow(false)
-    val isRunningFocus: StateFlow<Boolean> = _isRunningFocus
-
-    private val _isRunningRest = MutableStateFlow(false)
-    val isRunningRest: StateFlow<Boolean> = _isRunningRest
-
-    private var _isRunningLongBreak = MutableStateFlow(false)
-    val isRunningLongBreak: StateFlow<Boolean> = _isRunningLongBreak
-
-    private val _finishedCount = MutableStateFlow(0)
-    val finishedCount: StateFlow<Int> = _finishedCount
-
     val settings = repository.getSettings()
     val getVolume = repository.getVolume()
 
@@ -70,6 +44,32 @@ class SharedPomodoroViewModel @Inject constructor(
             }
         }
     }
+
+    private val _isPaused = MutableStateFlow(false)
+    val isPaused: StateFlow<Boolean> = _isPaused
+
+    private var pausedTime = 0L
+
+    private val _remainingFocusTime = MutableStateFlow(focusDuration/1000)
+    val remainingFocusTime: StateFlow<Long> = _remainingFocusTime
+
+    private val _remainingRestTime = MutableStateFlow(breakDuration/1000)
+    val remainingRestTime: StateFlow<Long> = _remainingRestTime
+
+    private val _remainingLongBreakTime = MutableStateFlow(longBreakDuration/1000)
+    val remainingLongBreakTime: StateFlow<Long> = _remainingLongBreakTime
+
+    private var _isRunningFocus = MutableStateFlow(false)
+    val isRunningFocus: StateFlow<Boolean> = _isRunningFocus
+
+    private val _isRunningRest = MutableStateFlow(false)
+    val isRunningRest: StateFlow<Boolean> = _isRunningRest
+
+    private var _isRunningLongBreak = MutableStateFlow(false)
+    val isRunningLongBreak: StateFlow<Boolean> = _isRunningLongBreak
+
+    private val _finishedCount = MutableStateFlow(0)
+    val finishedCount: StateFlow<Int> = _finishedCount
 
     fun saveVolume(volume: Float) {
         repository.saveVolume(volume = volume)
@@ -285,9 +285,9 @@ class SharedPomodoroViewModel @Inject constructor(
         _isRunningFocus.value = false
         _isRunningRest.value = false
         _isRunningLongBreak.value = false
-        _remainingFocusTime.value = TOTAL_TIME
-        _remainingRestTime.value = TOTAL_TIME
-        _remainingLongBreakTime.value = TOTAL_TIME
+//        _remainingFocusTime.value = TOTAL_TIME
+//        _remainingRestTime.value = TOTAL_TIME
+//        _remainingLongBreakTime.value = TOTAL_TIME
         _finishedCount.value = 0
         pausedTime = 0
     }

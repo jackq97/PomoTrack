@@ -161,6 +161,8 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                             }
                         }
 
+                        Log.d("TAG", "PomodoroScreen: $remainingProgress")
+
                         Text(
                             text = remainingProgress,
                             style = MaterialTheme.typography.titleMedium,
@@ -237,7 +239,6 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
 
                 var isSliderVisible by remember { mutableStateOf(false) }
                 val mMediaPlayer = MediaPlayer.create(mContext, R.raw.tick)
-                Log.d("TAG", "PomodoroScreen: $volumeSliderValue")
                 mMediaPlayer.setVolume(volumeSliderValue, volumeSliderValue) // Update the MediaPlayer volume
 
                 viewModel.onTickRest = {
