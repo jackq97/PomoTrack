@@ -13,7 +13,9 @@ import androidx.navigation.NavHostController
 import com.example.pomodoro.screens.SharedPomodoroViewModel
 import com.example.pomodoro.screens.infoscreen.InfoScreen
 import com.example.pomodoro.screens.pomodoroscreen.PomodoroScreen
-import com.example.pomodoro.screens.settingscreen.SettingsScreen
+import com.example.pomodoro.screens.settingsscreen.SettingsScreen
+import com.example.pomodoro.screens.timersettingscreen.TimerSettingsScreen
+import com.example.pomodoro.screens.userdatascreen.UserDataScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 
@@ -38,7 +40,7 @@ fun MyNavigation(
             PomodoroScreen(viewModel = viewModel)
         }
 
-        composable(route = NavigationRoutes.InfoScreen.route,
+        composable(route = NavigationRoutes.UserDataScreen.route,
             enterTransition = {
                 when (initialState.destination.route) {
                     "pomodoro_screen" ->
@@ -68,10 +70,10 @@ fun MyNavigation(
                 }
             }
         ) {
-            InfoScreen()
+            UserDataScreen()
         }
 
-        composable(route = NavigationRoutes.SettingsScreen.route,
+        composable(route = NavigationRoutes.TimerSettingsScreen.route,
             enterTransition = {
                 when (initialState.destination.route) {
                     "pomodoro_screen" ->
@@ -101,9 +103,23 @@ fun MyNavigation(
                 }
             }
         ) {
-            SettingsScreen(
+            TimerSettingsScreen(
                 viewModel = viewModel,
                 showSnackbar = showSnackbar)
+        }
+
+        composable(route = BottomNavigationItem.TimerSettingScreen.route) {
+            TimerSettingsScreen(
+                viewModel = viewModel,
+                showSnackbar = showSnackbar)
+        }
+
+        composable(route = BottomNavigationItem.SettingsScreen.route) {
+            SettingsScreen()
+        }
+
+        composable(route = BottomNavigationItem.InfoScreen.route) {
+            InfoScreen()
         }
     }
 }

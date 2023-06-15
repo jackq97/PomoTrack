@@ -18,9 +18,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.pomodoro.navigation.BottomNavigationItem
 import com.example.pomodoro.navigation.MyNavigation
 import com.example.pomodoro.navigation.NavigationRoutes
 import com.example.pomodoro.ui.composables.ConditionalLottieIcon
+import com.example.pomodoro.ui.composables.NavigationBar
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.SnackbarDemoAppState
 import com.example.pomodoro.util.rememberSnackbarDemoAppState
@@ -32,6 +34,8 @@ fun MainApp(){
     val appState: SnackbarDemoAppState = rememberSnackbarDemoAppState()
 
     val inScreenState = rememberSaveable { (mutableStateOf(false)) }
+    val inTimerSettings = rememberSaveable { (mutableStateOf(false)) }
+    var showTopAppBar by remember { mutableStateOf(true) }
     var startPlaying by remember { mutableStateOf(false) }
     var endReached by remember { mutableStateOf(false) }
     var buttonPressed by remember { mutableStateOf(false) }
@@ -49,14 +53,32 @@ fun MainApp(){
 
         NavigationRoutes.PomodoroScreen.route -> {
             inScreenState.value = false
+            inTimerSettings.value = false
+            showTopAppBar = true
         }
 
-        NavigationRoutes.InfoScreen.route -> {
+        NavigationRoutes.UserDataScreen.route -> {
             inScreenState.value = true
+            inTimerSettings.value = false
+            showTopAppBar = true
         }
 
-        NavigationRoutes.SettingsScreen.route -> {
+        NavigationRoutes.TimerSettingsScreen.route -> {
             inScreenState.value = true
+            inTimerSettings.value = true
+            showTopAppBar = true
+        }
+
+        BottomNavigationItem.TimerSettingScreen.route -> {
+            showTopAppBar = true
+        }
+
+        BottomNavigationItem.SettingsScreen.route -> {
+            showTopAppBar = false
+        }
+
+        BottomNavigationItem.InfoScreen.route -> {
+            showTopAppBar = false
         }
     }
 
@@ -72,7 +94,7 @@ fun MainApp(){
         Scaffold(
             scaffoldState = appState.scaffoldState,
             topBar = {
-
+                if (showTopAppBar)
                 TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                 ),
@@ -91,7 +113,7 @@ fun MainApp(){
                             onClick = {
                                 buttonPressed = true
                                 if (!inScreenState.value) {
-                                appState.navController.navigate(NavigationRoutes.SettingsScreen.route)
+                                appState.navController.navigate(NavigationRoutes.TimerSettingsScreen.route)
                             } else {
                                 appState.navController.popBackStack()
                             }},
@@ -111,7 +133,7 @@ fun MainApp(){
                             onClick = {
                                 buttonPressed = true
                                 if (!inScreenState.value) {
-                                    appState.navController.navigate(NavigationRoutes.InfoScreen.route)
+                                    appState.navController.navigate(NavigationRoutes.UserDataScreen.route)
                                 } },
                             animationSpeed = 2f,
                             scale = 6f
@@ -120,7 +142,10 @@ fun MainApp(){
                 )
             },
 
-            bottomBar = { },
+            bottomBar = {
+                if (inTimerSettings.value)
+                NavigationBar(appState.navController)
+                        },
 
             content = {
                 MyNavigation(

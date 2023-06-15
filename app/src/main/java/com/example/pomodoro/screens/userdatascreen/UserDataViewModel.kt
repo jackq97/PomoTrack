@@ -1,4 +1,4 @@
-package com.example.pomodoro.screens.infoscreen
+package com.example.pomodoro.screens.userdatascreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class InfoViewModel @Inject constructor (private val repository: PomodoroRepository) : ViewModel() {
+class UserDataViewModel @Inject constructor (private val repository: PomodoroRepository) : ViewModel() {
 
     private val _allDurations = MutableStateFlow<List<Duration>>(emptyList())
     private val _yesterdayData = MutableStateFlow(Duration())

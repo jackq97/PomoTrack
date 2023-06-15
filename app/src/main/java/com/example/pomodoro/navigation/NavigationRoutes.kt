@@ -4,7 +4,7 @@ sealed class NavigationRoutes(
     val route: String
 ) {
     object PomodoroScreen: NavigationRoutes(route = "pomodoro_screen")
-    object InfoScreen: NavigationRoutes(route = "info_screen")
-    object SettingsScreen: NavigationRoutes(route = "settings_screen")
-    object TestScreen: NavigationRoutes(route = "test_screen")
+    object UserDataScreen: NavigationRoutes(route = "user_data_screen")
+    object TimerSettingsScreen: NavigationRoutes(route = "timer_settings_screen")
+
 }

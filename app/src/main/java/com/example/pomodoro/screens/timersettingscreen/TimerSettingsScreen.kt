@@ -1,4 +1,4 @@
-package com.example.pomodoro.screens.settingscreen
+package com.example.pomodoro.screens.timersettingscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,15 +30,15 @@ import com.example.pomodoro.R
 import com.example.pomodoro.model.local.Settings
 import com.example.pomodoro.screens.SharedPomodoroViewModel
 import com.example.pomodoro.ui.composables.SettingsSliderText
-import com.example.pomodoro.ui.composables.SettingsText
 import com.example.pomodoro.ui.composables.SliderComponent
+import com.example.pomodoro.ui.composables.TimerSettingsText
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.convertMinutesToHoursAndMinutes
 import com.example.pomodoro.util.floatToTime
 
 @Composable
-fun SettingsScreen(viewModel: SharedPomodoroViewModel,
-                   showSnackbar: (String, SnackbarDuration) -> Unit) {
+fun TimerSettingsScreen(viewModel: SharedPomodoroViewModel,
+                        showSnackbar: (String, SnackbarDuration) -> Unit) {
 
     var focusSliderPosition by remember { mutableFloatStateOf(0f) }
     var breakSliderPosition by remember { mutableFloatStateOf(0f) }
@@ -63,7 +63,7 @@ fun SettingsScreen(viewModel: SharedPomodoroViewModel,
             Column(modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally) {
 
-                SettingsText(label = stringResource(R.string.focus))
+                TimerSettingsText(label = stringResource(R.string.focus))
 
                 SettingsSliderText(
                     label = convertMinutesToHoursAndMinutes(
@@ -82,7 +82,7 @@ fun SettingsScreen(viewModel: SharedPomodoroViewModel,
                     maxValue = 10f
                 )
 
-                SettingsText(label = stringResource(R.string.short_break))
+                TimerSettingsText(label = stringResource(R.string.short_break))
                 SettingsSliderText(
                     label = convertMinutesToHoursAndMinutes(
                         floatToTime(
@@ -100,7 +100,7 @@ fun SettingsScreen(viewModel: SharedPomodoroViewModel,
                     maxValue = 10f
                 )
 
-                SettingsText(label = stringResource(R.string.long_break))
+                TimerSettingsText(label = stringResource(R.string.long_break))
                 SettingsSliderText(
                     label = convertMinutesToHoursAndMinutes(
                         floatToTime(
@@ -118,7 +118,7 @@ fun SettingsScreen(viewModel: SharedPomodoroViewModel,
                     maxValue = 10f
                 )
 
-                SettingsText(label = stringResource(R.string.rounds))
+                TimerSettingsText(label = stringResource(R.string.rounds))
                 SettingsSliderText(label = noOfRoundsSliderPosition.toInt().toString())
 
                 SliderComponent(
