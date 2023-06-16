@@ -22,16 +22,16 @@ import com.google.accompanist.navigation.animation.composable
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MyNavigation(
-    modifier: Modifier,
+    //modifier: Modifier,
     navController: NavHostController,
     showSnackbar: (String, SnackbarDuration) -> Unit) {
 
     val animationDurationMilli = 500
 
     val viewModel: SharedPomodoroViewModel = hiltViewModel()
-    
+
     AnimatedNavHost(
-        modifier = modifier.background(MaterialTheme.colorScheme.surface),
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface),
         navController = navController,
         startDestination = NavigationRoutes.PomodoroScreen.route
     ) {
@@ -39,6 +39,7 @@ fun MyNavigation(
         composable(route = NavigationRoutes.PomodoroScreen.route) {
             PomodoroScreen(viewModel = viewModel)
         }
+
 
         composable(route = NavigationRoutes.UserDataScreen.route,
             enterTransition = {
@@ -108,6 +109,7 @@ fun MyNavigation(
                 showSnackbar = showSnackbar)
         }
 
+        //bottom bar
         composable(route = BottomNavigationItem.TimerSettingScreen.route) {
             TimerSettingsScreen(
                 viewModel = viewModel,

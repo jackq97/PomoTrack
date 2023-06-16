@@ -1,22 +1,25 @@
 package com.example.pomodoro.ui.composables
 
 import androidx.compose.material.Text
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.TextUnit
 
 @Composable
 fun SettingsText(
+    modifier: Modifier = Modifier,
     label: String,
-    color: ColorScheme,
+    color: Color,
     style: TextStyle,
+    fontSize: TextUnit = TextUnit.Unspecified
 ){
 
-    Text(text = "Appearance",
-        color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.headlineSmall,
-        fontSize = 15.sp
+    Text(modifier = modifier,
+        text = label,
+        color = color,
+        style = style,
+        fontSize = fontSize
     )
 }

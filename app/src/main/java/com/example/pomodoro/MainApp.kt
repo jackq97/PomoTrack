@@ -1,5 +1,6 @@
 package com.example.pomodoro
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,23 +22,24 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.pomodoro.navigation.BottomNavigationItem
 import com.example.pomodoro.navigation.MyNavigation
 import com.example.pomodoro.navigation.NavigationRoutes
+import com.example.pomodoro.ui.composables.BottomNavigationBar
 import com.example.pomodoro.ui.composables.ConditionalLottieIcon
-import com.example.pomodoro.ui.composables.NavigationBar
 import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.SnackbarDemoAppState
 import com.example.pomodoro.util.rememberSnackbarDemoAppState
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainApp(){
 
     val appState: SnackbarDemoAppState = rememberSnackbarDemoAppState()
 
-    val inScreenState = rememberSaveable { (mutableStateOf(false)) }
-    val inTimerSettings = rememberSaveable { (mutableStateOf(false)) }
-    var showTopAppBar by remember { mutableStateOf(true) }
+    var inScreenState by remember { (mutableStateOf(false)) }
+    val bottomBarState = rememberSaveable { (mutableStateOf(false)) }
+
     var startPlaying by remember { mutableStateOf(false) }
-    var endReached by remember { mutableStateOf(false) }
+    var reversePlaying by remember { mutableStateOf(false) }
     var buttonPressed by remember { mutableStateOf(false) }
     var drawerIcon = R.raw.drawer_close
     var pieChartIcon = R.raw.pie_chart
@@ -47,46 +49,44 @@ fun MainApp(){
         pieChartIcon = R.raw.pie_chart_light
     }
 
-    val navBackStackEntry by appState.navController.currentBackStackEntryAsState()
+    val currentScreenRoute by appState.navController.currentBackStackEntryAsState()
 
-    when (navBackStackEntry?.destination?.route) {
+    when (currentScreenRoute?.destination?.route) {
 
         NavigationRoutes.PomodoroScreen.route -> {
-            inScreenState.value = false
-            inTimerSettings.value = false
-            showTopAppBar = true
+            inScreenState = false
+            bottomBarState.value = false
         }
 
         NavigationRoutes.UserDataScreen.route -> {
-            inScreenState.value = true
-            inTimerSettings.value = false
-            showTopAppBar = true
+            inScreenState = true
+            bottomBarState.value = false
+
         }
 
         NavigationRoutes.TimerSettingsScreen.route -> {
-            inScreenState.value = true
-            inTimerSettings.value = true
-            showTopAppBar = true
-        }
-
-        BottomNavigationItem.TimerSettingScreen.route -> {
-            showTopAppBar = true
+            inScreenState = true
+            bottomBarState.value = true
         }
 
         BottomNavigationItem.SettingsScreen.route -> {
-            showTopAppBar = false
+            bottomBarState.value = true
+        }
+
+        BottomNavigationItem.TimerSettingScreen.route -> {
+            bottomBarState.value = true
         }
 
         BottomNavigationItem.InfoScreen.route -> {
-            showTopAppBar = false
+            bottomBarState.value = true
         }
     }
 
-    if (inScreenState.value){
+    if (inScreenState){
         startPlaying = true
-        endReached = false
+        reversePlaying = false
     } else {
-        if (buttonPressed) endReached = true
+        if (buttonPressed) reversePlaying = true
     }
 
     AppTheme() {
@@ -94,7 +94,6 @@ fun MainApp(){
         Scaffold(
             scaffoldState = appState.scaffoldState,
             topBar = {
-                if (showTopAppBar)
                 TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                 ),
@@ -106,13 +105,13 @@ fun MainApp(){
                     navigationIcon = {
                         ConditionalLottieIcon(
                             playAnimation = startPlaying,
-                            playReverse = endReached,
+                            playReverse = reversePlaying,
                             lottieModifier = Modifier
                                 .fillMaxSize(),
                             res = drawerIcon,
                             onClick = {
                                 buttonPressed = true
-                                if (!inScreenState.value) {
+                                if (!inScreenState) {
                                 appState.navController.navigate(NavigationRoutes.TimerSettingsScreen.route)
                             } else {
                                 appState.navController.popBackStack()
@@ -126,13 +125,13 @@ fun MainApp(){
 
                         ConditionalLottieIcon(
                             playAnimation = startPlaying,
-                            playReverse = endReached,
+                            playReverse = reversePlaying,
                             modifier = Modifier,
                             lottieModifier = Modifier,
                             res = pieChartIcon,
                             onClick = {
                                 buttonPressed = true
-                                if (!inScreenState.value) {
+                                if (!inScreenState) {
                                     appState.navController.navigate(NavigationRoutes.UserDataScreen.route)
                                 } },
                             animationSpeed = 2f,
@@ -143,13 +142,14 @@ fun MainApp(){
             },
 
             bottomBar = {
-                if (inTimerSettings.value)
-                NavigationBar(appState.navController)
-                        },
+                        BottomNavigationBar(
+                            navController = appState.navController,
+                            bottomBarState = bottomBarState)
+            },
 
             content = {
                 MyNavigation(
-                    modifier = Modifier.padding(it),
+                    //modifier = Modifier.padding(it),
                     navController = appState.navController,
                     showSnackbar = { message, duration ->
                     appState.showSnackbar(message = message, duration = duration)

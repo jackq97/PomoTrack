@@ -15,4 +15,8 @@
     <string name="pomodoro">Pomodoro</string>
     <string name="skip_session">skip session</string>
     <string name="sound">sound</string>
+    <string name="settings">Settings</string>
+    <string name="appearance">Appearance</string>
+    <string name="enable_dark_mode_theme">Enable dark mode theme</string>
+    <string name="dark_mode">Dark Mode</string>
 </resources>
