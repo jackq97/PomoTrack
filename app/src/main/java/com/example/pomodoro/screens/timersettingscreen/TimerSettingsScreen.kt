@@ -2,8 +2,9 @@ package com.example.pomodoro.screens.timersettingscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.SnackbarDuration
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.pomodoro.R
 import com.example.pomodoro.model.local.Settings
 import com.example.pomodoro.screens.SharedPomodoroViewModel
@@ -28,9 +30,7 @@ import com.example.pomodoro.util.floatToTime
 
 @Composable
 fun TimerSettingsScreen(
-    viewModel: SharedPomodoroViewModel,
-    showSnackbar: (String, SnackbarDuration) -> Unit
-) {
+    viewModel: SharedPomodoroViewModel) {
 
     var focusSliderPosition by remember { mutableFloatStateOf(0f) }
     var breakSliderPosition by remember { mutableFloatStateOf(0f) }
@@ -63,9 +63,11 @@ fun TimerSettingsScreen(
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
-
+            
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
+                
+                Spacer(modifier = Modifier.height(55.dp))
+                
                 SliderComponent(
                     sliderLabelText = stringResource(R.string.focus),
                     sliderTimerText = convertMinutesToHoursAndMinutes(
@@ -105,7 +107,6 @@ fun TimerSettingsScreen(
 
                     onClick = {
 
-                        showSnackbar("Set to Defaults", SnackbarDuration.Short)
                         focusSliderPosition = 3.510038F
                         breakSliderPosition = 1.4549646F
                         longBreakSliderPosition = 1.9804868F

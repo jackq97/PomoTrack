@@ -3,6 +3,7 @@ package com.example.pomodoro.ui.composables
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -12,8 +13,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pomodoro.navigation.BottomNavigationItem
 
@@ -41,6 +44,7 @@ fun BottomNavigationBar(
 
                 items.forEachIndexed { index, item ->
                     NavigationBarItem(
+                        modifier = Modifier.padding(0.dp),
                         icon = {
                             Icon(
                                 painterResource(id = item.icon),

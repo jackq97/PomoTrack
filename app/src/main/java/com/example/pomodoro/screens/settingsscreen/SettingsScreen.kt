@@ -37,6 +37,7 @@ fun SettingsScreen(){
 
         Surface(
             modifier = Modifier
+                .padding(0.dp)
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {

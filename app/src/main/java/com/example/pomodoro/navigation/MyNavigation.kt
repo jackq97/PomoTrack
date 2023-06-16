@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.material.SnackbarDuration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,9 +21,7 @@ import com.google.accompanist.navigation.animation.composable
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MyNavigation(
-    //modifier: Modifier,
-    navController: NavHostController,
-    showSnackbar: (String, SnackbarDuration) -> Unit) {
+    navController: NavHostController) {
 
     val animationDurationMilli = 500
 
@@ -39,7 +36,6 @@ fun MyNavigation(
         composable(route = NavigationRoutes.PomodoroScreen.route) {
             PomodoroScreen(viewModel = viewModel)
         }
-
 
         composable(route = NavigationRoutes.UserDataScreen.route,
             enterTransition = {
@@ -105,15 +101,13 @@ fun MyNavigation(
             }
         ) {
             TimerSettingsScreen(
-                viewModel = viewModel,
-                showSnackbar = showSnackbar)
+                viewModel = viewModel)
         }
 
         //bottom bar
         composable(route = BottomNavigationItem.TimerSettingScreen.route) {
             TimerSettingsScreen(
-                viewModel = viewModel,
-                showSnackbar = showSnackbar)
+                viewModel = viewModel)
         }
 
         composable(route = BottomNavigationItem.SettingsScreen.route) {

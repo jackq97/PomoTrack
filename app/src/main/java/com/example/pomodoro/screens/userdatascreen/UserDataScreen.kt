@@ -68,6 +68,8 @@ fun UserDataScreen(viewModel: UserDataViewModel = hiltViewModel()) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
 
+                Spacer(modifier = Modifier.height(55.dp))
+
                 Row {
 
                     InfoPomoColumn(
