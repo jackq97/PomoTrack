@@ -47,7 +47,6 @@ fun MainApp(){
     var drawerIcon = R.raw.drawer_close
     var pieChartIcon = R.raw.pie_chart
 
-
     if (isSystemInDarkTheme()){
         drawerIcon = R.raw.drawer_close_light
         pieChartIcon = R.raw.pie_chart_light
@@ -92,7 +91,7 @@ fun MainApp(){
         }
     }
 
-    if (inScreenState){
+    if (inScreenState) {
         startPlaying = true
         reversePlaying = false
     } else {
@@ -102,6 +101,7 @@ fun MainApp(){
     AppTheme() {
 
         Scaffold(
+
             topBar = {
 
                 AnimatedVisibility(
@@ -109,7 +109,6 @@ fun MainApp(){
                     enter = fadeIn(),
                     exit = fadeOut(),
                     content = {
-
 
                         TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.surface,

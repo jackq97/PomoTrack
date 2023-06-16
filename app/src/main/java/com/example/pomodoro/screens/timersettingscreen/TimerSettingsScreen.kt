@@ -127,8 +127,6 @@ fun TimerSettingsScreen(
                     )
                 }
             }
-
-            //BottomNavigationBar(navController = rememberNavController())
         }
     }
 }
