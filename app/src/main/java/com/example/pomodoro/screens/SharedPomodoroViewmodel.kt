@@ -28,6 +28,7 @@ class SharedPomodoroViewModel @Inject constructor(
 
     val settings = repository.getSettings()
     val getVolume = repository.getVolume()
+    val getDarkTheme = repository.getDarkTheme()
 
     var focusDuration: Long = 0L
     var breakDuration: Long = 0L
@@ -73,6 +74,10 @@ class SharedPomodoroViewModel @Inject constructor(
 
     fun saveVolume(volume: Float) {
         repository.saveVolume(volume = volume)
+    }
+
+    fun saveDarkTheme(darkTheme: Boolean) {
+        repository.saveDarkTheme(darkTheme = darkTheme)
     }
 
     fun saveSettings(settings: Settings) {

@@ -8,6 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -26,13 +27,16 @@ fun BottomNavigationBar(
     bottomBarState: MutableState<Boolean>
 ){
 
-    var selectedItem by remember { mutableIntStateOf(0) }
-
     val items = listOf(
         BottomNavigationItem.TimerSettingScreen,
         BottomNavigationItem.SettingsScreen,
         BottomNavigationItem.InfoScreen)
 
+    var selectedItem by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(bottomBarState.value) {
+        selectedItem = 0
+    }
 
     AnimatedVisibility(
         visible = bottomBarState.value,

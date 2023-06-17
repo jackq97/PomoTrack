@@ -24,7 +24,6 @@ import com.example.pomodoro.R
 import com.example.pomodoro.model.local.Settings
 import com.example.pomodoro.screens.SharedPomodoroViewModel
 import com.example.pomodoro.ui.composables.SliderComponent
-import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.convertMinutesToHoursAndMinutes
 import com.example.pomodoro.util.floatToTime
 
@@ -56,18 +55,18 @@ fun TimerSettingsScreen(
         viewModel.resetTimer()
     }
 
-    AppTheme() {
+
 
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
-            
+
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                
+
                 Spacer(modifier = Modifier.height(55.dp))
-                
+
                 SliderComponent(
                     sliderLabelText = stringResource(R.string.focus),
                     sliderTimerText = convertMinutesToHoursAndMinutes(
@@ -128,7 +127,7 @@ fun TimerSettingsScreen(
                 }
             }
         }
-    }
+
 }
 
 @Preview

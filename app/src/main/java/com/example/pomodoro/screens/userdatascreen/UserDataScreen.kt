@@ -33,7 +33,6 @@ import com.example.pomodoro.ui.composables.LineChart
 import com.example.pomodoro.ui.composables.PieChart
 import com.example.pomodoro.ui.composables.radiobuttons.LineRadioButtons
 import com.example.pomodoro.ui.composables.radiobuttons.PieRadioButtons
-import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.minutesToHoursAndMinutes
 import kotlin.math.roundToInt
 
@@ -52,128 +51,125 @@ fun UserDataScreen(viewModel: UserDataViewModel = hiltViewModel()) {
     val upperValue = lineData.value.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
     val lowerValue = lineData.value.minOfOrNull { it.second }?.toInt() ?: 0
 
-    AppTheme() {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.surface)
+    ) {
 
-        Surface(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.surface)
+                .verticalScroll(rememberScrollState())
+                .padding(top = 10.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
-            Column(
+            Spacer(modifier = Modifier.height(55.dp))
+
+            Row {
+
+                InfoPomoColumn(
+                    modifier = Modifier,
+                    label = stringResource(R.string.today_s_pomo),
+                    progress = roundsDifference.value,
+                    value = dayData.value.recordedRounds
+                )
+
+                InfoColumn(
+                    modifier = Modifier
+                        .padding(end = 10.dp),
+                    label = stringResource(R.string.today_s_focus_h),
+                    progress = focusDifference.value,
+                    value = dayData.value.focusRecordedDuration
+                )
+            }
+
+            Row(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(top = 10.dp),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .padding(top = 12.dp)
             ) {
 
-                Spacer(modifier = Modifier.height(55.dp))
-
-                Row {
-
-                    InfoPomoColumn(
-                        modifier = Modifier,
-                        label = stringResource(R.string.today_s_pomo),
-                        progress = roundsDifference.value,
-                        value = dayData.value.recordedRounds
-                    )
-
-                    InfoColumn(
-                        modifier = Modifier
-                            .padding(end = 10.dp),
-                        label = stringResource(R.string.today_s_focus_h),
-                        progress = focusDifference.value,
-                        value = dayData.value.focusRecordedDuration
-                    )
-                }
-
-                Row(
+                InfoTotalColumn(
                     modifier = Modifier
-                        .padding(top = 12.dp)
-                ) {
+                        .padding(start = 10.dp),
+                    label = stringResource(R.string.total_pomos),
+                    value = totalPomos.value.toString()
+                )
 
-                    InfoTotalColumn(
-                        modifier = Modifier
-                            .padding(start = 10.dp),
-                        label = stringResource(R.string.total_pomos),
-                        value = totalPomos.value.toString()
-                    )
-
-                    InfoTotalColumn(
-                        modifier = Modifier
-                            .padding(
-                                start = 10.dp,
-                                end = 10.dp
-                            ),
-                        label = stringResource(R.string.total_focus_duration),
-                        value = minutesToHoursAndMinutes(totalFocus.value)
-                    )
-                }
-
-                Box(
+                InfoTotalColumn(
                     modifier = Modifier
                         .padding(
-                            top = 12.dp,
                             start = 10.dp,
                             end = 10.dp
-                        )
-                        .clip(RoundedCornerShape(5.dp))
-                        .fillMaxWidth()
-                        .height(270.dp)
-                        .background(color = MaterialTheme.colorScheme.primaryContainer)
+                        ),
+                    label = stringResource(R.string.total_focus_duration),
+                    value = minutesToHoursAndMinutes(totalFocus.value)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .padding(
+                        top = 12.dp,
+                        start = 10.dp,
+                        end = 10.dp
+                    )
+                    .clip(RoundedCornerShape(5.dp))
+                    .fillMaxWidth()
+                    .height(270.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            ) {
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    PieRadioButtons { viewModel.getPieDataBySortOrder(sortOrder = it) }
 
-                        PieRadioButtons { viewModel.getPieDataBySortOrder(sortOrder = it) }
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        PieChart(values = pieData.value)
-                    }
+                    PieChart(values = pieData.value)
                 }
+            }
 
-                Box(
-                    modifier = Modifier
-                        .padding(
-                            top = 12.dp,
-                            start = 10.dp,
-                            end = 10.dp,
-                            bottom = 10.dp
-                        )
-                        .clip(RoundedCornerShape(5.dp))
-                        .fillMaxWidth()
-                        .height(290.dp)
-                        .background(color = MaterialTheme.colorScheme.primaryContainer)
+            Box(
+                modifier = Modifier
+                    .padding(
+                        top = 12.dp,
+                        start = 10.dp,
+                        end = 10.dp,
+                        bottom = 10.dp
+                    )
+                    .clip(RoundedCornerShape(5.dp))
+                    .fillMaxWidth()
+                    .height(290.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+            ) {
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        LineRadioButtons {
-                            viewModel.getLineDataBySortOrder(sortOrder = it)
-                        }
-
-                        Spacer(modifier = Modifier.height(30.dp))
-
-                        LineChart(
-                            modifier = Modifier
-                                .width(350.dp)
-                                .padding(8.dp)
-                                .height(180.dp),
-                            data = lineData.value,
-                            upperValue = upperValue,
-                            lowerValue = lowerValue
-                        )
+                    LineRadioButtons {
+                        viewModel.getLineDataBySortOrder(sortOrder = it)
                     }
+
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    LineChart(
+                        modifier = Modifier
+                            .width(350.dp)
+                            .padding(8.dp)
+                            .height(180.dp),
+                        data = lineData.value,
+                        upperValue = upperValue,
+                        lowerValue = lowerValue
+                    )
                 }
             }
         }

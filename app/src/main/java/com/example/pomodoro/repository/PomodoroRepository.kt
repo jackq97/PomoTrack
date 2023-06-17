@@ -167,15 +167,15 @@ class PomodoroRepository @Inject constructor(
         }
     }
 
-    fun getTimerReset() = settingsManager.getResetTimer().stateIn(
+    fun getDarkTheme() = settingsManager.getDarkTheme().stateIn(
         scope = myScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = false
     )
 
-    fun saveResetTimer(reset: Boolean) {
+    fun saveDarkTheme(darkTheme: Boolean) {
         myScope.launch {
-            settingsManager.saveResetTimer(reset = reset)
+            settingsManager.saveDarkTheme(darkTheme = darkTheme)
         }
     }
 }

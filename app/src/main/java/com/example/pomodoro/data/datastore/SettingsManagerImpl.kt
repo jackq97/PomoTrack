@@ -49,16 +49,16 @@ class SettingsManagerImpl (private val dataStore: DataStore<Preferences>):
             }
     }
 
-    override suspend fun saveResetTimer(reset: Boolean) {
+    override suspend fun saveDarkTheme(darkTheme: Boolean) {
         dataStore.edit { preferences ->
-            preferences[RESET_TIMER] = reset
+            preferences[Dark_Theme] = darkTheme
         }
     }
 
-    override fun getResetTimer(): Flow<Boolean> {
+    override fun getDarkTheme(): Flow<Boolean> {
 
         return dataStore.data.map { preferences ->
-            preferences[RESET_TIMER] ?: false
+            preferences[Dark_Theme] ?: true
         }.catch {
                 exception ->
             if (exception is IOException) {

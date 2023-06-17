@@ -19,4 +19,6 @@
     <string name="appearance">Appearance</string>
     <string name="enable_dark_mode_theme">Enable dark mode theme</string>
     <string name="dark_mode">Dark Mode</string>
+    <string name="material_you">Material You</string>
+    <string name="enable_custom_theme_for_your_device">Enable custom theme</string>
 </resources>

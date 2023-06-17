@@ -11,7 +11,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,7 +54,6 @@ import com.example.pomodoro.ui.composables.AnimatedCircularProgressbar
 import com.example.pomodoro.ui.composables.CircularProgressbar
 import com.example.pomodoro.ui.composables.ConditionalLottieIcon
 import com.example.pomodoro.ui.composables.VerticalSlider
-import com.example.pomodoro.ui.theme.AppTheme
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
 import kotlin.math.round
@@ -89,6 +87,7 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
 
     val settings = viewModel.settings.collectAsState()
     val volume = viewModel.getVolume.collectAsState()
+    val darkTheme = viewModel.getDarkTheme.collectAsState()
 
     focusSettingDur = settings.value.focusDur
     restSettingDur = settings.value.restDur
@@ -101,8 +100,6 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
     var startPlaying by remember { mutableStateOf(false) }
     var endReached by remember { mutableStateOf(false) }
     var buttonPressed by remember { mutableStateOf(false) }
-
-    AppTheme() {
 
         Surface(
             modifier = Modifier
@@ -209,7 +206,7 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
 
                 var playPauseIcon = R.raw.play_pause
 
-                if (isSystemInDarkTheme()) {
+                if (darkTheme.value) {
                     playPauseIcon = R.raw.play_pause_light
                 }
 
@@ -346,7 +343,6 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
             }
         }
     }
-}
 
 @Preview(showBackground = true)
 @Composable
