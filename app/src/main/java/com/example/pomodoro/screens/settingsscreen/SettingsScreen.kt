@@ -58,25 +58,6 @@ fun SettingsScreen(viewModel: SharedPomodoroViewModel){
                 style = MaterialTheme.typography.headlineSmall,
                 fontSize = 15.sp)
 
-            /*Row(modifier = Modifier.fillMaxWidth()) {
-
-                Column {
-                    SettingsText(label = stringResource(R.string.dark_mode),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.headlineSmall)
-
-                    SettingsText(label = stringResource(R.string.enable_dark_mode_theme),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.bodySmall)
-                }
-
-                Spacer(modifier = Modifier.width(170.dp))
-
-                Switch(
-                    checked = checked,
-                    onCheckedChange = { checked = it })
-            }*/
-
             SettingsSwitchRow(titleLabel = stringResource(R.string.dark_mode),
                 infoLabel = stringResource(R.string.enable_dark_mode_theme),
                 checked = checked,

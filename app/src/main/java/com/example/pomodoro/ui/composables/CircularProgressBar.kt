@@ -53,7 +53,6 @@ fun CircularProgressbar(
 }
 
 //animated progress
-
 @Composable
 fun AnimatedCircularProgressbar(
     size: Dp = 260.dp,

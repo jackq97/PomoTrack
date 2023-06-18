@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -78,6 +79,8 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
 
     val mContext = LocalContext.current
     val density = LocalDensity.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycle = lifecycleOwner.lifecycle
 
     var focusSettingDur by remember { mutableFloatStateOf(0f) }
     var restSettingDur by remember { mutableFloatStateOf(0f) }
@@ -237,6 +240,7 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                 var isSliderVisible by remember { mutableStateOf(false) }
                 val mMediaPlayer = MediaPlayer.create(mContext, R.raw.tick)
                 mMediaPlayer.setVolume(volumeSliderValue, volumeSliderValue) // Update the MediaPlayer volume
+
 
                 viewModel.onTickRest = {
                     mMediaPlayer.start()

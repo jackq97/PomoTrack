@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ fun SettingsSwitchRow(
 ){
 
     Row(modifier = Modifier
+        .padding(vertical = 5.dp)
         .fillMaxWidth()
         .height(50.dp)
     ) {
@@ -46,7 +48,4 @@ fun SettingsSwitchRow(
 
 @Composable
 @Preview
-fun SwitchPreview(){
-
-    SettingsSwitchRow(titleLabel = "sagittis", infoLabel = "eruditi", checked = false, onCheckChange = {})
-}
+fun SwitchPreview(){}
