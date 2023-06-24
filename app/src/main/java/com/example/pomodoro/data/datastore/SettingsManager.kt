@@ -10,7 +10,8 @@ val BREAK_SLIDER = floatPreferencesKey("break_slider")
 val LONG_SLIDER = floatPreferencesKey("long_slider")
 val ROUND_SLIDER = floatPreferencesKey("round_slider")
 val VOLUME_SLIDER = floatPreferencesKey("volume_slider")
-val Dark_Theme = booleanPreferencesKey("dark_theme")
+val DARK_THEME = booleanPreferencesKey("dark_theme")
+val SCREEN_ON = booleanPreferencesKey("screen_on")
 
 interface SettingsManager {
     suspend fun saveSettings(settings: Settings)
@@ -19,4 +20,7 @@ interface SettingsManager {
     fun getVolumeSettings(): Flow<Float>
     suspend fun saveDarkTheme(darkTheme: Boolean)
     fun getDarkTheme(): Flow<Boolean>
+
+    suspend fun saveScreenOn(screenOn: Boolean)
+    fun getScreenOn(): Flow<Boolean>
 }

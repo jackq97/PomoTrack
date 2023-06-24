@@ -34,9 +34,9 @@ class PomodoroRepository @Inject constructor(
     private val yearFormatter = SimpleDateFormat("yyyy", Locale.getDefault())
 
     //room database
-    suspend fun addList(list: List<Duration>) = durationDao.insertListDuration(list = list)
+    //suspend fun addList(list: List<Duration>) = durationDao.insertListDuration(list = list)
 
-    suspend fun nukeTable() { durationDao.deleteAllData() }
+    //suspend fun nukeTable() { durationDao.deleteAllData() }
 
     suspend fun getDurationByDate(date: String): Duration? { return durationDao.getDurationByDate(date) }
 
@@ -176,6 +176,18 @@ class PomodoroRepository @Inject constructor(
     fun saveDarkTheme(darkTheme: Boolean) {
         myScope.launch {
             settingsManager.saveDarkTheme(darkTheme = darkTheme)
+        }
+    }
+
+    fun getScreenOn() = settingsManager.getScreenOn().stateIn(
+        scope = myScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = false
+    )
+
+    fun saveScreenOn(screenOn: Boolean) {
+        myScope.launch {
+            settingsManager.saveScreenOn(screenOn = screenOn)
         }
     }
 }

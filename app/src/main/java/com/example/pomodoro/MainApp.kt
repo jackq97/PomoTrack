@@ -124,7 +124,7 @@ fun MainApp(){
 
                             title = {
                                 Text(
-                                    text = stringResource(R.string.pomodoro),
+                                    text = stringResource(R.string.pomodroid),
                                     style = MaterialTheme.typography.headlineMedium
                                 )
                             },

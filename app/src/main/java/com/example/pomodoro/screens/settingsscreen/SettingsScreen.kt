@@ -27,13 +27,21 @@ import com.example.pomodoro.ui.composables.SettingsText
 fun SettingsScreen(viewModel: SharedPomodoroViewModel){
 
     val darkTheme = viewModel.getDarkTheme.collectAsState()
+    val screenOn = viewModel.getScreenOn.collectAsState()
 
     var checkedDark by remember { mutableStateOf(darkTheme.value) }
+    var checkedScreenOn by remember { mutableStateOf(screenOn.value) }
 
     if (checkedDark){
         viewModel.saveDarkTheme(darkTheme = true)
     } else {
         viewModel.saveDarkTheme(darkTheme = false)
+    }
+
+    if (checkedScreenOn){
+        viewModel.saveScreenOn(screenOn = true)
+    } else {
+        viewModel.saveScreenOn(screenOn = false)
     }
 
     Surface(
@@ -62,6 +70,11 @@ fun SettingsScreen(viewModel: SharedPomodoroViewModel){
                 infoLabel = stringResource(R.string.enable_dark_mode_theme),
                 checked = checkedDark,
                 onCheckChange = {checkedDark = it})
+
+            SettingsSwitchRow(titleLabel = stringResource(R.string.keep_screen_on),
+                infoLabel = stringResource(R.string.prevents_screen_from_shutting_off),
+                checked = checkedScreenOn,
+                onCheckChange = {checkedScreenOn = it})
 
         }
     }

@@ -51,14 +51,34 @@ class SettingsManagerImpl (private val dataStore: DataStore<Preferences>):
 
     override suspend fun saveDarkTheme(darkTheme: Boolean) {
         dataStore.edit { preferences ->
-            preferences[Dark_Theme] = darkTheme
+            preferences[DARK_THEME] = darkTheme
         }
     }
 
     override fun getDarkTheme(): Flow<Boolean> {
 
         return dataStore.data.map { preferences ->
-            preferences[Dark_Theme] ?: true
+            preferences[DARK_THEME] ?: true
+        }.catch {
+                exception ->
+            if (exception is IOException) {
+                Log.e("exception", "error reading preferences: $exception")
+                emit(false)
+            } else {
+                throw exception
+            }
+        }
+    }
+
+    override suspend fun saveScreenOn(screenOn: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[SCREEN_ON] = screenOn
+        }
+    }
+
+    override fun getScreenOn(): Flow<Boolean> {
+        return dataStore.data.map { preferences ->
+            preferences[SCREEN_ON] ?: false
         }.catch {
                 exception ->
             if (exception is IOException) {

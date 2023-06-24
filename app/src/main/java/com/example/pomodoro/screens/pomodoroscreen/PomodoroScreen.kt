@@ -53,6 +53,7 @@ import com.example.pomodoro.ui.composables.AnimatedCircularProgressbar
 import com.example.pomodoro.ui.composables.CircularProgressbar
 import com.example.pomodoro.ui.composables.ConditionalLottieIcon
 import com.example.pomodoro.ui.composables.VerticalSlider
+import com.example.pomodoro.util.KeepScreenOn
 import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.secondsToMinutesAndSeconds
 import kotlinx.coroutines.flow.collectLatest
@@ -90,6 +91,7 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
     val settings = viewModel.settings.collectAsState()
     val volume = viewModel.getVolume.collectAsState()
     val darkTheme = viewModel.getDarkTheme.collectAsState()
+    val screenOn = viewModel.getScreenOn.collectAsState()
 
     focusSettingDur = settings.value.focusDur
     restSettingDur = settings.value.restDur
@@ -103,6 +105,10 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
     var endReached by remember { mutableStateOf(false) }
     var buttonPressed by remember { mutableStateOf(false) }
     var isSliderVisible by remember { mutableStateOf(false) }
+
+    if (screenOn.value){
+        KeepScreenOn()
+    }
 
     Surface(
             modifier = Modifier

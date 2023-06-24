@@ -36,6 +36,7 @@ class SharedPomodoroViewModel @Inject constructor(
     val settings = repository.getSettings()
     val getVolume = repository.getVolume()
     val getDarkTheme = repository.getDarkTheme()
+    val getScreenOn = repository.getScreenOn()
 
     var focusDuration: Long = 0L
     var breakDuration: Long = 0L
@@ -113,6 +114,10 @@ class SharedPomodoroViewModel @Inject constructor(
         repository.saveSettings(settings = settings)
     }
 
+    fun saveScreenOn(screenOn: Boolean) {
+        repository.saveScreenOn(screenOn = screenOn)
+    }
+
     fun upsert(focusDuration: Int,
                restDuration: Int,
                rounds: Int) {
@@ -155,7 +160,7 @@ class SharedPomodoroViewModel @Inject constructor(
                       volume: Float){
 
         if (restMediaPlayer == null) {
-            restMediaPlayer = MediaPlayer.create(context, R.raw.rest_finish)
+            restMediaPlayer = MediaPlayer.create(context, R.raw.focus_finish)
         }
         restMediaPlayer?.setVolume(volume,volume)
         restMediaPlayer?.start()
@@ -165,7 +170,7 @@ class SharedPomodoroViewModel @Inject constructor(
                       volume: Float){
 
         if (focusMediaPlayer == null) {
-            focusMediaPlayer = MediaPlayer.create(context, R.raw.focus_finish)
+            focusMediaPlayer = MediaPlayer.create(context, R.raw.rest_finish)
         }
         focusMediaPlayer?.setVolume(volume,volume)
         focusMediaPlayer?.start()
