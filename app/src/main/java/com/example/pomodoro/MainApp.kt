@@ -104,9 +104,7 @@ fun MainApp(){
         if (buttonPressed) reversePlaying = true
     }
 
-    AppTheme(darkTheme = darkTheme.value,
-        setDynamicColor = false
-    ) {
+    AppTheme(darkTheme = darkTheme.value) {
 
         Scaffold(
 
