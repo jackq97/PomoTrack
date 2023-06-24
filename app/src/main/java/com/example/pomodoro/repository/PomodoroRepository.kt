@@ -170,7 +170,7 @@ class PomodoroRepository @Inject constructor(
     fun getDarkTheme() = settingsManager.getDarkTheme().stateIn(
         scope = myScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = false
+        initialValue = true
     )
 
     fun saveDarkTheme(darkTheme: Boolean) {

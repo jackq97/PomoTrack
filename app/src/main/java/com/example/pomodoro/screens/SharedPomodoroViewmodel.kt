@@ -1,8 +1,11 @@
 package com.example.pomodoro.screens
 
+import android.content.Context
+import android.media.MediaPlayer
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pomodoro.R
 import com.example.pomodoro.model.local.Duration
 import com.example.pomodoro.model.local.Settings
 import com.example.pomodoro.repository.PomodoroRepository
@@ -10,6 +13,7 @@ import com.example.pomodoro.util.floatToTime
 import com.example.pomodoro.util.millisecondsToMinutes
 import com.example.pomodoro.util.minutesToLong
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -25,6 +29,9 @@ class SharedPomodoroViewModel @Inject constructor(
 
     private val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     private val currentDate: String =  dateFormat.format(Date())
+    private var tickMediaPlayer: MediaPlayer? = null
+    private var restMediaPlayer: MediaPlayer? = null
+    private var focusMediaPlayer: MediaPlayer? = null
 
     val settings = repository.getSettings()
     val getVolume = repository.getVolume()
@@ -72,6 +79,28 @@ class SharedPomodoroViewModel @Inject constructor(
     private val _finishedCount = MutableStateFlow(0)
     val finishedCount: StateFlow<Int> = _finishedCount
 
+    val tick = MutableSharedFlow<Unit>()
+    val focusFinish = MutableSharedFlow<Unit>()
+    val restFinish = MutableSharedFlow<Unit>()
+
+    fun alertRestTick() {
+        viewModelScope.launch {
+            tick.emit(Unit)
+        }
+    }
+
+    fun alertFocusCompleteTick() {
+        viewModelScope.launch {
+            focusFinish.emit(Unit)
+        }
+    }
+
+    fun alertRestCompleteTick() {
+        viewModelScope.launch {
+            restFinish.emit(Unit)
+        }
+    }
+
     fun saveVolume(volume: Float) {
         repository.saveVolume(volume = volume)
     }
@@ -112,14 +141,39 @@ class SharedPomodoroViewModel @Inject constructor(
         }
     }
 
+    fun playTickSound(context: Context,
+                  volume: Float){
+
+        if (tickMediaPlayer == null) {
+            tickMediaPlayer = MediaPlayer.create(context, R.raw.tick)
+        }
+        tickMediaPlayer?.setVolume(volume,volume)
+        tickMediaPlayer?.start()
+    }
+
+    fun playRestSound(context: Context,
+                      volume: Float){
+
+        if (restMediaPlayer == null) {
+            restMediaPlayer = MediaPlayer.create(context, R.raw.rest_finish)
+        }
+        restMediaPlayer?.setVolume(volume,volume)
+        restMediaPlayer?.start()
+    }
+
+    fun playFocusSound(context: Context,
+                      volume: Float){
+
+        if (focusMediaPlayer == null) {
+            focusMediaPlayer = MediaPlayer.create(context, R.raw.focus_finish)
+        }
+        focusMediaPlayer?.setVolume(volume,volume)
+        focusMediaPlayer?.start()
+    }
+
     private var focusCountDownTimer: CountDownTimer? = null
     private var restCountDownTimer: CountDownTimer? = null
     private var longBreakCountDownTimer: CountDownTimer? = null
-
-    var onFinishFocus: () -> Unit = {}
-
-    var onTickRest: () -> Unit = {}
-    var onFinishRest: () -> Unit = {}
 
     fun startFocusTimer() {
 
@@ -132,9 +186,8 @@ class SharedPomodoroViewModel @Inject constructor(
             }
 
             override fun onFinish() {
-                onFinishFocus()
+                alertFocusCompleteTick()
                 _isRunningFocus.value = false
-                //_remainingFocusTime.value = 0
                 _finishedCount.value++
                 upsert(focusDuration = millisecondsToMinutes(focusDuration),
                     restDuration = 0,
@@ -157,16 +210,15 @@ class SharedPomodoroViewModel @Inject constructor(
 
             override fun onTick(millisUntilFinished: Long) {
                 _remainingRestTime.value = millisUntilFinished / 1000
-                onTickRest()
+                alertRestTick()
             }
 
             override fun onFinish() {
-                onFinishRest()
+                alertRestCompleteTick()
                 upsert(focusDuration = 0,
                     restDuration = millisecondsToMinutes(breakDuration),
                     rounds = 0)
                 _isRunningRest.value = false
-                //_remainingRestTime.value = 0
                 startFocusTimer()
             }
         }.start()
@@ -181,11 +233,11 @@ class SharedPomodoroViewModel @Inject constructor(
 
             override fun onTick(millisUntilFinished: Long) {
                 _remainingLongBreakTime.value = millisUntilFinished / 1000
-                onTickRest()
+                alertRestTick()
             }
 
             override fun onFinish() {
-                onFinishRest()
+                alertRestCompleteTick()
                 _isRunningLongBreak.value = false
                 //_remainingLongBreakTime.value = 0
                 _finishedCount.value = 0
@@ -225,12 +277,11 @@ class SharedPomodoroViewModel @Inject constructor(
                         }
 
                         override fun onFinish() {
-                            onFinishFocus()
+                            alertFocusCompleteTick()
                             upsert(focusDuration = millisecondsToMinutes(focusDuration),
                                 restDuration = 0,
                                 rounds = 1)
                             _isRunningFocus.value = false
-                            //_remainingFocusTime.value = 0
                             _finishedCount.value++
                             if (_finishedCount.value == roundsDuration) {
                                 startLongBreakTimer()
@@ -246,12 +297,12 @@ class SharedPomodoroViewModel @Inject constructor(
                     restCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
                         // ...
                         override fun onTick(p0: Long) {
-                            onTickRest()
+                            alertRestTick()
                             _remainingRestTime.value = p0 / 1000
                         }
 
                         override fun onFinish() {
-                            onFinishRest()
+                            alertRestCompleteTick()
                             upsert(focusDuration = 0,
                                 restDuration = millisecondsToMinutes(breakDuration),
                                 rounds = 0)
@@ -267,12 +318,12 @@ class SharedPomodoroViewModel @Inject constructor(
                     longBreakCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
                         // ...
                         override fun onTick(p0: Long) {
-                            onTickRest()
+                            alertRestTick()
                             _remainingLongBreakTime.value = p0 / 1000
                         }
 
                         override fun onFinish() {
-                            onFinishRest()
+                            alertRestCompleteTick()
                             _isRunningLongBreak.value = false
                             //_remainingLongBreakTime.value = 0
                             _finishedCount.value = 0
@@ -290,9 +341,6 @@ class SharedPomodoroViewModel @Inject constructor(
         _isRunningFocus.value = false
         _isRunningRest.value = false
         _isRunningLongBreak.value = false
-//        _remainingFocusTime.value = TOTAL_TIME
-//        _remainingRestTime.value = TOTAL_TIME
-//        _remainingLongBreakTime.value = TOTAL_TIME
         _finishedCount.value = 0
         pausedTime = 0
     }
@@ -302,8 +350,8 @@ class SharedPomodoroViewModel @Inject constructor(
        _isPaused.value = false
 
         when {
-
             _isRunningFocus.value -> {
+                alertFocusCompleteTick()
                 focusCountDownTimer?.cancel()
                 _isRunningFocus.value = false
                 _finishedCount.value++
@@ -320,6 +368,7 @@ class SharedPomodoroViewModel @Inject constructor(
             }
 
             _isRunningRest.value -> {
+                alertRestCompleteTick()
                 _isRunningFocus.value = true
                 _isRunningRest.value = false
                 _isRunningLongBreak.value = false
@@ -328,6 +377,7 @@ class SharedPomodoroViewModel @Inject constructor(
             }
 
             _isRunningLongBreak.value -> {
+                alertRestCompleteTick()
                 _finishedCount.value = 0
                 _isRunningFocus.value = true
                 _isRunningRest.value = false
@@ -337,6 +387,7 @@ class SharedPomodoroViewModel @Inject constructor(
             }
 
             else -> {
+                alertFocusCompleteTick()
                 startRestTimer()
             }
         }
@@ -352,11 +403,16 @@ class SharedPomodoroViewModel @Inject constructor(
     override fun onCleared() {
 
         super.onCleared()
+        tickMediaPlayer?.release()
+        tickMediaPlayer = null
+        restMediaPlayer?.release()
+        restMediaPlayer = null
+        focusMediaPlayer?.release()
+        focusMediaPlayer = null
         stopAllTimers()
     }
 
     companion object {
-        const val TOTAL_TIME = 0L
         const val INTERVAL = 1000L
     }
 }

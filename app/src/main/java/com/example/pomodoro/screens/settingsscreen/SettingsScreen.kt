@@ -28,9 +28,9 @@ fun SettingsScreen(viewModel: SharedPomodoroViewModel){
 
     val darkTheme = viewModel.getDarkTheme.collectAsState()
 
-    var checked by remember { mutableStateOf(darkTheme.value) }
+    var checkedDark by remember { mutableStateOf(darkTheme.value) }
 
-    if (checked){
+    if (checkedDark){
         viewModel.saveDarkTheme(darkTheme = true)
     } else {
         viewModel.saveDarkTheme(darkTheme = false)
@@ -60,8 +60,8 @@ fun SettingsScreen(viewModel: SharedPomodoroViewModel){
 
             SettingsSwitchRow(titleLabel = stringResource(R.string.dark_mode),
                 infoLabel = stringResource(R.string.enable_dark_mode_theme),
-                checked = checked,
-                onCheckChange = {checked = it})
+                checked = checkedDark,
+                onCheckChange = {checkedDark = it})
 
         }
     }

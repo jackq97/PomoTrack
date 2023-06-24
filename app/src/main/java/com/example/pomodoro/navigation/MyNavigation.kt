@@ -31,7 +31,9 @@ fun MyNavigation(
 
     val darkTheme = viewModel.getDarkTheme.collectAsState()
 
-    AppTheme(darkTheme = darkTheme.value) {
+    AppTheme(darkTheme = darkTheme.value,
+        setDynamicColor = false
+    ) {
 
         AnimatedNavHost(
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
