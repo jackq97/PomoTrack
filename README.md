@@ -1,9 +1,11 @@
 <div align="center">
-  <img alt="Pomotroid" src="art/title.png" width="800px">
+  <img alt="Pomotroid" src="art/title.png" width="500px">
 </div>
 <div align="center">
   <img alt="Pomotroid in action" src="art/banner.png" width="800px">
 </div>
+
+---
 
 <p align="center">Simple and visually-pleasing Pomodoro timer.</p>
 
