@@ -2,11 +2,9 @@
   <img alt="Pomotroid" src="art/title.png">
 </div>
 
-<style>
-  .top-margin {
-    margin-top: 20px;
-  }
-</style>
+<div align="center">
+  <img alt="rct" src="art/Rectangle.png">
+</div>
 
 <div align="center">
   <img alt="Pomotroid in action" src="art/banner.png" width="800px">
