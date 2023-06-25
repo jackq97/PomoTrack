@@ -62,11 +62,13 @@ fun InfoScreen(){
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun InfoPreview(){
     InfoScreen()
 }

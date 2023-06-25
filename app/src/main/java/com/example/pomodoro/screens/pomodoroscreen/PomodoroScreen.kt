@@ -1,5 +1,6 @@
 package com.example.pomodoro.screens.pomodoroscreen
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -105,6 +106,8 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
     var endReached by remember { mutableStateOf(false) }
     var buttonPressed by remember { mutableStateOf(false) }
     var isSliderVisible by remember { mutableStateOf(false) }
+
+    Log.d("TAG", "PomodoroScreen: ${screenOn.value}")
 
     if (screenOn.value){
         KeepScreenOn()

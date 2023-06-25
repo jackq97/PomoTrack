@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pomodoro</string>
+    <string name="app_name">Pomotrack</string>
     <string name="focus">Focus</string>
     <string name="short_break">Short Break</string>
     <string name="long_break">Long Break</string>
@@ -12,7 +12,7 @@
     <string name="total_focus_duration">Total Focus Duration</string>
     <string name="reset">Reset</string>
     <string name="rest">Rest</string>
-    <string name="pomodoro">Pomodoro</string>
+    <string name="pomodoro">Pomotrack</string>
     <string name="skip_session">skip session</string>
     <string name="sound">sound</string>
     <string name="settings">Settings</string>
@@ -22,7 +22,7 @@
     <string name="material_you">Material You</string>
     <string name="enable_custom_theme_for_your_device">Enable custom theme</string>
     <string name="license_and_documentation">License and Documentation</string>
-    <string name="pomodroid">Pomodroid</string>
+    <string name="pomodroid">Pomotrack</string>
     <string name="keep_screen_on">Keep Screen On</string>
     <string name="prevents_screen_from_shutting_off">Prevents screen from shutting off</string>
 </resources>
