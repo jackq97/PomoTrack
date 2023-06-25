@@ -2,7 +2,13 @@
   <img alt="Pomotroid" src="art/title.png">
 </div>
 
-<div align="center" style="margin-top: 20px;">
+<style>
+  .top-margin {
+    margin-top: 20px;
+  }
+</style>
+
+<div align="center">
   <img alt="Pomotroid in action" src="art/banner.png" width="800px">
 </div>
 
@@ -30,22 +36,6 @@ height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.mathroda.dashcoin)
 
 - Clean and Simple UI with Jetpack Compose Material dynamic theme.
 - Best and Clean Code Quality following Modern Android Development
-- Clean Architecture Approach by uncle bob
-
-## Insights into the app 🔎
-
-![](art/Dash-coin-1.jpg)
-![](art/Dash-coin-2.jpg)
-![](art/Dash-coin-3.jpg)
-
-<!-- ## 📸 Screenshots
-
-|   |   |   |
-|---|---|---|
-|![](art/Screenshot_splashscreen.png)| ![](art/Screenshot_signin.png) | ![](art/Screenshot_register.png)
-|![](art/home.png)| ![](art/search.png) | ![](art/positive-chart.png)
-|![](art/nigative-chart.png) | ![](art/watchlist.png) |![](art/news.png)
-|![](art/Screenshot_profile.png) | ![](art/Screenshot_notification.png) | -->
 
 ### Technical details
 
