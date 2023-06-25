@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="Pomotroid" src="art/title.png" width="350px" height="100px">
+  <img alt="Pomotroid" src="art/title.png" width="350px" height="150px">
 </div>
 
 <div align="center">
