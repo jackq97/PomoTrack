@@ -1,9 +1,9 @@
 <div align="center">
-  <img alt="Pomotroid" src="art/title.png">
+  <img alt="Pomotroid" src="art/title.png" width="350px" height="100px">
 </div>
 
 <div align="center">
-  <img alt="rct" src="art/rectangle.png" height="150px">
+  <img alt="rct" src="art/rectangle.png" height="100px">
 </div>
 
 <div align="center">
