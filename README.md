@@ -3,7 +3,7 @@
 </div>
 
 <div align="center">
-  <img alt="rct" src="art/Rectangle.png">
+  <img alt="rct" src="art/rectangle.png">
 </div>
 
 <div align="center">
