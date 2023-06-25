@@ -1,13 +1,12 @@
 <div align="center">
-  <img alt="Pomotroid" src="art/title.png" width="500px">
+  <img alt="Pomotroid" src="art/title.png" width="400px">
 </div>
-<div align="center">
+
+<div align="center" style="margin-top: 20px;">
   <img alt="Pomotroid in action" src="art/banner.png" width="800px">
 </div>
 
----
-
-<p align="center">Simple and visually-pleasing Pomodoro timer.</p>
+<p align="center" style="margin-top: 20px;">Simple and visually-pleasing Pomodoro timer.</p>
 
 # **Pomotrack**
 
