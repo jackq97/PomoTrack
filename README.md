@@ -20,7 +20,7 @@ This project is developed by **jaskq** for more projects [GitHub](https://github
 
 ## Application Install
 
-***You can Install and test latest DashCoin app from below 👇***
+***You can Install and test latest PomoTrack app from below 👇***
 
 [![PomoTrack](https://img.shields.io/badge/PomoTrack-APK-red.svg?style=for-the-badge&logo=android)](https://github.com/jackq97/PomoTrack/releases/download/v1.0/app-release.apk)
 
