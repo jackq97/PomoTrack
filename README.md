@@ -22,13 +22,7 @@ This project is developed by **jaskq** for more projects [GitHub](https://github
 
 ***You can Install and test latest DashCoin app from below 👇***
 
-[![DashCoin](https://img.shields.io/badge/DashCoin✅-APK-red.svg?style=for-the-badge&logo=android)](https://github.com/MathRoda/Dash-Coin-App/releases/download/v1.1.0/DashCoin.apk)
-
-or from the IzzyOnDroid F-Droid compatible repo
-
-[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
-alt="Get it on IzzyOnDroid"
-height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.mathroda.dashcoin)
+[![PomoTrack](https://img.shields.io/badge/PomoTrack-APK-red.svg?style=for-the-badge&logo=android)](https://github.com/jackq97/PomoTrack/releases/download/v1.0/app-release.apk)
 
 ## About
 
@@ -74,7 +68,7 @@ height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.mathroda.dashcoin)
 
 ## Contact
 
-you can connect with me here [LinkedIn](https://www.linkedin.com/in/mathroda/) .
+you can connect with me here [LinkedIn](https://www.linkedin.com/in/jaskaran-singh-914a33248/) .
 
 # License
 
