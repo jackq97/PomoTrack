@@ -325,7 +325,6 @@ fun MainApp(){
                     bottomBarState = bottomBarState
                 )
             },
-
             content = {
                 MyNavigation(
                     navController = navController

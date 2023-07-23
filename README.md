@@ -66,10 +66,6 @@ This project is developed by **jaskq** for more projects [GitHub](https://github
 - [Material Components for Android](https://github.com/material-components/material-components-android)
     - Modular and customizable Material Design UI components for Android.
 
-## Contact
-
-you can connect with me here [LinkedIn](https://www.linkedin.com/in/jaskaran-singh-914a33248/) .
-
 # License
 
 ```xml
