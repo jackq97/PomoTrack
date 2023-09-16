@@ -56,80 +56,79 @@ fun TimerSettingsScreen(
         viewModel.resetTimer()
     }
 
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.surface)
+            //.border(width = 4.dp, color = Color.Blue)
+    ) {
 
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.surface)
-        ) {
+            Spacer(modifier = Modifier.height(55.dp))
 
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            SliderComponent(
+                sliderLabelText = stringResource(R.string.focus),
+                sliderTimerText = convertMinutesToHoursAndMinutes(
+                    floatToTime(focusSliderPosition)),
+                value = focusSliderPosition,
+                onValueChange = {focusSliderPosition = it},
+                onSliderValueChangeFinished = {saveAndReset()}
+            )
 
-                Spacer(modifier = Modifier.height(55.dp))
+            SliderComponent(
+                sliderLabelText = stringResource(R.string.short_break),
+                sliderTimerText = convertMinutesToHoursAndMinutes(
+                    floatToTime(breakSliderPosition)),
+                value = breakSliderPosition,
+                onValueChange = {breakSliderPosition = it},
+                onSliderValueChangeFinished = {saveAndReset()}
+            )
 
-                SliderComponent(
-                    sliderLabelText = stringResource(R.string.focus),
-                    sliderTimerText = convertMinutesToHoursAndMinutes(
-                        floatToTime(focusSliderPosition)),
-                    value = focusSliderPosition,
-                    onValueChange = {focusSliderPosition = it},
-                    onSliderValueChangeFinished = {saveAndReset()}
-                )
+            SliderComponent(
+                sliderLabelText = stringResource(R.string.long_break),
+                sliderTimerText = convertMinutesToHoursAndMinutes(
+                    floatToTime(longBreakSliderPosition)),
+                value = longBreakSliderPosition,
+                onValueChange = {longBreakSliderPosition = it},
+                onSliderValueChangeFinished = {saveAndReset()}
+            )
 
-                SliderComponent(
-                    sliderLabelText = stringResource(R.string.short_break),
-                    sliderTimerText = convertMinutesToHoursAndMinutes(
-                        floatToTime(breakSliderPosition)),
-                    value = breakSliderPosition,
-                    onValueChange = {breakSliderPosition = it},
-                    onSliderValueChangeFinished = {saveAndReset()}
-                )
+            SliderComponent(
+                sliderLabelText = stringResource(R.string.rounds),
+                sliderTimerText = noOfRoundsSliderPosition.toInt().toString(),
+                value = noOfRoundsSliderPosition,
+                onValueChange = {noOfRoundsSliderPosition = it},
+                onSliderValueChangeFinished = {saveAndReset()}
+            )
 
-                SliderComponent(
-                    sliderLabelText = stringResource(R.string.long_break),
-                    sliderTimerText = convertMinutesToHoursAndMinutes(
-                        floatToTime(longBreakSliderPosition)),
-                    value = longBreakSliderPosition,
-                    onValueChange = {longBreakSliderPosition = it},
-                    onSliderValueChangeFinished = {saveAndReset()}
-                )
+            TextButton(modifier = Modifier,
 
-                SliderComponent(
-                    sliderLabelText = stringResource(R.string.rounds),
-                    sliderTimerText = noOfRoundsSliderPosition.toInt().toString(),
-                    value = noOfRoundsSliderPosition,
-                    onValueChange = {noOfRoundsSliderPosition = it},
-                    onSliderValueChangeFinished = {saveAndReset()}
-                )
+                onClick = {
 
-                TextButton(modifier = Modifier,
+                    focusSliderPosition = 3.510038F
+                    breakSliderPosition = 1.4549646F
+                    longBreakSliderPosition = 1.9804868F
+                    noOfRoundsSliderPosition = 2f
 
-                    onClick = {
-
-                        focusSliderPosition = 3.510038F
-                        breakSliderPosition = 1.4549646F
-                        longBreakSliderPosition = 1.9804868F
-                        noOfRoundsSliderPosition = 2f
-
-                        viewModel.saveSettings(
-                            Settings(
-                                focusDur = focusSliderPosition,
-                                restDur = breakSliderPosition,
-                                longRestDur = longBreakSliderPosition,
-                                rounds = noOfRoundsSliderPosition)
-                        )
-
-                        viewModel.resetTimer()
-
-                    }) {
-                    Text(text = stringResource(R.string.reset_defaults),
-                        color = MaterialTheme.colorScheme.primary
+                    viewModel.saveSettings(
+                        Settings(
+                            focusDur = focusSliderPosition,
+                            restDur = breakSliderPosition,
+                            longRestDur = longBreakSliderPosition,
+                            rounds = noOfRoundsSliderPosition)
                     )
-                }
+
+                    viewModel.resetTimer()
+
+                }) {
+                Text(text = stringResource(R.string.reset_defaults),
+                    color = MaterialTheme.colorScheme.primary
+                )
+
             }
         }
-
+    }
 }
 
 @Preview

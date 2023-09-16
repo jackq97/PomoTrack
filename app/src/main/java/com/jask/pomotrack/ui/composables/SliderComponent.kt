@@ -57,7 +57,7 @@ fun SliderComponent(
             Text(
                 modifier = Modifier.padding(8.dp),
                 text = sliderTimerText,
-                fontSize = 20.sp,
+                fontSize = 15.sp,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
