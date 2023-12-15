@@ -203,7 +203,13 @@ fun InfoTotalColumn(modifier: Modifier,
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun InfoColumnPreview(){
+    InfoColumn(modifier = Modifier, label = "test", progress = 4, value = 5)
+}
 
+@Composable
+@Preview(showBackground = true)
+fun InfoColumnPreview2(){
+    InfoTotalColumn(modifier = Modifier, label = "test", value = "test")
 }
