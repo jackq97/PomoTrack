@@ -9,7 +9,7 @@
     <string name="today_s_pomo">Today\'s Pomo</string>
     <string name="today_s_focus_h">Today\'s focus (h)</string>
     <string name="total_pomos">Total Pomos</string>
-    <string name="total_focus_duration">Total Focus Duration</string>
+    <string name="total_focus_duration">Total Focus</string>
     <string name="reset">Reset</string>
     <string name="rest">Rest</string>
     <string name="pomodoro">Pomotrack</string>
