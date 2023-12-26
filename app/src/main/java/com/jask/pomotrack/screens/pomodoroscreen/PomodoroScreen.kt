@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.jask.pomotrack.R
 import com.jask.pomotrack.screens.SharedPomodoroViewModel
 import com.jask.pomotrack.ui.composables.AnimatedCircularProgressbar
@@ -375,5 +376,5 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
 @Composable
 fun PomodoroPreview(){
 
-    //PomodoroScreen(navigator = EmptyDestinationsNavigator)
+    PomodoroScreen(viewModel = hiltViewModel())
 }

@@ -1,7 +1,6 @@
 package com.jask.pomotrack.screens.userdatascreen.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.Icon
@@ -33,7 +28,7 @@ import com.jask.pomotrack.R
 import kotlin.math.absoluteValue
 
 @Composable
-fun InfoPomoColumn(modifier: Modifier,
+fun InfoPomoColumn(modifier:  Modifier,
                    label: String,
                    progress: Int,
                    value: Int) {
@@ -52,17 +47,17 @@ fun InfoPomoColumn(modifier: Modifier,
     Box(modifier = modifier
         .clip(RoundedCornerShape(5.dp))
         .background(color = MaterialTheme.colorScheme.primaryContainer)
-        .width(180.dp)
         .height(100.dp)) {
 
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier
+                .fillMaxSize()
+                .padding(start = 10.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
 
             Text(
-                modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 15.sp,
@@ -70,29 +65,29 @@ fun InfoPomoColumn(modifier: Modifier,
             )
 
             Row(modifier = Modifier
-                .border(width = 2.dp, color = Color.Green)
-
-                ) {
+                .fillMaxWidth()
+            ) {
 
                 Text(
-                    modifier = Modifier.padding(start = 10.dp),
+                    modifier = Modifier,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     text = "${progress.absoluteValue} from yesterday"
                 )
 
                 Icon(
-                    modifier = modifier.size(15.dp),
+                    modifier = modifier
+                        .height(15.dp),
                     painter = painter,
                     tint = color,
                     contentDescription = null
                 )
+
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 22.sp,

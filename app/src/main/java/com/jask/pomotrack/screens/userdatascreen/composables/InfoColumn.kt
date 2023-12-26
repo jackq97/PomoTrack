@@ -1,16 +1,17 @@
 package com.jask.pomotrack.screens.userdatascreen.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.Icon
@@ -49,34 +50,34 @@ fun InfoColumn(modifier: Modifier,
     Box(modifier = modifier
         .clip(RoundedCornerShape(5.dp))
         .background(color = MaterialTheme.colorScheme.primaryContainer)
-        .width(180.dp)
         .height(100.dp)) {
 
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 10.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
 
             Text(
-                modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 15.sp,
                 text = label
             )
 
-            Row {
+            Row(modifier = Modifier.fillMaxWidth()) {
 
                 Text(
-                    modifier = Modifier.padding(start = 10.dp),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     text = "${minutesToHoursAndMinutes(progress.absoluteValue)} from yesterday"
                 )
 
                 Icon(
-                    modifier = modifier.size(15.dp),
+                    modifier = modifier
+                        .size(15.dp),
                     painter = painter,
                     tint = color,
                     contentDescription = null
@@ -86,7 +87,6 @@ fun InfoColumn(modifier: Modifier,
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 22.sp,

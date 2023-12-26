@@ -1,4 +1,4 @@
-package com.jask.pomotrack.ui.composables
+package com.jask.pomotrack.screens.userdatascreen.composables
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
