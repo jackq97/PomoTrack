@@ -19,6 +19,7 @@ import com.jask.pomotrack.screens.userdatascreen.UserDataScreen
 import com.jask.pomotrack.ui.theme.AppTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
+import com.jask.pomotrack.screens.userdatascreen.UserDataViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -28,7 +29,8 @@ fun MyNavigation(
     val animationDurationMilli = 500
 
     val viewModel: SharedPomodoroViewModel = hiltViewModel()
-
+    val userDataViewModel: UserDataViewModel = hiltViewModel()
+    val userDataState = userDataViewModel.state.value
     val darkTheme = viewModel.getDarkTheme.collectAsState()
 
     AppTheme(darkTheme = darkTheme.value) {
@@ -89,7 +91,7 @@ fun MyNavigation(
                     }
                 }
             ) {
-                UserDataScreen()
+                UserDataScreen(state = userDataState)
             }
 
             composable(route = NavigationRoutes.TimerSettingsScreen.route,

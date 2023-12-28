@@ -100,5 +100,5 @@ fun InfoPomoColumn(modifier:  Modifier,
 @Composable
 @Preview(showBackground = true)
 fun InfoPomoColumnPreview(){
-    InfoPomoColumn(modifier = Modifier, label = "", progress = 0, value = 0)
+    InfoPomoColumn(modifier = Modifier, label = "", progress = 1, value = 4)
 }

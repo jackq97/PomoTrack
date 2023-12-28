@@ -17,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,20 +36,10 @@ import com.jask.pomotrack.util.minutesToHoursAndMinutes
 import kotlin.math.roundToInt
 
 @Composable
-fun UserDataScreen() {
+fun UserDataScreen(state: UserDataState) {
 
-    val viewModel: UserDataViewModel = hiltViewModel()
-
-    val dayData = viewModel.dayData.collectAsState()
-    val roundsDifference = viewModel.differenceOfRecordedRounds.collectAsState()
-    val focusDifference = viewModel.differenceOfRecordedFocus.collectAsState()
-    val lineData = viewModel.lineData.collectAsState()
-    val pieData = viewModel.pieData.collectAsState()
-    val totalFocus = viewModel.totalRecordedFocus.collectAsState()
-    val totalPomos = viewModel.numberOfTotalPomos.collectAsState()
-
-    val upperValue = lineData.value.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
-    val lowerValue = lineData.value.minOfOrNull { it.second }?.toInt() ?: 0
+    val upperValue = state.lineData.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
+    val lowerValue = state.lineData.minOfOrNull { it.second }?.toInt() ?: 0
 
     Surface(
         modifier = Modifier
@@ -74,8 +63,8 @@ fun UserDataScreen() {
                     modifier = Modifier
                         .weight(1f),
                     label = stringResource(R.string.today_s_pomo),
-                    progress = roundsDifference.value,
-                    value = dayData.value.recordedRounds
+                    progress = state.differenceOfRecordedRounds,
+                    value = state.dayData.recordedRounds
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
@@ -84,8 +73,8 @@ fun UserDataScreen() {
                     modifier = Modifier
                         .weight(1f),
                     label = stringResource(R.string.today_s_focus_h),
-                    progress = focusDifference.value,
-                    value = dayData.value.focusRecordedDuration
+                    progress = state.differenceOfRecordedFocus,
+                    value = state.dayData.focusRecordedDuration
                 )
             }
 
@@ -95,7 +84,7 @@ fun UserDataScreen() {
                 InfoTotalColumn(
                     modifier = Modifier.weight(1f),
                     label = stringResource(R.string.total_pomos),
-                    value = totalPomos.value.toString()
+                    value = state.numberOfTotalPomos.toString()
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
@@ -103,7 +92,7 @@ fun UserDataScreen() {
                 InfoTotalColumn(
                     modifier = Modifier.weight(1f),
                     label = stringResource(R.string.total_focus_duration),
-                    value = minutesToHoursAndMinutes(totalFocus.value)
+                    value = minutesToHoursAndMinutes(state.totalRecordedFocus)
                 )
             }
 
@@ -126,11 +115,11 @@ fun UserDataScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    PieRadioButtons { viewModel.getPieDataBySortOrder(sortOrder = it) }
+                    //PieRadioButtons { viewModel.getPieDataBySortOrder(sortOrder = it) }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    PieChart(values = pieData.value)
+                    PieChart(values = state.pieData)
                 }
             }
 
@@ -155,7 +144,7 @@ fun UserDataScreen() {
                 ) {
 
                     LineRadioButtons {
-                        viewModel.getLineDataBySortOrder(sortOrder = it)
+                        //viewModel.getLineDataBySortOrder(sortOrder = it)
                     }
 
                     Spacer(modifier = Modifier.height(30.dp))
@@ -165,7 +154,7 @@ fun UserDataScreen() {
                             .width(300.dp)
                             .padding(8.dp)
                             .height(180.dp),
-                        data = lineData.value,
+                        data = state.lineData,
                         upperValue = upperValue,
                         lowerValue = lowerValue
                     )
@@ -177,6 +166,4 @@ fun UserDataScreen() {
 
 @Composable
 @Preview
-fun InfoScreenPreview(){
-    //UserDataScreen(userData = data)
-}
+fun InfoScreenPreview(){}

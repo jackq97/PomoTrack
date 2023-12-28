@@ -1,68 +1,52 @@
 package com.jask.pomotrack.screens.userdatascreen
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jask.pomotrack.model.Duration
 import com.jask.pomotrack.repository.PomodoroRepository
 import com.jask.pomotrack.util.SortOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class UserDataViewModel @Inject constructor (private val repository: PomodoroRepository) : ViewModel() {
 
-    private val _allDurations = MutableStateFlow<List<Duration>>(emptyList())
-    private val _yesterdayData = MutableStateFlow(Duration())
-    private val _weekData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
-    private val _monthData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
-    private val _yearData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
+    private val _state = mutableStateOf(UserDataState())
+    val state: State<UserDataState> = _state
 
-    private val _dayData = MutableStateFlow(Duration())
-    val dayData: StateFlow<Duration> = _dayData
-
-    var lineData = MutableStateFlow<List<Triple<Int, Double, Double>>>(emptyList())
-    var pieData = MutableStateFlow<List<Float>>(emptyList())
-
-    private val _numberOfTotalPomos = MutableStateFlow(0)
-    val numberOfTotalPomos: StateFlow<Int> = _numberOfTotalPomos
-
-    private val _totalRecordedFocus = MutableStateFlow(0)
-    val totalRecordedFocus: StateFlow<Int> = _totalRecordedFocus
-
-    private val _differenceOfRecordedRounds = MutableStateFlow(0)
-    val differenceOfRecordedRounds: StateFlow<Int> = _differenceOfRecordedRounds
-
-    private val _differenceOfRecordedFocus = MutableStateFlow(0)
-    val differenceOfRecordedFocus: StateFlow<Int> = _differenceOfRecordedFocus
-
-    private suspend fun processDataForCurrentDay() {
-        val data = repository.getDataForCurrentDay()
-        _dayData.value = data
-    }
-
-    private suspend fun processDataForYesterday() {
-        val data = repository.getDataForYesterday()
-        _yesterdayData.value = data
-    }
-
-    private fun getTotalNoOfPomos(){
+    init {
         viewModelScope.launch {
-            _allDurations.collect{ duration ->
-                _numberOfTotalPomos.value = duration.sumOf { it.recordedRounds }
+            // Collect data and update state
+            repository.getDataForCurrentDay().collect { _state.value = _state.value.copy(dayData = it)}
+            repository.getDataForYesterday().collect { _state.value = _state.value.copy(yesterdayData = it)}
+            repository.getDataOfCurrentWeek().collect { _state.value = _state.value.copy(weekData = it) }
+            repository.getDataOfCurrentMonth().collect { _state.value = _state.value.copy(monthData = it) }
+            repository.getDataOfCurrentYear().collect { _state.value = _state.value.copy(yearData = it) }
+            repository.getAllDuration().collect { allDurations ->
+                _state.value = _state.value.copy(allDurations = allDurations)
+                getTotalNoOfPomos()
+                getTotalRecordeFocus()
+                getDifferenceOfData()
+                getTotalRecordeFocus()
+                getPieDataBySortOrder(SortOrder.Day.name)
+                getLineDataBySortOrder(SortOrder.Week.name)
             }
+        }
+    }
+
+    private fun getTotalNoOfPomos() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(
+                numberOfTotalPomos = _state.value.allDurations.sumOf { it.recordedRounds }
+            )
         }
     }
 
     private fun getTotalRecordeFocus(){
         viewModelScope.launch {
-            _allDurations.collect{ duration ->
-                _totalRecordedFocus.value = duration.sumOf { it.focusRecordedDuration }
-            }
+            _state.value = _state.value.copy( totalRecordedFocus = _state.value.allDurations.sumOf {it.focusRecordedDuration} )
         }
     }
 
@@ -70,76 +54,58 @@ class UserDataViewModel @Inject constructor (private val repository: PomodoroRep
         viewModelScope.launch {
             when (sortOrder) {
                   SortOrder.Day.name -> {
-                    _dayData.collect{ dayData ->
-                        pieData.value = listOf(dayData.restRecordedDuration.toFloat(),
-                            dayData.focusRecordedDuration.toFloat())
-                    }
+
+                        _state.value = _state.value.copy( pieData = listOf(
+                            _state.value.dayData.restRecordedDuration.toFloat(),
+                            _state.value.dayData.focusRecordedDuration.toFloat()))
+
+
                 }
                 SortOrder.Week.name -> {
-                    _weekData.collect{ weekData ->
-                        val totalWeekFocusDuration = weekData.sumOf { it.second }
-                        val totalWeekRestDuration = weekData.sumOf { it.third }
-                        pieData.value = listOf(totalWeekRestDuration.toFloat(),
-                            totalWeekFocusDuration.toFloat())
-                    }
-                }
+
+                        val totalWeekFocusDuration = _state.value.weekData.sumOf { it.second } //weekData.sumOf { it.second }
+                        val totalWeekRestDuration = _state.value.weekData.sumOf { it.third } //weekData.sumOf { it.third }
+                        _state.value = _state.value.copy(pieData =
+                        listOf(totalWeekRestDuration.toFloat(),
+                            totalWeekFocusDuration.toFloat())) }
                 SortOrder.Month.name -> {
-                    _monthData.collect{ monthData ->
-                        val totalMonthFocusDuration = monthData.sumOf { it.second }
-                        val totalMonthRestDuration = monthData.sumOf { it.third }
-                        pieData.value = listOf(totalMonthRestDuration.toFloat(),
-                            totalMonthFocusDuration.toFloat())
-                    }
+
+                        val totalMonthFocusDuration = _state.value.monthData.sumOf { it.second } //monthData.sumOf { it.second }
+                        val totalMonthRestDuration = _state.value.monthData.sumOf { it.third } //monthData.sumOf { it.third }
+                        _state.value = _state.value.copy(pieData =
+                        listOf(totalMonthRestDuration.toFloat(),
+                            totalMonthFocusDuration.toFloat()))
+
+
                 }
             }
         }
     }
 
     private fun getDifferenceOfData() {
-        viewModelScope.launch {
-            combine(_dayData, _yesterdayData) { currentDayData, yesterdayData ->
-                _differenceOfRecordedRounds.value = currentDayData.recordedRounds - yesterdayData.recordedRounds
-                _differenceOfRecordedFocus.value = currentDayData.focusRecordedDuration - yesterdayData.focusRecordedDuration
-            }.collect()
-        }
+        _state.value =
+            _state.value.copy( differenceOfRecordedRounds =
+            _state.value.dayData.recordedRounds - _state.value.yesterdayData.recordedRounds)
+        _state.value =
+            _state.value.copy( differenceOfRecordedFocus =
+            _state.value.dayData.focusRecordedDuration - _state.value.yesterdayData.focusRecordedDuration)
     }
 
     fun getLineDataBySortOrder(sortOrder: String) {
         viewModelScope.launch {
             when (sortOrder) {
                 SortOrder.Week.name -> {
-                    _weekData.collect{
-                        lineData.value = it
-                    }
+                    _state.value = _state.value.copy(lineData = _state.value.weekData)
                 }
+
                 SortOrder.Month.name -> {
-                    _monthData.collect{
-                        lineData.value = it
-                    }
+                    _state.value = _state.value.copy(lineData = _state.value.monthData)
                 }
+
                 SortOrder.Year.name -> {
-                    _yearData.collect{
-                        lineData.value = it
-                    }
+                    _state.value = _state.value.copy(lineData = _state.value.yearData)
                 }
             }
         }
     }
-
-    init {
-        getPieDataBySortOrder(SortOrder.Day.name)
-        getLineDataBySortOrder(SortOrder.Week.name)
-        viewModelScope.launch {
-            getDifferenceOfData()
-            processDataForYesterday()
-            processDataForCurrentDay()
-            getTotalNoOfPomos()
-            getTotalRecordeFocus()
-            repository.getDataOfCurrentWeek().collect { _weekData.value = it }
-            repository.getDataOfCurrentMonth().collect { _monthData.value = it }
-            repository.getDataOfCurrentYear().collect { _yearData.value = it }
-            repository.getAllDuration().collect { _allDurations.value = it }
-        }
-    }
-
 }
