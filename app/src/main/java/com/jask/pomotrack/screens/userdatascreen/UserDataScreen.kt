@@ -23,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.jask.pomotrack.R
 import com.jask.pomotrack.screens.userdatascreen.composables.InfoColumn
 import com.jask.pomotrack.screens.userdatascreen.composables.InfoPomoColumn
@@ -36,7 +35,8 @@ import com.jask.pomotrack.util.minutesToHoursAndMinutes
 import kotlin.math.roundToInt
 
 @Composable
-fun UserDataScreen(state: UserDataState) {
+fun UserDataScreen(state: UserDataState,
+                   onEvent: (UserDataEvents) -> Unit) {
 
     val upperValue = state.lineData.maxOfOrNull { it.second }?.plus(1)?.roundToInt() ?: 0
     val lowerValue = state.lineData.minOfOrNull { it.second }?.toInt() ?: 0
@@ -115,7 +115,7 @@ fun UserDataScreen(state: UserDataState) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    //PieRadioButtons { viewModel.getPieDataBySortOrder(sortOrder = it) }
+                    PieRadioButtons { onEvent(UserDataEvents.GetPieDataBySortOrder(sortOrder = it))  /*viewModel.getPieDataBySortOrder(sortOrder = it)*/ }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
@@ -144,7 +144,7 @@ fun UserDataScreen(state: UserDataState) {
                 ) {
 
                     LineRadioButtons {
-                        //viewModel.getLineDataBySortOrder(sortOrder = it)
+                        onEvent(UserDataEvents.GetLineDataBySortOrder(sortOrder = it))
                     }
 
                     Spacer(modifier = Modifier.height(30.dp))
@@ -166,4 +166,7 @@ fun UserDataScreen(state: UserDataState) {
 
 @Composable
 @Preview
-fun InfoScreenPreview(){}
+fun InfoScreenPreview(){
+    UserDataScreen(state = UserDataState(),
+        onEvent = {})
+}

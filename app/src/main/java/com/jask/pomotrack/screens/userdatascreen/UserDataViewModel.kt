@@ -1,5 +1,6 @@
 package com.jask.pomotrack.screens.userdatascreen
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -50,7 +51,21 @@ class UserDataViewModel @Inject constructor (private val repository: PomodoroRep
         }
     }
 
-    fun getPieDataBySortOrder(sortOrder: String) {
+
+    fun onEvent(event: UserDataEvents) {
+
+        when (event) {
+            is UserDataEvents.GetPieDataBySortOrder -> {
+                getPieDataBySortOrder(event.sortOrder)
+            }
+            is UserDataEvents.GetLineDataBySortOrder -> {
+                getLineDataBySortOrder(event.sortOrder)
+            }
+        }
+    }
+
+
+    private fun getPieDataBySortOrder(sortOrder: String) {
         viewModelScope.launch {
             when (sortOrder) {
                   SortOrder.Day.name -> {
@@ -91,7 +106,7 @@ class UserDataViewModel @Inject constructor (private val repository: PomodoroRep
             _state.value.dayData.focusRecordedDuration - _state.value.yesterdayData.focusRecordedDuration)
     }
 
-    fun getLineDataBySortOrder(sortOrder: String) {
+    private fun getLineDataBySortOrder(sortOrder: String) {
         viewModelScope.launch {
             when (sortOrder) {
                 SortOrder.Week.name -> {

@@ -1,6 +1,7 @@
 package com.jask.pomotrack.screens.userdatascreen
 
 import com.jask.pomotrack.model.Duration
+import com.jask.pomotrack.util.SortOrder
 
 data class UserDataState(
 
@@ -15,5 +16,6 @@ data class UserDataState(
     val numberOfTotalPomos: Int = 0,
     val totalRecordedFocus: Int = 0,
     val differenceOfRecordedRounds: Int = 0,
-    val differenceOfRecordedFocus: Int = 0
+    val differenceOfRecordedFocus: Int = 0,
+    val noteOrder: SortOrder = SortOrder.Day
 )

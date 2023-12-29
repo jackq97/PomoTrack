@@ -91,7 +91,9 @@ fun MyNavigation(
                     }
                 }
             ) {
-                UserDataScreen(state = userDataState)
+                UserDataScreen(state = userDataState,
+                    onEvent = userDataViewModel::onEvent
+                    )
             }
 
             composable(route = NavigationRoutes.TimerSettingsScreen.route,
