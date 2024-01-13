@@ -26,11 +26,10 @@ import com.jask.pomotrack.ui.composables.SettingsText
 @Composable
 fun SettingsScreen(viewModel: SharedPomodoroViewModel){
 
-    val darkTheme = viewModel.getDarkTheme.collectAsState()
-    val screenOn = viewModel.getScreenOn.collectAsState()
+    val state = viewModel.state.value
 
-    var checkedDark by remember { mutableStateOf(darkTheme.value) }
-    var checkedScreenOn by remember { mutableStateOf(screenOn.value) }
+    var checkedDark by remember { mutableStateOf(state.getDarkTheme) }
+    var checkedScreenOn by remember { mutableStateOf(state.getScreenOn) }
 
     if (checkedDark){
         viewModel.saveDarkTheme(darkTheme = true)

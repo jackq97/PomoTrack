@@ -28,18 +28,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,9 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.jask.pomotrack.R
-import com.jask.pomotrack.screens.SharedPomodoroViewModel
 import com.jask.pomotrack.ui.composables.AnimatedCircularProgressbar
 import com.jask.pomotrack.ui.composables.CircularProgressbar
 import com.jask.pomotrack.ui.composables.ConditionalLottieIcon
@@ -57,21 +52,13 @@ import com.jask.pomotrack.ui.composables.VerticalSlider
 import com.jask.pomotrack.util.KeepScreenOn
 import com.jask.pomotrack.util.floatToTime
 import com.jask.pomotrack.util.secondsToMinutesAndSeconds
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlin.math.round
 
 @Composable
-fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
+fun PomodoroScreen(state: PomodoroState,
+                   onEvent: (PomodoroEvents) -> Unit
+                   ) {
 
-    val focusRemainingTime by viewModel.remainingFocusTime.collectAsState()
-    val restRemainingTime by viewModel.remainingRestTime.collectAsState()
-    val longBreakRemainingTime by viewModel.remainingLongBreakTime.collectAsState()
-    val isRunningFocus by viewModel.isRunningFocus.collectAsState()
-    val isRunningRest by viewModel.isRunningRest.collectAsState()
-    val isRunningLongBreak by viewModel.isRunningLongBreak.collectAsState()
-    val isPaused by viewModel.isPaused.collectAsState()
-    val finishedCount by viewModel.finishedCount.collectAsState()
     var focusProgress by remember { mutableFloatStateOf(0f) }
     var restProgress by remember { mutableFloatStateOf(0f) }
     var longBreakProgress by remember { mutableFloatStateOf(0f) }
@@ -79,36 +66,28 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
     var remainingProgress by remember { mutableStateOf("") }
     var timerText by remember { mutableStateOf("") }
 
-    val context = LocalContext.current
-    val density = LocalDensity.current
-    val coroutineScope = rememberCoroutineScope()
-
-    var focusSettingDur by remember { mutableFloatStateOf(0f) }
-    var restSettingDur by remember { mutableFloatStateOf(0f) }
-    var longRestSettingDur by remember { mutableFloatStateOf(0f) }
-    var rounds by remember { mutableIntStateOf(0) }
     var volumeSliderValue by remember { mutableFloatStateOf(0f) }
 
-    val settings = viewModel.settings.collectAsState()
-    val volume = viewModel.getVolume.collectAsState()
-    val darkTheme = viewModel.getDarkTheme.collectAsState()
-    val screenOn = viewModel.getScreenOn.collectAsState()
+    val density = LocalDensity.current
 
-    focusSettingDur = settings.value.focusDur
-    restSettingDur = settings.value.restDur
-    longRestSettingDur = settings.value.longRestDur
-    focusProgress = (focusRemainingTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()) * 100
-    restProgress = (restRemainingTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()) * 100
-    longBreakProgress = (longBreakRemainingTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()) * 100
-    rounds = settings.value.rounds.toInt()
+    val focusSettingDur = state.settings.focusDur
+    val restSettingDur = state.settings.restDur
+    val longRestSettingDur = state.settings.longRestDur
+    val rounds = state.settings.rounds.toInt()
+    focusProgress = (state.remainingFocusTime.toFloat() / (floatToTime(focusSettingDur) * 60).toFloat()) * 100
+    restProgress = (state.remainingRestTime.toFloat() / (floatToTime(restSettingDur) * 60).toFloat()) * 100
+    longBreakProgress = (state.remainingLongBreakTime.toFloat() / (floatToTime(longRestSettingDur) * 60).toFloat()) * 100
+
 
     var startPlaying by remember { mutableStateOf(false) }
     var endReached by remember { mutableStateOf(false) }
     var buttonPressed by remember { mutableStateOf(false) }
     var isSliderVisible by remember { mutableStateOf(false) }
 
-    if (screenOn.value){
-        KeepScreenOn()
+    if (state.getScreenOn){ KeepScreenOn() }
+    LaunchedEffect(state.volume){
+        //to make sure slider value doesn't update with timer
+        volumeSliderValue = state.volume
     }
 
     Surface(
@@ -117,48 +96,18 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                 .background(MaterialTheme.colorScheme.surface)
         ) {
 
-        LaunchedEffect(volume.value){
-            //to make sure slider value doesn't update with timer
-            volumeSliderValue = volume.value
-        }
-
-        LaunchedEffect(Unit) {
-            coroutineScope.launch {
-                viewModel.tick.collectLatest {
-                    viewModel.playTickSound(context = context,
-                        volume = volumeSliderValue)
-                }
-            }
-        }
-
-        LaunchedEffect(Unit) {
-            coroutineScope.launch {
-                viewModel.focusFinish.collectLatest {
-                    viewModel.playFocusSound(context = context,
-                        volume = volumeSliderValue)
-                }
-            }
-        }
-
-        LaunchedEffect(Unit) {
-            coroutineScope.launch {
-                viewModel.restFinish.collectLatest {
-                    viewModel.playRestSound(
-                        context = context,
-                        volume = volumeSliderValue)
-                }
-            }
-        }
-
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .border(width = 2.dp, color = Color.Red),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Box(
-                modifier = Modifier,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(width = 2.dp, color = Color.Green),
                 contentAlignment = Alignment.Center
             ) {
 
@@ -174,20 +123,20 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                 ) {
 
                     when {
-                        isRunningFocus -> {
+                        state.isRunningFocus -> {
                             timerText = stringResource(R.string.focus)
-                            remainingProgress = secondsToMinutesAndSeconds(focusRemainingTime)
+                            remainingProgress = secondsToMinutesAndSeconds(state.remainingFocusTime)
                         }
 
-                        isRunningRest -> {
+                        state.isRunningRest -> {
                             timerText = stringResource(R.string.rest)
-                            remainingProgress = secondsToMinutesAndSeconds(restRemainingTime)
+                            remainingProgress = secondsToMinutesAndSeconds(state.remainingRestTime)
                         }
 
-                        isRunningLongBreak -> {
+                        state.isRunningLongBreak -> {
                             timerText = stringResource(R.string.long_break)
                             remainingProgress =
-                                secondsToMinutesAndSeconds(longBreakRemainingTime)
+                                secondsToMinutesAndSeconds(state.remainingLongBreakTime)
                         }
 
                         else -> {
@@ -212,9 +161,9 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                 }
 
                 showProgress = when {
-                    isRunningFocus -> { focusProgress }
-                    isRunningLongBreak -> { longBreakProgress }
-                    isRunningRest -> { restProgress }
+                    state.isRunningFocus -> { focusProgress }
+                    state.isRunningLongBreak -> { longBreakProgress }
+                    state.isRunningRest -> { restProgress }
                     else -> { 100f }
                 }
 
@@ -231,7 +180,7 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            if (!isRunningFocus && !isRunningRest && !isRunningLongBreak || isPaused) {
+            if (!state.isRunningFocus && !state.isRunningRest && !state.isRunningLongBreak || state.isPaused) {
                 // START
                 if (buttonPressed) endReached = true
             } else {
@@ -242,7 +191,7 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
 
             var playPauseIcon = R.raw.play_pause
 
-            if (darkTheme.value) {
+            if (state.getDarkTheme) {
                 playPauseIcon = R.raw.play_pause_light
             }
 
@@ -259,10 +208,10 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                 animationSpeed = 5f,
                 onClick = {
                     buttonPressed = true
-                    if (!isRunningFocus && !isRunningRest && !isRunningLongBreak) {
-                        viewModel.startFocusTimer()
-                    } else { viewModel.pauseTimer() }
-                    if (isPaused) { viewModel.resumeTimer() }
+                    if (!state.isRunningFocus && !state.isRunningRest && !state.isRunningLongBreak) {
+                        onEvent(PomodoroEvents.StartFocusTimer)
+                    } else { onEvent(PomodoroEvents.PauseTimer) }
+                    if (state.isPaused) { onEvent(PomodoroEvents.ResetTimer) }
                           },
                 playAnimation = startPlaying,
                 playReverse = endReached
@@ -290,7 +239,8 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                     VerticalSlider(value = volumeSliderValue, onValueChange = {
                         volumeSliderValue = it },
                         onValueChangeFinished = {
-                            viewModel.saveVolume(volumeSliderValue)
+                            //viewModel.saveVolume(volumeSliderValue)
+                            onEvent(PomodoroEvents.SaveVolume(volumeSliderValue))
                         }
                     )
                 }
@@ -317,13 +267,13 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         color =  MaterialTheme.colorScheme.onSurface,
-                        text = "${finishedCount}/$rounds"
+                        text = "${state.finishedCount}/$rounds"
                     )
 
                     TextButton(modifier = Modifier.padding(start = 2.dp),
                         onClick = {
                             buttonPressed = true
-                            viewModel.resetTimer() }) {
+                            onEvent(PomodoroEvents.ResetTimer) }) {
                         Text(text = stringResource(R.string.reset),
                             color = MaterialTheme.colorScheme.primary
                             )
@@ -339,7 +289,7 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
                 ) {
 
                     IconButton(
-                        onClick = { viewModel.skipTimer() })
+                        onClick = { onEvent(PomodoroEvents.SkipTimer) })
                     {
 
                         Icon(
@@ -375,6 +325,8 @@ fun PomodoroScreen(viewModel: SharedPomodoroViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun PomodoroPreview(){
-
-    PomodoroScreen(viewModel = hiltViewModel())
+    PomodoroScreen(
+        state = PomodoroState(),
+        onEvent = {}
+    )
 }

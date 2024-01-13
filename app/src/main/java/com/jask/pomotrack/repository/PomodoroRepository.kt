@@ -92,6 +92,7 @@ class PomodoroRepository @Inject constructor(
         emit(data)
     }
 
+    // function used to get the data for current year
     suspend fun getDataOfCurrentYear(): Flow<List<Triple<Int, Double, Double>>> = flow {
 
             val data: MutableList<Triple<Int, Double, Double>> = mutableListOf()

@@ -31,17 +31,19 @@ import com.jask.pomotrack.util.floatToTime
 fun TimerSettingsScreen(
     viewModel: SharedPomodoroViewModel) {
 
+    val state = viewModel.state.value
+
     var focusSliderPosition by remember { mutableFloatStateOf(0f) }
     var breakSliderPosition by remember { mutableFloatStateOf(0f) }
     var longBreakSliderPosition by remember { mutableFloatStateOf(0f) }
     var noOfRoundsSliderPosition  by remember { mutableFloatStateOf(0f) }
 
-    val settings = viewModel.settings.collectAsState()
+    val settings = state.settings
 
-    focusSliderPosition = settings.value.focusDur
-    breakSliderPosition = settings.value.restDur
-    longBreakSliderPosition = settings.value.longRestDur
-    noOfRoundsSliderPosition = settings.value.rounds
+    focusSliderPosition = settings.focusDur
+    breakSliderPosition = settings.restDur
+    longBreakSliderPosition = settings.longRestDur
+    noOfRoundsSliderPosition = settings.rounds
 
     fun saveAndReset(){
         viewModel.saveSettings(

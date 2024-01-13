@@ -3,19 +3,21 @@ package com.jask.pomotrack.screens
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.CountDownTimer
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jask.pomotrack.R
 import com.jask.pomotrack.model.Duration
 import com.jask.pomotrack.model.Settings
 import com.jask.pomotrack.repository.PomodoroRepository
+import com.jask.pomotrack.screens.pomodoroscreen.PomodoroEvents
+import com.jask.pomotrack.screens.pomodoroscreen.PomodoroState
 import com.jask.pomotrack.util.floatToTime
 import com.jask.pomotrack.util.millisecondsToMinutes
 import com.jask.pomotrack.util.minutesToLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -27,16 +29,38 @@ class SharedPomodoroViewModel @Inject constructor(
     private val repository: PomodoroRepository
 ) : ViewModel(){
 
+    private val _state = mutableStateOf(PomodoroState())
+    val state: State<PomodoroState> = _state
+
+    fun onEvent(event: PomodoroEvents) {
+
+        when (event) {
+            is PomodoroEvents.StartFocusTimer -> {
+                startFocusTimer()
+            }
+            is PomodoroEvents.PauseTimer -> {
+                pauseTimer()
+            }
+            is PomodoroEvents.ResumeTimer -> {
+                resumeTimer()
+            }
+            is PomodoroEvents.ResetTimer -> {
+                resetTimer()
+            }
+            is PomodoroEvents.SkipTimer -> {
+                skipTimer()
+            }
+            is PomodoroEvents.SaveVolume -> {
+                saveVolume(event.volumeSliderValue)
+            }
+        }
+    }
+
     private val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     private val currentDate: String =  dateFormat.format(Date())
     private var tickMediaPlayer: MediaPlayer? = null
     private var restMediaPlayer: MediaPlayer? = null
     private var focusMediaPlayer: MediaPlayer? = null
-
-    val settings = repository.getSettings()
-    val getVolume = repository.getVolume()
-    val getDarkTheme = repository.getDarkTheme()
-    val getScreenOn = repository.getScreenOn()
 
     var focusDuration: Long = 0L
     var breakDuration: Long = 0L
@@ -45,7 +69,23 @@ class SharedPomodoroViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            settings.collect { settings ->
+            repository.getVolume().collect{
+                _state.value = _state.value.copy( volume = it )
+            }
+        }
+        viewModelScope.launch {
+            repository.getDarkTheme().collect{
+                _state.value = _state.value.copy( getDarkTheme = it )
+            }
+        }
+        viewModelScope.launch {
+            repository.getScreenOn().collect{
+                _state.value = _state.value.copy( getScreenOn = it )
+            }
+        }
+        viewModelScope.launch {
+            repository.getSettings().collect { settings ->
+                _state.value = _state.value.copy( settings = settings )
                 focusDuration = minutesToLong(floatToTime(settings.focusDur))
                 breakDuration = minutesToLong(floatToTime(settings.restDur))
                 longBreakDuration = minutesToLong(floatToTime(settings.longRestDur))
@@ -54,31 +94,7 @@ class SharedPomodoroViewModel @Inject constructor(
         }
     }
 
-    private val _isPaused = MutableStateFlow(false)
-    val isPaused: StateFlow<Boolean> = _isPaused
-
     private var pausedTime = 0L
-
-    private val _remainingFocusTime = MutableStateFlow(focusDuration/1000)
-    val remainingFocusTime: StateFlow<Long> = _remainingFocusTime
-
-    private val _remainingRestTime = MutableStateFlow(breakDuration/1000)
-    val remainingRestTime: StateFlow<Long> = _remainingRestTime
-
-    private val _remainingLongBreakTime = MutableStateFlow(longBreakDuration/1000)
-    val remainingLongBreakTime: StateFlow<Long> = _remainingLongBreakTime
-
-    private var _isRunningFocus = MutableStateFlow(false)
-    val isRunningFocus: StateFlow<Boolean> = _isRunningFocus
-
-    private val _isRunningRest = MutableStateFlow(false)
-    val isRunningRest: StateFlow<Boolean> = _isRunningRest
-
-    private var _isRunningLongBreak = MutableStateFlow(false)
-    val isRunningLongBreak: StateFlow<Boolean> = _isRunningLongBreak
-
-    private val _finishedCount = MutableStateFlow(0)
-    val finishedCount: StateFlow<Int> = _finishedCount
 
     val tick = MutableSharedFlow<Unit>()
     val focusFinish = MutableSharedFlow<Unit>()
@@ -183,21 +199,22 @@ class SharedPomodoroViewModel @Inject constructor(
     fun startFocusTimer() {
 
         stopAllTimers()
-        _isRunningFocus.value = true
+        _state.value = _state.value.copy( isRunningFocus = true )
         focusCountDownTimer = object : CountDownTimer(focusDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
-                _remainingFocusTime.value = millisUntilFinished / 1000
+                _state.value = _state.value.copy( remainingFocusTime = millisUntilFinished / 1000 )
             }
 
             override fun onFinish() {
                 alertFocusCompleteTick()
-                _isRunningFocus.value = false
-                _finishedCount.value++
+                _state.value = _state.value.copy( isRunningFocus = false )
+                //_state.valuefinishedCount.value++
+                _state.value = _state.value.copy( finishedCount = _state.value.finishedCount + 1 )
                 upsert(focusDuration = millisecondsToMinutes(focusDuration),
                     restDuration = 0,
                     rounds = 1)
-                if (_finishedCount.value == roundsDuration) {
+                if (_state.value.finishedCount == roundsDuration) {
                     startLongBreakTimer()
                 } else {
                     startRestTimer()
@@ -209,12 +226,12 @@ class SharedPomodoroViewModel @Inject constructor(
     fun startRestTimer() {
 
         stopAllTimers()
-        _isRunningRest.value = true
+        _state.value = _state.value.copy( isRunningRest = true )
 
         restCountDownTimer = object : CountDownTimer(breakDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
-                _remainingRestTime.value = millisUntilFinished / 1000
+                _state.value = _state.value.copy( remainingRestTime = millisUntilFinished / 1000 )
                 alertRestTick()
             }
 
@@ -223,7 +240,7 @@ class SharedPomodoroViewModel @Inject constructor(
                 upsert(focusDuration = 0,
                     restDuration = millisecondsToMinutes(breakDuration),
                     rounds = 0)
-                _isRunningRest.value = false
+                _state.value = _state.value.copy( isRunningRest = false )
                 startFocusTimer()
             }
         }.start()
@@ -232,53 +249,53 @@ class SharedPomodoroViewModel @Inject constructor(
     fun startLongBreakTimer() {
 
         stopAllTimers()
-        _isRunningLongBreak.value = true
+        _state.value = _state.value.copy( isRunningLongBreak = true )
 
         longBreakCountDownTimer = object : CountDownTimer(longBreakDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
-                _remainingLongBreakTime.value = millisUntilFinished / 1000
+                _state.value = _state.value.copy( remainingLongBreakTime = millisUntilFinished / 1000 )
                 alertRestTick()
             }
 
             override fun onFinish() {
                 alertRestCompleteTick()
-                _isRunningLongBreak.value = false
+                _state.value = _state.value.copy( isRunningLongBreak = false )
                 //_remainingLongBreakTime.value = 0
-                _finishedCount.value = 0
+                _state.value = _state.value.copy( finishedCount = 0 )
                 startFocusTimer()
             }
         }.start()
     }
     fun pauseTimer() {
         stopAllTimers()
-        _isPaused.value = true
+        _state.value = _state.value.copy( isPaused = true )
 
         when {
-            _isRunningFocus.value -> {
-                pausedTime = _remainingFocusTime.value * 1000
+            _state.value.isRunningFocus -> {
+                pausedTime = _state.value.remainingFocusTime * 1000
             }
-            _isRunningRest.value -> {
-                pausedTime = _remainingRestTime.value * 1000
+            _state.value.isRunningRest -> {
+                pausedTime = _state.value.remainingRestTime * 1000
             }
-            _isRunningLongBreak.value -> {
-                pausedTime = _remainingLongBreakTime.value * 1000
+            _state.value.isRunningLongBreak -> {
+                pausedTime = _state.value.remainingLongBreakTime * 1000
             }
         }
     }
 
     fun resumeTimer() {
-        if (_isPaused.value) {
-            _isPaused.value = false
+        if (_state.value.isPaused) {
+            _state.value = _state.value.copy( isPaused = false )
 
             when {
-                _isRunningFocus.value -> {
+                _state.value.isRunningFocus -> {
                     stopAllTimers()
-                    _isRunningFocus.value = true
+                    _state.value = _state.value.copy( isRunningFocus = true )
                     focusCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
                         // ...
                         override fun onTick(p0: Long) {
-                            _remainingFocusTime.value = p0 / 1000
+                            _state.value = _state.value.copy( remainingFocusTime = p0 / 1000 )
                         }
 
                         override fun onFinish() {
@@ -286,9 +303,10 @@ class SharedPomodoroViewModel @Inject constructor(
                             upsert(focusDuration = millisecondsToMinutes(focusDuration),
                                 restDuration = 0,
                                 rounds = 1)
-                            _isRunningFocus.value = false
-                            _finishedCount.value++
-                            if (_finishedCount.value == roundsDuration) {
+                            _state.value = _state.value.copy( isRunningFocus = false )
+                            //_finishedCount.value++
+                            _state.value = _state.value.copy( finishedCount = _state.value.finishedCount + 1 )
+                            if (_state.value.finishedCount == roundsDuration) {
                                 startLongBreakTimer()
                             } else {
                                 startRestTimer()
@@ -296,14 +314,14 @@ class SharedPomodoroViewModel @Inject constructor(
                         }
                     }.start()
                 }
-                _isRunningRest.value -> {
+                _state.value.isRunningRest -> {
                     stopAllTimers()
-                    _isRunningRest.value = true
+                    _state.value = _state.value.copy( isRunningRest = true )
                     restCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
                         // ...
                         override fun onTick(p0: Long) {
                             alertRestTick()
-                            _remainingRestTime.value = p0 / 1000
+                            _state.value = _state.value.copy( remainingRestTime = p0 / 1000 )
                         }
 
                         override fun onFinish() {
@@ -311,27 +329,27 @@ class SharedPomodoroViewModel @Inject constructor(
                             upsert(focusDuration = 0,
                                 restDuration = millisecondsToMinutes(breakDuration),
                                 rounds = 0)
-                            _isRunningRest.value = false
+                            _state.value = _state.value.copy( isRunningRest = false )
                             //_remainingRestTime.value = 0
                             startFocusTimer()
                         }
                     }.start()
                 }
-                _isRunningLongBreak.value -> {
+                _state.value.isRunningLongBreak -> {
                     stopAllTimers()
-                    _isRunningLongBreak.value = true
+                    _state.value = _state.value.copy( isRunningLongBreak = true )
                     longBreakCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
                         // ...
                         override fun onTick(p0: Long) {
                             alertRestTick()
-                            _remainingLongBreakTime.value = p0 / 1000
+                            _state.value = _state.value.copy( remainingLongBreakTime = p0 / 1000 )
                         }
 
                         override fun onFinish() {
                             alertRestCompleteTick()
-                            _isRunningLongBreak.value = false
+                            _state.value = _state.value.copy( isRunningLongBreak = false )
                             //_remainingLongBreakTime.value = 0
-                            _finishedCount.value = 0
+                            _state.value = _state.value.copy( finishedCount = 0 )
                             startFocusTimer()
                         }
                     }.start()
@@ -342,51 +360,51 @@ class SharedPomodoroViewModel @Inject constructor(
 
     fun resetTimer() {
         stopAllTimers()
-        _isPaused.value = false
-        _isRunningFocus.value = false
-        _isRunningRest.value = false
-        _isRunningLongBreak.value = false
-        _finishedCount.value = 0
+        _state.value = _state.value.copy( isPaused = false )
+        _state.value = _state.value.copy( isRunningFocus = false )
+        _state.value = _state.value.copy( isRunningRest = false )
+        _state.value = _state.value.copy( isRunningLongBreak = false )
+        _state.value = _state.value.copy( finishedCount = 0 )
         pausedTime = 0
     }
 
    fun skipTimer() {
 
-       _isPaused.value = false
+       _state.value = _state.value.copy( isPaused = false )
 
         when {
-            _isRunningFocus.value -> {
+            _state.value.isRunningFocus -> {
                 alertFocusCompleteTick()
                 focusCountDownTimer?.cancel()
-                _isRunningFocus.value = false
-                _finishedCount.value++
+                _state.value = _state.value.copy( isRunningFocus = false )
+                _state.value = _state.value.copy( finishedCount = _state.value.finishedCount + 1)
 
-                if (_finishedCount.value == roundsDuration){
-                    _isRunningRest.value = false
-                    _isRunningLongBreak.value = true
+                if (_state.value.finishedCount == roundsDuration){
+                    _state.value = _state.value.copy( isRunningRest = false )
+                    _state.value = _state.value.copy( isRunningLongBreak = true )
                     startLongBreakTimer()
                 } else {
-                    _isRunningRest.value = true
-                    _isRunningLongBreak.value = false
+                    _state.value = _state.value.copy( isRunningRest = true )
+                    _state.value = _state.value.copy( isRunningLongBreak = false )
                     startRestTimer()
                 }
             }
 
-            _isRunningRest.value -> {
+            _state.value.isRunningRest -> {
                 alertRestCompleteTick()
-                _isRunningFocus.value = true
-                _isRunningRest.value = false
-                _isRunningLongBreak.value = false
+                _state.value = _state.value.copy( isRunningFocus = true )
+                _state.value = _state.value.copy( isRunningRest = false )
+                _state.value = _state.value.copy( isRunningLongBreak = false )
                 restCountDownTimer?.cancel()
                 startFocusTimer()
             }
 
-            _isRunningLongBreak.value -> {
+            _state.value.isRunningLongBreak -> {
                 alertRestCompleteTick()
-                _finishedCount.value = 0
-                _isRunningFocus.value = true
-                _isRunningRest.value = false
-                _isRunningLongBreak.value = false
+                _state.value = _state.value.copy( finishedCount = 0 )
+                _state.value = _state.value.copy( isRunningFocus = true )
+                _state.value = _state.value.copy( isRunningRest = false )
+                _state.value = _state.value.copy( isRunningLongBreak = false )
                 longBreakCountDownTimer?.cancel()
                 startFocusTimer()
             }

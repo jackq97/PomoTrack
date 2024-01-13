@@ -28,12 +28,13 @@ fun MyNavigation(
 
     val animationDurationMilli = 500
 
-    val viewModel: SharedPomodoroViewModel = hiltViewModel()
+    val pomodoroViewModel: SharedPomodoroViewModel = hiltViewModel()
+    val pomodoroState = pomodoroViewModel.state.value
     val userDataViewModel: UserDataViewModel = hiltViewModel()
     val userDataState = userDataViewModel.state.value
-    val darkTheme = viewModel.getDarkTheme.collectAsState()
 
-    AppTheme(darkTheme = darkTheme.value) {
+
+    AppTheme(darkTheme = pomodoroState.getDarkTheme) {
 
         AnimatedNavHost(
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
@@ -42,7 +43,9 @@ fun MyNavigation(
         ) {
 
             composable(route = NavigationRoutes.PomodoroScreen.route) {
-                PomodoroScreen(viewModel = viewModel)
+                PomodoroScreen(state = pomodoroState,
+                    onEvent = pomodoroViewModel::onEvent
+                    )
             }
 
             composable(route = NavigationRoutes.UserDataScreen.route,
@@ -143,19 +146,19 @@ fun MyNavigation(
                 }
             ) {
                 TimerSettingsScreen(
-                    viewModel = viewModel
+                    viewModel = pomodoroViewModel
                 )
             }
 
             //bottom bar
             composable(route = BottomNavigationItem.TimerSettingScreen.route) {
                 TimerSettingsScreen(
-                    viewModel = viewModel
+                    viewModel = pomodoroViewModel
                 )
             }
 
             composable(route = BottomNavigationItem.SettingsScreen.route) {
-                SettingsScreen(viewModel = viewModel)
+                SettingsScreen(viewModel = pomodoroViewModel)
             }
 
             composable(route = BottomNavigationItem.InfoScreen.route) {

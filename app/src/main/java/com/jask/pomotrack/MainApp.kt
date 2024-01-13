@@ -39,7 +39,7 @@ fun MainApp(){
 
     val viewModel: SharedPomodoroViewModel = hiltViewModel()
 
-    val darkTheme = viewModel.getDarkTheme.collectAsState()
+    val darkTheme = viewModel.state.value.getDarkTheme
 
     val navController =  rememberAnimatedNavController()
 
@@ -53,7 +53,7 @@ fun MainApp(){
     var drawerIcon = R.raw.drawer_close
     var pieChartIcon = R.raw.pie_chart
 
-    if (darkTheme.value){
+    if (darkTheme){
         drawerIcon = R.raw.drawer_close_light
         pieChartIcon = R.raw.pie_chart_light
     }
@@ -104,7 +104,7 @@ fun MainApp(){
         if (buttonPressed) reversePlaying = true
     }
 
-    AppTheme(darkTheme = darkTheme.value) {
+    AppTheme(darkTheme = darkTheme) {
 
         Scaffold(
 
