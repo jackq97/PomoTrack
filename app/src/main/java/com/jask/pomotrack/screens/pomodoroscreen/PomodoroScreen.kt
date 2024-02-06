@@ -8,7 +8,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -90,6 +89,21 @@ fun PomodoroScreen(state: PomodoroState,
         volumeSliderValue = state.volume
     }
 
+    if (!state.isRunningFocus && !state.isRunningRest && !state.isRunningLongBreak || state.isPaused) {
+        // START
+        if (buttonPressed) endReached = true
+    } else {
+        //PAUSE
+        startPlaying = true
+        endReached = false
+    }
+
+    var playPauseIcon = R.raw.play_pause
+
+    if (state.getDarkTheme) {
+        playPauseIcon = R.raw.play_pause_light
+    }
+
     Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -98,16 +112,14 @@ fun PomodoroScreen(state: PomodoroState,
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .border(width = 2.dp, color = Color.Red),
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .border(width = 2.dp, color = Color.Green),
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
 
@@ -180,29 +192,9 @@ fun PomodoroScreen(state: PomodoroState,
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            if (!state.isRunningFocus && !state.isRunningRest && !state.isRunningLongBreak || state.isPaused) {
-                // START
-                if (buttonPressed) endReached = true
-            } else {
-                //PAUSE
-                startPlaying = true
-                endReached = false
-            }
-
-            var playPauseIcon = R.raw.play_pause
-
-            if (state.getDarkTheme) {
-                playPauseIcon = R.raw.play_pause_light
-            }
-
             ConditionalLottieIcon(
                 modifier = Modifier
-                    .size(80.dp)
-                    .border(
-                        shape = CircleShape,
-                        width = 5.dp,
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                    ),
+                    .size(80.dp),
                 lottieModifier = Modifier.size(30.dp),
                 res = playPauseIcon,
                 animationSpeed = 5f,
