@@ -75,6 +75,8 @@ fun InfoColumn(modifier: Modifier,
                     text = "${minutesToHoursAndMinutes(progress.absoluteValue)} from yesterday"
                 )
 
+                Spacer(modifier = Modifier.weight(1f))
+
                 Icon(
                     modifier = modifier
                         .size(15.dp),

@@ -1,7 +1,5 @@
 package com.jask.pomotrack.screens
 
-import android.content.Context
-import android.media.MediaPlayer
 import android.os.CountDownTimer
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -13,11 +11,11 @@ import com.jask.pomotrack.model.Settings
 import com.jask.pomotrack.repository.PomodoroRepository
 import com.jask.pomotrack.screens.pomodoroscreen.PomodoroEvents
 import com.jask.pomotrack.screens.pomodoroscreen.PomodoroState
+import com.jask.pomotrack.util.SoundPlayer
 import com.jask.pomotrack.util.floatToTime
 import com.jask.pomotrack.util.millisecondsToMinutes
 import com.jask.pomotrack.util.minutesToLong
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -26,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SharedPomodoroViewModel @Inject constructor(
-    private val repository: PomodoroRepository
+    private val repository: PomodoroRepository,
+    private var soundPlayer: SoundPlayer,
 ) : ViewModel(){
 
     private val _state = mutableStateOf(PomodoroState())
@@ -58,9 +57,6 @@ class SharedPomodoroViewModel @Inject constructor(
 
     private val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     private val currentDate: String =  dateFormat.format(Date())
-    private var tickMediaPlayer: MediaPlayer? = null
-    private var restMediaPlayer: MediaPlayer? = null
-    private var focusMediaPlayer: MediaPlayer? = null
 
     var focusDuration: Long = 0L
     var breakDuration: Long = 0L
@@ -96,29 +92,7 @@ class SharedPomodoroViewModel @Inject constructor(
 
     private var pausedTime = 0L
 
-    val tick = MutableSharedFlow<Unit>()
-    val focusFinish = MutableSharedFlow<Unit>()
-    val restFinish = MutableSharedFlow<Unit>()
-
-    fun alertRestTick() {
-        viewModelScope.launch {
-            tick.emit(Unit)
-        }
-    }
-
-    fun alertFocusCompleteTick() {
-        viewModelScope.launch {
-            focusFinish.emit(Unit)
-        }
-    }
-
-    fun alertRestCompleteTick() {
-        viewModelScope.launch {
-            restFinish.emit(Unit)
-        }
-    }
-
-    fun saveVolume(volume: Float) {
+    private fun saveVolume(volume: Float) {
         repository.saveVolume(volume = volume)
     }
 
@@ -152,44 +126,14 @@ class SharedPomodoroViewModel @Inject constructor(
                     )
                 )
             } else {
-                //Log.d("TAG", "upsert: data updated")
+
                 repository.accumulateFocusDuration(date = currentDate,
                     focusDuration = focusDuration,
                     restDuration = restDuration,
                     rounds = rounds
-                    )
+                )
             }
         }
-    }
-
-    fun playTickSound(context: Context,
-                  volume: Float){
-
-        if (tickMediaPlayer == null) {
-            tickMediaPlayer = MediaPlayer.create(context, R.raw.tick)
-        }
-        tickMediaPlayer?.setVolume(volume,volume)
-        tickMediaPlayer?.start()
-    }
-
-    fun playRestSound(context: Context,
-                      volume: Float){
-
-        if (restMediaPlayer == null) {
-            restMediaPlayer = MediaPlayer.create(context, R.raw.rest_finish)
-        }
-        restMediaPlayer?.setVolume(volume,volume)
-        restMediaPlayer?.start()
-    }
-
-    fun playFocusSound(context: Context,
-                      volume: Float){
-
-        if (focusMediaPlayer == null) {
-            focusMediaPlayer = MediaPlayer.create(context, R.raw.focus_finish)
-        }
-        focusMediaPlayer?.setVolume(volume,volume)
-        focusMediaPlayer?.start()
     }
 
     private var focusCountDownTimer: CountDownTimer? = null
@@ -204,12 +148,12 @@ class SharedPomodoroViewModel @Inject constructor(
 
             override fun onTick(millisUntilFinished: Long) {
                 _state.value = _state.value.copy( remainingFocusTime = millisUntilFinished / 1000 )
+                soundPlayer.playTickSound(R.raw.tick)
             }
 
             override fun onFinish() {
-                alertFocusCompleteTick()
                 _state.value = _state.value.copy( isRunningFocus = false )
-                //_state.valuefinishedCount.value++
+                soundPlayer.playFinishSound(R.raw.focus_finish)
                 _state.value = _state.value.copy( finishedCount = _state.value.finishedCount + 1 )
                 upsert(focusDuration = millisecondsToMinutes(focusDuration),
                     restDuration = 0,
@@ -232,11 +176,11 @@ class SharedPomodoroViewModel @Inject constructor(
 
             override fun onTick(millisUntilFinished: Long) {
                 _state.value = _state.value.copy( remainingRestTime = millisUntilFinished / 1000 )
-                alertRestTick()
+                soundPlayer.playTickSound(R.raw.tick)
             }
 
             override fun onFinish() {
-                alertRestCompleteTick()
+                soundPlayer.playFinishSound(R.raw.rest_finish)
                 upsert(focusDuration = 0,
                     restDuration = millisecondsToMinutes(breakDuration),
                     rounds = 0)
@@ -254,20 +198,19 @@ class SharedPomodoroViewModel @Inject constructor(
         longBreakCountDownTimer = object : CountDownTimer(longBreakDuration, INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
+                soundPlayer.playTickSound(R.raw.tick)
                 _state.value = _state.value.copy( remainingLongBreakTime = millisUntilFinished / 1000 )
-                alertRestTick()
             }
 
             override fun onFinish() {
-                alertRestCompleteTick()
+                soundPlayer.playFinishSound(R.raw.rest_finish)
                 _state.value = _state.value.copy( isRunningLongBreak = false )
-                //_remainingLongBreakTime.value = 0
                 _state.value = _state.value.copy( finishedCount = 0 )
                 startFocusTimer()
             }
         }.start()
     }
-    fun pauseTimer() {
+    private fun pauseTimer() {
         stopAllTimers()
         _state.value = _state.value.copy( isPaused = true )
 
@@ -284,7 +227,7 @@ class SharedPomodoroViewModel @Inject constructor(
         }
     }
 
-    fun resumeTimer() {
+    private fun resumeTimer() {
         if (_state.value.isPaused) {
             _state.value = _state.value.copy( isPaused = false )
 
@@ -293,18 +236,18 @@ class SharedPomodoroViewModel @Inject constructor(
                     stopAllTimers()
                     _state.value = _state.value.copy( isRunningFocus = true )
                     focusCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
-                        // ...
+
                         override fun onTick(p0: Long) {
+                            soundPlayer.playTickSound(R.raw.tick)
                             _state.value = _state.value.copy( remainingFocusTime = p0 / 1000 )
                         }
 
                         override fun onFinish() {
-                            alertFocusCompleteTick()
+                            soundPlayer.playFinishSound(R.raw.focus_finish)
                             upsert(focusDuration = millisecondsToMinutes(focusDuration),
                                 restDuration = 0,
                                 rounds = 1)
                             _state.value = _state.value.copy( isRunningFocus = false )
-                            //_finishedCount.value++
                             _state.value = _state.value.copy( finishedCount = _state.value.finishedCount + 1 )
                             if (_state.value.finishedCount == roundsDuration) {
                                 startLongBreakTimer()
@@ -320,17 +263,16 @@ class SharedPomodoroViewModel @Inject constructor(
                     restCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
                         // ...
                         override fun onTick(p0: Long) {
-                            alertRestTick()
+                            soundPlayer.playTickSound(R.raw.tick)
                             _state.value = _state.value.copy( remainingRestTime = p0 / 1000 )
                         }
 
                         override fun onFinish() {
-                            alertRestCompleteTick()
+                            soundPlayer.playFinishSound(R.raw.rest_finish)
                             upsert(focusDuration = 0,
                                 restDuration = millisecondsToMinutes(breakDuration),
                                 rounds = 0)
                             _state.value = _state.value.copy( isRunningRest = false )
-                            //_remainingRestTime.value = 0
                             startFocusTimer()
                         }
                     }.start()
@@ -339,16 +281,14 @@ class SharedPomodoroViewModel @Inject constructor(
                     stopAllTimers()
                     _state.value = _state.value.copy( isRunningLongBreak = true )
                     longBreakCountDownTimer = object : CountDownTimer(pausedTime, INTERVAL) {
-                        // ...
                         override fun onTick(p0: Long) {
-                            alertRestTick()
+                            soundPlayer.playTickSound(R.raw.tick)
                             _state.value = _state.value.copy( remainingLongBreakTime = p0 / 1000 )
                         }
 
                         override fun onFinish() {
-                            alertRestCompleteTick()
+                            soundPlayer.playFinishSound(R.raw.rest_finish)
                             _state.value = _state.value.copy( isRunningLongBreak = false )
-                            //_remainingLongBreakTime.value = 0
                             _state.value = _state.value.copy( finishedCount = 0 )
                             startFocusTimer()
                         }
@@ -368,13 +308,13 @@ class SharedPomodoroViewModel @Inject constructor(
         pausedTime = 0
     }
 
-   fun skipTimer() {
+   private fun skipTimer() {
 
        _state.value = _state.value.copy( isPaused = false )
 
         when {
             _state.value.isRunningFocus -> {
-                alertFocusCompleteTick()
+                soundPlayer.playFinishSound(R.raw.focus_finish)
                 focusCountDownTimer?.cancel()
                 _state.value = _state.value.copy( isRunningFocus = false )
                 _state.value = _state.value.copy( finishedCount = _state.value.finishedCount + 1)
@@ -391,7 +331,7 @@ class SharedPomodoroViewModel @Inject constructor(
             }
 
             _state.value.isRunningRest -> {
-                alertRestCompleteTick()
+                soundPlayer.playFinishSound(R.raw.rest_finish)
                 _state.value = _state.value.copy( isRunningFocus = true )
                 _state.value = _state.value.copy( isRunningRest = false )
                 _state.value = _state.value.copy( isRunningLongBreak = false )
@@ -400,7 +340,7 @@ class SharedPomodoroViewModel @Inject constructor(
             }
 
             _state.value.isRunningLongBreak -> {
-                alertRestCompleteTick()
+                soundPlayer.playFinishSound(R.raw.rest_finish)
                 _state.value = _state.value.copy( finishedCount = 0 )
                 _state.value = _state.value.copy( isRunningFocus = true )
                 _state.value = _state.value.copy( isRunningRest = false )
@@ -410,7 +350,7 @@ class SharedPomodoroViewModel @Inject constructor(
             }
 
             else -> {
-                alertFocusCompleteTick()
+                soundPlayer.playFinishSound(R.raw.rest_finish)
                 startRestTimer()
             }
         }
@@ -424,14 +364,9 @@ class SharedPomodoroViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-
         super.onCleared()
-        tickMediaPlayer?.release()
-        tickMediaPlayer = null
-        restMediaPlayer?.release()
-        restMediaPlayer = null
-        focusMediaPlayer?.release()
-        focusMediaPlayer = null
+        soundPlayer.reset()
+        soundPlayer.resetFinish()
         stopAllTimers()
     }
 

@@ -1,6 +1,7 @@
 package com.jask.pomotrack.screens.pomodoroscreen
 
 import com.jask.pomotrack.model.Settings
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 data class PomodoroState(
  val isPaused: Boolean = false,
@@ -14,11 +15,6 @@ data class PomodoroState(
  val volume: Float = 0f,
  val getDarkTheme: Boolean = false,
  val getScreenOn: Boolean = false,
- val settings: Settings = Settings(
-  focusDur = 0.0f,
-  restDur = 0.0f,
-  longRestDur = 0.0f,
-  rounds = 0.0f
+ val settings: Settings = Settings(focusDur = 0.0f, restDur = 0.0f, longRestDur = 0.0f, rounds = 0.0f),
+ var timerEvent: MutableSharedFlow<Unit>? = MutableSharedFlow()
  )
-
-)

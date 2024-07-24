@@ -12,6 +12,7 @@ import com.jask.pomotrack.data.datastore.SettingsManager
 import com.jask.pomotrack.data.datastore.SettingsManagerImpl
 import com.jask.pomotrack.data.roomdatabase.DurationDao
 import com.jask.pomotrack.data.roomdatabase.DurationDatabase
+import com.jask.pomotrack.util.SoundPlayer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,6 +48,11 @@ object AppModule {
             ), produceFile = { context.preferencesDataStoreFile("user_settings") }
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideSoundPlayer(@ApplicationContext context: Context) =
+        SoundPlayer(context = context)
 
     @Provides
     fun provideUserPref(dataStore: DataStore<Preferences>): SettingsManager = SettingsManagerImpl(dataStore)

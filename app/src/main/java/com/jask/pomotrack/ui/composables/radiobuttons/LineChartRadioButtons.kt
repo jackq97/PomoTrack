@@ -51,7 +51,6 @@ fun LineRadioButtons(onClickOption : (String) -> Unit) {
 
             val color = if (text == selectedOption) MaterialTheme.colorScheme.tertiaryContainer else Color.Transparent
 
-
             Button(
                 onClick = { onSelectionChange(text)
                     onClickOption(text) },
@@ -75,6 +74,7 @@ fun LineRadioButtons(onClickOption : (String) -> Unit) {
         }
     }
 }
+
 @Preview
 @Composable
 fun LinePreviewCustomRadioGroup(){

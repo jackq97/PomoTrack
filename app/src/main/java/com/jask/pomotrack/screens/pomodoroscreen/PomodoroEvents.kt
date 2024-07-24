@@ -7,9 +7,5 @@ sealed class PomodoroEvents {
     object ResumeTimer: PomodoroEvents()
     object ResetTimer: PomodoroEvents()
     object SkipTimer: PomodoroEvents()
-
     data class SaveVolume(val volumeSliderValue: Float): PomodoroEvents()
-
-
-
 }

@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.jask.pomotrack.navigation.BottomNavigationItem
 import com.jask.pomotrack.navigation.MyNavigation
 import com.jask.pomotrack.navigation.NavigationRoutes
@@ -30,7 +30,6 @@ import com.jask.pomotrack.screens.SharedPomodoroViewModel
 import com.jask.pomotrack.ui.composables.BottomNavigationBar
 import com.jask.pomotrack.ui.composables.ConditionalLottieIcon
 import com.jask.pomotrack.ui.theme.AppTheme
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
@@ -329,6 +328,7 @@ fun MainApp(){
                 MyNavigation(
                     navController = navController
                 )
-            })
+            }
+        )
     }
 }

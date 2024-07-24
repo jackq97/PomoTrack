@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jask.pomotrack.R
+import com.jask.pomotrack.repository.PomodoroRepository
 import com.jask.pomotrack.screens.SharedPomodoroViewModel
 import com.jask.pomotrack.ui.composables.SettingsSwitchRow
 import com.jask.pomotrack.ui.composables.SettingsText
@@ -81,8 +81,5 @@ fun SettingsScreen(viewModel: SharedPomodoroViewModel){
 }
 
 @Composable
-@Preview()
-fun SettingsScreenPreview(){
-
-    //SettingsScreen()
-}
+@Preview
+fun SettingsScreenPreview(){}
