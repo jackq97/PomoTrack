@@ -1,7 +1,6 @@
 package com.jask.pomotrack.screens.userdatascreen
 
 import com.jask.pomotrack.model.Duration
-import com.jask.pomotrack.model.Settings
 import com.jask.pomotrack.util.SortOrder
 
 data class UserDataState(

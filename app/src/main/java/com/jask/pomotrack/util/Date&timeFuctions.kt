@@ -1,5 +1,7 @@
 package com.jask.pomotrack.util
 
+import java.util.Locale
+
 fun floatToTime(value: Float): Int {
     val minValue = 1.0f
     val maxValue = 10.0f
@@ -20,7 +22,9 @@ fun minutesToLong(minutes: Int): Long {
 fun secondsToMinutesAndSeconds(seconds: Long): String {
     val minutes = seconds / 60
     val remainingSeconds = seconds % 60
-    val secondsString = String.format("%02d", remainingSeconds)
+    val secondsString = String.format(
+        locale = Locale.getDefault(),
+        "%02d", remainingSeconds)
     return "$minutes:$secondsString"
 }
 
@@ -34,9 +38,3 @@ fun minutesToHoursAndMinutes(minutes: Int): String {
 fun millisecondsToMinutes(milliseconds: Long): Int {
     return (milliseconds / (1000 * 60)).toInt()
 }
-
-
-
-
-
-

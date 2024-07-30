@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -291,7 +289,7 @@ fun PomodoroScreen(state: PomodoroState,
                         )
                     }
 
-                    val volumePainter: Painter = if (volumeSliderValue == 0F) {
+                    /*val volumePainter: Painter = if (volumeSliderValue == 0F) {
                         painterResource(id = R.drawable.volume_off)
                     } else {
                         painterResource(id = R.drawable.volume)
@@ -307,7 +305,7 @@ fun PomodoroScreen(state: PomodoroState,
                             tint = MaterialTheme.colorScheme.onSurface,
                             contentDescription = stringResource(R.string.sound)
                         )
-                    }
+                    }*/
                 }
             }
         }

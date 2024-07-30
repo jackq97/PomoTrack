@@ -18,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jask.pomotrack.R
-import com.jask.pomotrack.repository.PomodoroRepository
 import com.jask.pomotrack.screens.SharedPomodoroViewModel
 import com.jask.pomotrack.ui.composables.SettingsSwitchRow
 import com.jask.pomotrack.ui.composables.SettingsText

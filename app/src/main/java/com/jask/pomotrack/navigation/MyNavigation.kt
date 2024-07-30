@@ -6,20 +6,19 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
 import com.jask.pomotrack.screens.SharedPomodoroViewModel
 import com.jask.pomotrack.screens.infoscreen.InfoScreen
 import com.jask.pomotrack.screens.pomodoroscreen.PomodoroScreen
 import com.jask.pomotrack.screens.settingsscreen.SettingsScreen
 import com.jask.pomotrack.screens.timersettingscreen.TimerSettingsScreen
 import com.jask.pomotrack.screens.userdatascreen.UserDataScreen
-import com.jask.pomotrack.ui.theme.AppTheme
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
 import com.jask.pomotrack.screens.userdatascreen.UserDataViewModel
+import com.jask.pomotrack.ui.theme.AppTheme
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

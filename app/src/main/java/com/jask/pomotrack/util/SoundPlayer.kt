@@ -2,7 +2,6 @@ package com.jask.pomotrack.util
 
 import android.content.Context
 import android.media.MediaPlayer
-import android.util.Log
 import androidx.annotation.RawRes
 
 class SoundPlayer(

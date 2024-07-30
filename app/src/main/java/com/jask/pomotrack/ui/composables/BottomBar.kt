@@ -44,7 +44,7 @@ fun BottomNavigationBar(
         exit = slideOutVertically(targetOffsetY = { it }),
         content = {
 
-            NavigationBar() {
+            NavigationBar {
 
                 items.forEachIndexed { index, item ->
                     NavigationBarItem(

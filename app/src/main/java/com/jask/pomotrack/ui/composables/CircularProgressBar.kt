@@ -69,7 +69,7 @@ fun AnimatedCircularProgressbar(
         targetValue = dataUsageRemember,
         animationSpec = tween(
             durationMillis = animationDuration
-        )
+        ), label = ""
     )
 
     // This is to start the animation when the activity is opened

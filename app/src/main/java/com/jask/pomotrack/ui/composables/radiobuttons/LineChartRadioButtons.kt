@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,7 +55,7 @@ fun LineRadioButtons(onClickOption : (String) -> Unit) {
                 onClick = { onSelectionChange(text)
                     onClickOption(text) },
                 modifier = Modifier.padding(start = 8.dp),
-                elevation = ButtonDefaults.elevation(
+                elevation = ButtonDefaults.buttonElevation(
                     defaultElevation = 0.dp,
                     pressedElevation = 0.dp,
                     disabledElevation = 0.dp,
@@ -63,7 +63,7 @@ fun LineRadioButtons(onClickOption : (String) -> Unit) {
                     focusedElevation = 0.dp
                 ),
                 shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = color)
+                colors = ButtonDefaults.buttonColors(containerColor = color)
             ) {
                 Text(text = text,
                     style = androidx.compose.material.MaterialTheme.typography.button,

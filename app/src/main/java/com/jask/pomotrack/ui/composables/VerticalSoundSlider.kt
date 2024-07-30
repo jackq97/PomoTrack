@@ -1,9 +1,9 @@
 package com.jask.pomotrack.ui.composables
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.material.Slider
-import androidx.compose.material.SliderDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
